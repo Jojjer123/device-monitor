@@ -6,7 +6,8 @@ import (
 	"time"
 )
 
-func deviceMonitor(config string, numberOfDeviceMonitors *int, deviceChannel <-chan string) {
+func deviceMonitor(config string, numberOfDeviceMonitors *int, managerChannel <-chan string, deviceMonitorWaitGroup *sync.WaitGroup) {
+	defer deviceMonitorWaitGroup.Done()
 	var localWaitGroup sync.WaitGroup
 	localWaitGroup.Add(1)
 
@@ -23,16 +24,18 @@ func deviceMonitor(config string, numberOfDeviceMonitors *int, deviceChannel <-c
 	deviceMonitorIsActive := true
 	for deviceMonitorIsActive {
 		select {
-		case x := <-deviceChannel:
-			if x == "shutdown" {
-				// fmt.Println("Received shutdown command on channel now...")
+		case x := <-managerChannel:
+			if x == "shutdown" { // shut down (all) device monitors
+				fmt.Println("Received shutdown command on channel now...")
 				deviceMonitorIsActive = false
 				deviceMonitorChannel <- x
 				*numberOfDeviceMonitors -= 1
 			}
 		}
 	}
-	// fmt.Println("Shutting down device monitor now...")
+
+	localWaitGroup.Wait()
+	fmt.Println("Shutting down device monitor now...")
 }
 
 func newCounter(config string, interval int, localWaitGroup *sync.WaitGroup, deviceMonitorChannel <-chan string) {
@@ -47,9 +50,9 @@ func newCounter(config string, interval int, localWaitGroup *sync.WaitGroup, dev
 			counterIsActive = false
 		case <-intervalTicker.C:
 			// TODO: Get the counters for the given interval here and send them to the data processing part.
-			// fmt.Println("Ticker triggered")
+			fmt.Println("Ticker triggered")
 		}
 	}
 
-	// fmt.Println("Exits counter now")
+	fmt.Println("Exits counter now")
 }

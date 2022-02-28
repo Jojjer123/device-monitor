@@ -20,14 +20,14 @@ func main() {
 	waitGroup.Add(numberOfComponents)
 
 	// WARNING potential problem: buffered vs unbuffered channels block in different stages of the communication.
-	adminDeviceChannel := make(chan string)
+	adminChannel := make(chan string)
 
 	go topo.TopoInterface(&waitGroup)
 	go conf.ConfigInterface(&waitGroup)
-	go adm.AdminInterface(&waitGroup, adminDeviceChannel)
+	go adm.AdminInterface(&waitGroup, adminChannel)
 	go kafka.KafkaInterface(&waitGroup)
 	go reqBuilder.RequestBuilder(&waitGroup)
-	go deviceMgr.DeviceManager(&waitGroup, adminDeviceChannel)
+	go deviceMgr.DeviceManager(&waitGroup, adminChannel)
 	go dataProc.DataProcessing(&waitGroup)
 
 	waitGroup.Wait()

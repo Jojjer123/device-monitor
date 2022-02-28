@@ -6,12 +6,17 @@ import (
 	"time"
 )
 
-func AdminInterface(waitGroup *sync.WaitGroup, deviceChannel chan<- string) {
+func AdminInterface(waitGroup *sync.WaitGroup, adminChannel chan<- string) {
 	fmt.Println("AdminInterface started")
 	defer waitGroup.Done()
 
+	time.Sleep(2 * time.Second)
+
 	// Communicate with device manager over deviceChannel.
+	adminChannel <- "create new"
+	adminChannel <- "create new"
+
 	time.Sleep(10 * time.Second)
-	// fmt.Println("Send shutdown command over channel now...")
-	deviceChannel <- "shutdown"
+	fmt.Println("Send shutdown command over channel now...")
+	adminChannel <- "shutdown"
 }
