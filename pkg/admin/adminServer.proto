@@ -1,0 +1,15 @@
+syntax = "proto3";
+package adminServer;
+
+service MonitorAdminInterface {
+	rpc MonitorDevice(MonitorMessage) returns (MonitorResponse) {}
+}
+
+message MonitorMessage {
+	string action = 1;
+	string target = 2;
+}
+
+message MonitorResponse {
+	string respone = 1;
+}
