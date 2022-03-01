@@ -12,10 +12,17 @@ func deviceMonitor(config string, numberOfDeviceMonitors *int, managerChannel <-
 	localWaitGroup.Add(1)
 
 	// TODO: Need to have a way to communicate with specific goroutines for specific counters
-	// TODO: Send message to goroutines dedicated for each counter, to change already existing device monitor.
 
-	// For each interval, create a new goroutine, which repeatedly collects counters.
+	// Temporary interval, should be specified in the config?
 	interval := 2
+
+	// // Create a map of counter names as keys to channel references in the counterChannels slice.
+	// counterChannelsMap := make(map[string]chan string)
+
+	// // Create a slice for keeping dynamically created channels.
+	// var counterChannels []chan string
+
+	// This should happen for every counter we want to have
 	deviceMonitorChannel := make(chan string)
 	go newCounter(config, interval, &localWaitGroup, deviceMonitorChannel)
 	fmt.Println("Created new device monitor")
@@ -30,12 +37,19 @@ func deviceMonitor(config string, numberOfDeviceMonitors *int, managerChannel <-
 				deviceMonitorIsActive = false
 				deviceMonitorChannel <- x
 				*numberOfDeviceMonitors -= 1
+			} else if x == "update" {
+				fmt.Println("Received update command on channel now...")
+
 			}
 		}
 	}
 
 	localWaitGroup.Wait()
 	fmt.Println("Shutting down device monitor now...")
+}
+
+func sendToChannel(msg string) {
+	// TODO: Check which channel should get the msg and send it on that channel.
 }
 
 func newCounter(config string, interval int, localWaitGroup *sync.WaitGroup, deviceMonitorChannel <-chan string) {

@@ -16,6 +16,8 @@ func DeviceManager(waitGroup *sync.WaitGroup, adminChannel <-chan string) {
 	// Create a map of channels as keys to indexes in the managerChannels slice.
 	managerChannelsMap := make(map[chan string]int)
 
+	// TODO: Create a map with IP as keys and channels as values.
+
 	// Create a slice for keeping dynamically created channels.
 	var managerChannels []chan string
 
@@ -36,6 +38,8 @@ func DeviceManager(waitGroup *sync.WaitGroup, adminChannel <-chan string) {
 				fmt.Println("Device manager received create new command")
 				if numberOfDeviceMonitors < maxNumberOfDeviceMonitors {
 					fmt.Println("Create new device monitor...")
+
+					// The following 3 implemented lines could be replaced if there is only one map with IP and channels.
 					channelIndexToUse := len(managerChannels)
 					managerChannels = append(managerChannels, make(chan string))
 
