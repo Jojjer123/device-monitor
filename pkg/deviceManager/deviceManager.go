@@ -12,7 +12,14 @@ func DeviceManager(waitGroup *sync.WaitGroup, adminChannel <-chan string) {
 	defer waitGroup.Done()
 
 	var deviceMonitorWaitGroup sync.WaitGroup
-	managerChannel := make(chan string)
+
+	// Create a map of channels as keys to indexes in the managerChannels slice.
+	managerChannelsMap := make(map[chan string]int)
+
+	// Create a slice for keeping dynamically created channels.
+	var managerChannels []chan string
+
+	// Start device manager with 0 device monitors.
 	numberOfDeviceMonitors := 0
 
 	deviceManagerIsActive := true
@@ -21,22 +28,28 @@ func DeviceManager(waitGroup *sync.WaitGroup, adminChannel <-chan string) {
 		case msg := <-adminChannel:
 			if msg == "shutdown" {
 				fmt.Println("Device manager received shutdown command")
-				// deviceManagerIsActive = false
-				for i := 0; i < numberOfDeviceMonitors; i++ {
-					managerChannel <- msg
+				for i := 0; i < len(managerChannels); i++ {
+					managerChannels[i] <- msg
 				}
+				// deviceManagerIsActive = false
 			} else if msg == "create new" {
 				fmt.Println("Device manager received create new command")
 				if numberOfDeviceMonitors < maxNumberOfDeviceMonitors {
 					fmt.Println("Create new device monitor...")
-					createDeviceMonitor(&numberOfDeviceMonitors, managerChannel, &deviceMonitorWaitGroup)
+					channelIndexToUse := len(managerChannels)
+					managerChannels = append(managerChannels, make(chan string))
+
+					// Add the newly created channel mapped to its index.
+					managerChannelsMap[managerChannels[channelIndexToUse]] = channelIndexToUse
+
+					createDeviceMonitor(&numberOfDeviceMonitors, managerChannels[channelIndexToUse], &deviceMonitorWaitGroup)
 				}
 			}
 		}
 	}
 
 	deviceMonitorWaitGroup.Wait()
-	fmt.Println("Device manager shutting down...")
+	// fmt.Println("Device manager shutting down...")
 }
 
 func createDeviceMonitor(numberOfDeviceMonitors *int, managerChannel <-chan string, deviceMonitorWaitGroup *sync.WaitGroup) {
