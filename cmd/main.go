@@ -10,6 +10,8 @@ import (
 	kafka "github.com/onosproject/device-monitor/pkg/kafka"
 	reqBuilder "github.com/onosproject/device-monitor/pkg/requestBuilder"
 	topo "github.com/onosproject/device-monitor/pkg/topo"
+
+	types "github.com/onosproject/device-monitor/pkg/types"
 )
 
 const numberOfComponents = 7
@@ -20,7 +22,7 @@ func main() {
 	waitGroup.Add(numberOfComponents)
 
 	// WARNING potential problem: buffered vs unbuffered channels block in different stages of the communication.
-	adminChannel := make(chan string)
+	adminChannel := make(chan types.AdminChannelMessage)
 
 	go topo.TopoInterface(&waitGroup)
 	go conf.ConfigInterface(&waitGroup)
