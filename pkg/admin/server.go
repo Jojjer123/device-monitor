@@ -9,7 +9,7 @@ import (
 	"google.golang.org/grpc"
 )
 
-func startServer(serverWaitGroup *sync.WaitGroup) {
+func startServer(serverWaitGroup *sync.WaitGroup, registerChannelFunction func(chan string, *sync.WaitGroup)) {
 	defer serverWaitGroup.Done()
 	// Default rpc port range is 1024-5000.
 	listener, err := net.Listen("tcp", ":4040")
@@ -18,6 +18,9 @@ func startServer(serverWaitGroup *sync.WaitGroup) {
 	}
 
 	s := adminServer.Server{}
+	// s.ServerChannel = serverChannel
+
+	s.RegisterFunction = registerChannelFunction
 
 	grpcServer := grpc.NewServer()
 
