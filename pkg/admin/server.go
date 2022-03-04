@@ -18,12 +18,9 @@ func startServer(serverWaitGroup *sync.WaitGroup, registerChannelFunction func(c
 	}
 
 	s := adminServer.Server{}
-	// s.ServerChannel = serverChannel
-
 	s.RegisterFunction = registerChannelFunction
 
 	grpcServer := grpc.NewServer()
-
 	adminServer.RegisterMonitorAdminInterfaceServer(grpcServer, &s)
 
 	err = grpcServer.Serve(listener)

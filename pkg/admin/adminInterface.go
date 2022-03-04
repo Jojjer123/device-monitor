@@ -11,12 +11,7 @@ func AdminInterface(waitGroup *sync.WaitGroup, adminChannel chan types.AdminChan
 	fmt.Println("AdminInterface started")
 	defer waitGroup.Done()
 
-	// TODO: Instead of having a channel to gRPC server, get the function for registering channels in device manager,
-	//		 from the admin channel, and use that function directly in the gRPC server.
-
 	var serverWaitGroup sync.WaitGroup
-
-	// serverChannel := make(chan string)
 
 	var registerFunction func(chan string, *sync.WaitGroup)
 

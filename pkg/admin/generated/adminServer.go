@@ -8,7 +8,6 @@ import (
 )
 
 type Server struct {
-	// ServerChannel chan string
 	RegisterFunction func(chan string, *sync.WaitGroup)
 }
 
@@ -22,6 +21,7 @@ func (s *Server) MonitorDevice(ctx context.Context, message *MonitorMessage) (*M
 
 	serverChannel := make(chan string)
 
+	// TODO: REWORK THIS, could potentially be called as a basic function, call function with msg as param and return string.
 	var channelWaitGroup sync.WaitGroup
 	channelWaitGroup.Add(1)
 	go s.RegisterFunction(serverChannel, &channelWaitGroup)
@@ -38,6 +38,7 @@ func (s *Server) MonitorDevice(ctx context.Context, message *MonitorMessage) (*M
 	}
 
 	channelWaitGroup.Wait()
+	// End of code that should be reworked.
 
 	return &MonitorResponse{Response: response}, nil
 }
