@@ -18,4 +18,6 @@ WORKDIR $HOME
 
 COPY --from=build /go/bin/main /usr/local/bin/
 
+COPY configs/target_configs target_configs
+
 CMD ["main"]
