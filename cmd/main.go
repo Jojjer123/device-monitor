@@ -3,11 +3,11 @@ package main
 import (
 	"sync"
 
-	adm "github.com/onosproject/device-monitor/pkg/admin"
 	conf "github.com/onosproject/device-monitor/pkg/config"
 	dataProc "github.com/onosproject/device-monitor/pkg/dataProcessing"
 	deviceMgr "github.com/onosproject/device-monitor/pkg/deviceManager"
 	kafka "github.com/onosproject/device-monitor/pkg/kafka"
+	north "github.com/onosproject/device-monitor/pkg/northbound"
 	reqBuilder "github.com/onosproject/device-monitor/pkg/requestBuilder"
 	topo "github.com/onosproject/device-monitor/pkg/topo"
 
@@ -26,7 +26,7 @@ func main() {
 
 	go topo.TopoInterface(&waitGroup)
 	go conf.ConfigInterface(&waitGroup)
-	go adm.AdminInterface(&waitGroup, adminChannel)
+	go north.Northbound(&waitGroup, adminChannel)
 	go kafka.KafkaInterface(&waitGroup)
 	go reqBuilder.RequestBuilder(&waitGroup)
 	go deviceMgr.DeviceManager(&waitGroup, adminChannel)
