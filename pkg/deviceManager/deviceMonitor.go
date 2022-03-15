@@ -30,27 +30,36 @@ func deviceMonitor(config string, numberOfDeviceMonitors *int, managerChannel <-
 	// Loops forever and reads the channel which admin interface controls, if the channel has any new data, read it and react accordingly.
 	deviceMonitorIsActive := true
 	for deviceMonitorIsActive {
-		select {
-		case x := <-managerChannel:
-			if x == "shutdown" { // shut down (all) device monitors
-				fmt.Println("Received shutdown command on channel now...")
-				deviceMonitorIsActive = false
-				deviceMonitorChannel <- x
-				*numberOfDeviceMonitors -= 1
-			} else if x == "update" {
-				fmt.Println("Received update command on channel now...")
-
-			}
+		x := <-managerChannel
+		if x == "shutdown" { // shut down (all) device monitors
+			fmt.Println("Received shutdown command on channel now...")
+			deviceMonitorIsActive = false
+			deviceMonitorChannel <- x
+			*numberOfDeviceMonitors -= 1
+		} else if x == "update" {
+			fmt.Println("Received update command on channel now...")
 		}
+		// select {
+		// case x := <-managerChannel:
+		// 	if x == "shutdown" { // shut down (all) device monitors
+		// 		fmt.Println("Received shutdown command on channel now...")
+		// 		deviceMonitorIsActive = false
+		// 		deviceMonitorChannel <- x
+		// 		*numberOfDeviceMonitors -= 1
+		// 	} else if x == "update" {
+		// 		fmt.Println("Received update command on channel now...")
+
+		// 	}
+		// }
 	}
 
 	localWaitGroup.Wait()
 	fmt.Println("Shutting down device monitor now...")
 }
 
-func sendToChannel(msg string) {
-	// TODO: Check which channel should get the msg and send it on that channel.
-}
+// func sendToChannel(msg string) {
+// 	// TODO: Check which channel should get the msg and send it on that channel.
+// }
 
 func newCounter(config string, interval int, localWaitGroup *sync.WaitGroup, deviceMonitorChannel <-chan string) {
 	defer localWaitGroup.Done()
@@ -58,7 +67,7 @@ func newCounter(config string, interval int, localWaitGroup *sync.WaitGroup, dev
 	intervalTicker := time.NewTicker(time.Duration(interval*1000) * time.Millisecond)
 
 	counterIsActive := true
-	for counterIsActive == true {
+	for counterIsActive {
 		select {
 		case <-deviceMonitorChannel:
 			counterIsActive = false
