@@ -1,4 +1,4 @@
-package configInterface
+package config
 
 import (
 	"context"
@@ -24,6 +24,10 @@ func ConfigInterface(waitGroup *sync.WaitGroup) {
 	// var c client.Impl
 	// var err error
 
+	// fmt.Println(response)
+}
+
+func GetConfig(target string) types.ConfigRequest {
 	ctx := context.Background()
 
 	address := []string{"storage-service:11161"}
@@ -46,7 +50,10 @@ func ConfigInterface(waitGroup *sync.WaitGroup) {
 
 	r := &gpb.GetRequest{}
 
-	if err := proto.UnmarshalText("path: <target: 'storage-service', elem: <name: 'interfaces'> elem: <name: 'interface' key: <key: 'name' value: 'sw0p5'>>>", r); err != nil {
+	err = proto.UnmarshalText(`path: <target: '`+target+`', elem: <name: 'interfaces'> 
+					elem: <name: 'interface' key: <key: 'name' value: 'sw0p5'>>>`, r)
+
+	if err != nil {
 		// fmt.Errorf("unable to parse gnmi.GetRequest: %v", err)
 		fmt.Print("Unable to parse gnmi.GetRequest: ")
 		fmt.Println(err)
@@ -62,12 +69,12 @@ func ConfigInterface(waitGroup *sync.WaitGroup) {
 		fmt.Println(err)
 	}
 
-	var config types.Config
+	var config types.ConfigRequest
 	yaml.Unmarshal(response.Notification[0].Update[0].Value.Value, &config)
 
-	fmt.Println(config.DevicesWithMonitoring[0].DeviceCounters[1].Name,
-		config.DevicesWithMonitoring[0].DeviceCounters[1].Interval,
-		config.DevicesWithMonitoring[0].DeviceCounters[1].Path)
+	// fmt.Println(config.DefaultConfig.DeviceCounters[1].Name,
+	// 	config.DefaultConfig.DeviceCounters[1].Interval,
+	// 	config.DefaultConfig.DeviceCounters[1].Path)
 
-	// fmt.Println(response)
+	return config
 }

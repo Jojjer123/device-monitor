@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"sync"
 
+	reqBuilder "github.com/onosproject/device-monitor/pkg/requestBuilder"
 	types "github.com/onosproject/device-monitor/pkg/types"
 )
 
@@ -38,57 +39,32 @@ func DeviceManager(waitGroup *sync.WaitGroup, adminChannel chan types.AdminChann
 		go createDeviceMonitor(nil, nil, nil)
 	}
 
-	// // Create a map of channels as keys to indexes in the managerChannels slice.
-	// managerChannelsMap := make(map[chan string]int)
-
-	// // TODO: Create a map with IP as keys and channels as values.
-
-	// // Create a slice for keeping dynamically created channels.
-	// var managerChannels []chan string
-
-	// // Start device manager with 0 device monitors.
-	// numberOfDeviceMonitors := 0
-
-	// TODO: Rework this for-loop, there should be a function for registering new channels & this loop
-	//		 will be used in the new function.
-	// deviceManagerIsActive := true
-	// for deviceManagerIsActive {
-	// 	select {
-	// 	case msg := <-adminChannel:
-	// 		if msg == "shutdown" {
-	// 			fmt.Println("Device manager received shutdown command")
-	// 			for i := 0; i < len(managerChannels); i++ {
-	// 				managerChannels[i] <- msg
-	// 			}
-	// 			// deviceManagerIsActive = false
-	// 		} else if msg == "create new" {
-	// 			fmt.Println("Device manager received create new command")
-	// 			if numberOfDeviceMonitors < maxNumberOfDeviceMonitors {
-	// 				fmt.Println("Create new device monitor...")
-
-	// 				// The following 3 implemented lines could be replaced if there is only one map with IP and channels.
-	// 				channelIndexToUse := len(managerChannels)
-	// 				managerChannels = append(managerChannels, make(chan string))
-
-	// 				// Add the newly created channel mapped to its index.
-	// 				managerChannelsMap[managerChannels[channelIndexToUse]] = channelIndexToUse
-
-	// 				createDeviceMonitor(&numberOfDeviceMonitors, managerChannels[channelIndexToUse], &deviceMonitorWaitGroup)
-	// 			}
-	// 		}
-	// 	}
-	// }
-
 	deviceMonitorWaitGroup.Wait()
 	// fmt.Println("Device manager shutting down...")
 }
 
-func executeAdminSetCmd(cmd string) string {
-	fmt.Println(cmd)
-	// switch cmdType {
-	// case "":
+func executeAdminSetCmd(cmd string, target string) string {
+	// fmt.Println(cmd)
+	switch cmd {
+	case "Create":
+		{
+			fmt.Println("Creating new device monitor for target: " + target)
+			// TODO: Build request, then create device monitor with the request.
+			requests := reqBuilder.GetRequest(target, "default") // confType options: default & temporary
 
-	// }
+			fmt.Println(requests)
+		}
+	case "Update": // Should not be implemented before discussed design (how it should update configs).
+		{
+			fmt.Println("Updating device monitor with target: " + target)
+		}
+	default:
+		{
+			fmt.Println("Could not find command: " + cmd)
+			return "Command not found!"
+		}
+	}
+
 	return "Successfully executed command sent"
 }
 

@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"time"
 
-	// "github.com/docker/engine/api/types/time"
 	"github.com/google/gnxi/utils/credentials"
 	"github.com/openconfig/gnmi/proto/gnmi"
 	"github.com/openconfig/gnmi/value"
@@ -32,7 +31,7 @@ func (s *server) Set(ctx context.Context, req *gnmi.SetRequest) (*gnmi.SetRespon
 
 	update := gnmi.UpdateResult{
 		Path: &gnmi.Path{
-			Element: []string{s.ExecuteSetCmd(cmd.(string))},
+			Element: []string{s.ExecuteSetCmd(cmd.(string), req.Update[0].Path.Target)},
 			Target:  req.Update[0].Path.Target,
 		},
 	}

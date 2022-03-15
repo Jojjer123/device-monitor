@@ -9,7 +9,7 @@ type server struct {
 	*gnmi.Server
 	Model         *gnmi.Model
 	configStruct  ygot.ValidatedGoStruct
-	ExecuteSetCmd func(string) string
+	ExecuteSetCmd func(string, string) string
 }
 
 func newServer(model *gnmi.Model, config []byte) (*server, error) {
