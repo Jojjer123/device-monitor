@@ -23,7 +23,7 @@ func (s *server) Subscribe(stream pb.GNMI_SubscribeServer) error {
 	fmt.Print("Allowed a Subscribe request: ")
 	fmt.Println(msg)
 
-	message, err := stream.Recv()
+	subRequest, err := stream.Recv()
 
 	if err != nil {
 		fmt.Print("Failed to receive from stream: ")
@@ -31,7 +31,13 @@ func (s *server) Subscribe(stream pb.GNMI_SubscribeServer) error {
 
 	}
 
-	fmt.Println(message)
+	fmt.Print("target: ")
+	fmt.Println(subRequest.GetSubscribe().Prefix.Target)
+
+	fmt.Print("subscription: ")
+	fmt.Println(subRequest.GetSubscribe().GetSubscription())
+
+	// fmt.Println(subRequest)
 
 	// upd := []*pb.Update{
 	// 	Value: &pb.Value{
@@ -43,30 +49,37 @@ func (s *server) Subscribe(stream pb.GNMI_SubscribeServer) error {
 
 	// notification.Update[0].Value.Value = []byte("test")
 
-	var upd []*pb.Update
+	var updateList []*pb.Update
 
-	fuckingHell := pb.TypedValue_StringVal{
-		StringVal: "from the other fucking side",
+	data := pb.TypedValue_StringVal{
+		StringVal: "data for switch 0",
 	}
 
-	reee := pb.Update{
+	path := pb.Path{
+		Target: "switch 0",
+	}
+
+	update := pb.Update{
+		Path: &path,
 		Val: &pb.TypedValue{
-			Value: &fuckingHell,
+			Value: &data,
 		},
 	}
 
-	upd = append(upd, &reee)
+	updateList = append(updateList, &update)
 
 	response := pb.SubscribeResponse{
 		Response: &pb.SubscribeResponse_Update{
 			Update: &pb.Notification{
-				Update: upd,
+				Update: updateList,
 			},
 		},
 	}
-	stream.Send(&response)
-	time.Sleep(5 * time.Second)
-	stream.Send(&response)
+
+	for i := 0; i < 10; i++ {
+		stream.Send(&response)
+		time.Sleep(5 * time.Second)
+	}
 
 	return nil //s.Server.Subscribe(stream)
 }
