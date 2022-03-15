@@ -6,7 +6,6 @@ import (
 	conf "github.com/onosproject/device-monitor/pkg/config"
 	dataProc "github.com/onosproject/device-monitor/pkg/dataProcessing"
 	deviceMgr "github.com/onosproject/device-monitor/pkg/deviceManager"
-	kafka "github.com/onosproject/device-monitor/pkg/kafka"
 	north "github.com/onosproject/device-monitor/pkg/northbound"
 	reqBuilder "github.com/onosproject/device-monitor/pkg/requestBuilder"
 	topo "github.com/onosproject/device-monitor/pkg/topo"
@@ -14,7 +13,7 @@ import (
 	types "github.com/onosproject/device-monitor/pkg/types"
 )
 
-const numberOfComponents = 7
+const numberOfComponents = 6
 
 // Starts the main components of the device-monitor
 func main() {
@@ -27,7 +26,6 @@ func main() {
 	go topo.TopoInterface(&waitGroup)
 	go conf.ConfigInterface(&waitGroup)
 	go north.Northbound(&waitGroup, adminChannel)
-	go kafka.KafkaInterface(&waitGroup)
 	go reqBuilder.RequestBuilder(&waitGroup)
 	go deviceMgr.DeviceManager(&waitGroup, adminChannel)
 	go dataProc.DataProcessing(&waitGroup)
