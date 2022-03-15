@@ -7,7 +7,7 @@ import (
 	types "github.com/onosproject/device-monitor/pkg/types"
 )
 
-const maxNumberOfDeviceMonitors = 10
+// const maxNumberOfDeviceMonitors = 10
 
 func DeviceManager(waitGroup *sync.WaitGroup, adminChannel chan types.AdminChannelMessage) {
 	fmt.Println("DeviceManager started")
@@ -17,18 +17,25 @@ func DeviceManager(waitGroup *sync.WaitGroup, adminChannel chan types.AdminChann
 
 	var adminMessage types.AdminChannelMessage
 	adminMessage.RegisterFunction = registerServerChannel
+	adminMessage.ExecuteSetCmd = executeAdminSetCmd
 
 	adminChannel <- adminMessage
 
-	deviceManagerIsActive := true
-	for deviceManagerIsActive {
-		select {
-		case msg := <-adminChannel:
-			{
-				// deviceManagerIsActive = false
-				fmt.Println(msg)
-			}
-		}
+	fmt.Println(<-adminChannel)
+	// deviceManagerIsActive := true
+	// for deviceManagerIsActive {
+
+	// 	select {
+	// 	case msg := <-adminChannel:
+	// 		{
+	// 			// deviceManagerIsActive = false
+	// 			fmt.Println(msg)
+	// 		}
+	// 	}
+	// }
+
+	if false {
+		go createDeviceMonitor(nil, nil, nil)
 	}
 
 	// // Create a map of channels as keys to indexes in the managerChannels slice.
@@ -76,16 +83,26 @@ func DeviceManager(waitGroup *sync.WaitGroup, adminChannel chan types.AdminChann
 	// fmt.Println("Device manager shutting down...")
 }
 
+func executeAdminSetCmd(cmd string) string {
+	fmt.Println(cmd)
+	// switch cmdType {
+	// case "":
+
+	// }
+	return "Successfully executed command sent"
+}
+
 // TODO: REWORK THIS, could potentially be used as a basic function, call it with msg as param and return string.
 // Executes the request/message and returns the response on the provided channel.
 func registerServerChannel(serverChannel chan string, channelWaitGroup *sync.WaitGroup) {
 	defer channelWaitGroup.Done()
-	select {
-	case x := <-serverChannel:
-		{
-			fmt.Println(x)
-		}
-	}
+	fmt.Println(<-serverChannel)
+	// select {
+	// case x := <-serverChannel:
+	// 	{
+	// 		fmt.Println(x)
+	// 	}
+	// }
 
 	// TODO: Create, update or delete device monitor and get a response from it.
 	response := "Success"

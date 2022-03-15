@@ -17,7 +17,7 @@ import (
 	pb "github.com/openconfig/gnmi/proto/gnmi"
 )
 
-func startServer(address string) {
+func startServer(address string, executeSetCmd func(string) string) {
 	model := gnmi.NewModel(modeldata.ModelData,
 		reflect.TypeOf((*gostruct.Device)(nil)),
 		gostruct.SchemaTree["Device"],
@@ -52,6 +52,8 @@ func startServer(address string) {
 	}
 
 	s, err := newServer(model, configData)
+
+	s.ExecuteSetCmd = executeSetCmd
 
 	if err != nil {
 		// log.Fatalf("Error in creating gnmi target: %v", err)

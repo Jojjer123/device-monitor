@@ -23,7 +23,9 @@ func Northbound(waitGroup *sync.WaitGroup, adminChannel chan types.AdminChannelM
 	// 	}
 	// }
 
-	go startServer(":11161")
+	adminChannelMessage := <-adminChannel
+
+	go startServer(":11161", adminChannelMessage.ExecuteSetCmd)
 
 	// // Starts the gRPC server which will be the external interface.
 	// go startServer(&serverWaitGroup, registerFunction)
