@@ -17,7 +17,7 @@ import (
 	pb "github.com/openconfig/gnmi/proto/gnmi"
 )
 
-func startServer(address string, executeSetCmd func(string, string) string) {
+func startServer(address string, executeSetCmd func(string, string, int) string) {
 	model := gnmi.NewModel(modeldata.ModelData,
 		reflect.TypeOf((*gostruct.Device)(nil)),
 		gostruct.SchemaTree["Device"],

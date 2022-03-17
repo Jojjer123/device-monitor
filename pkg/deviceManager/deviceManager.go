@@ -43,14 +43,14 @@ func DeviceManager(waitGroup *sync.WaitGroup, adminChannel chan types.AdminChann
 	// fmt.Println("Device manager shutting down...")
 }
 
-func executeAdminSetCmd(cmd string, target string) string {
+func executeAdminSetCmd(cmd string, target string, configIndex int) string {
 	// fmt.Println(cmd)
 	switch cmd {
 	case "Create":
 		{
 			fmt.Println("Creating new device monitor for target: " + target)
 			// TODO: Build request, then create device monitor with the request.
-			requests := reqBuilder.GetRequest(target, "default") // confType options: default & temporary
+			requests := reqBuilder.GetRequest(target, "default", configIndex) // confType options: default & temporary
 
 			fmt.Println(requests)
 		}

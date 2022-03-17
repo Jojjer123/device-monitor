@@ -15,7 +15,7 @@ func RequestBuilder(waitGroup *sync.WaitGroup) {
 
 }
 
-func GetRequest(target string, confType string) []types.Request {
+func GetRequest(target string, confType string, configSelected int) []types.Request {
 	conf := confInterface.GetConfig(target)
 
 	var requests []types.Request
@@ -23,7 +23,7 @@ func GetRequest(target string, confType string) []types.Request {
 	switch confType {
 	case "default":
 		{
-			for _, req := range conf.DefaultConfig.DeviceCounters {
+			for _, req := range conf.Configs[configSelected].DeviceCounters {
 				var requestObj types.Request
 				reqBytes, err := yaml.Marshal(req)
 				if err != nil {
