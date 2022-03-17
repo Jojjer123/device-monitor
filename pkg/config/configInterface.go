@@ -78,3 +78,53 @@ func GetConfig(target string) types.ConfigRequest {
 
 	return config
 }
+
+func UpdateConfig(req *gpb.SetRequest) error {
+	ctx := context.Background()
+
+	address := []string{"storage-service:11161"}
+
+	c, err := gclient.New(ctx, client.Destination{
+		Addrs:       address,
+		Target:      "storage-service",
+		Timeout:     time.Second * 5,
+		Credentials: nil,
+		TLS:         nil,
+	})
+
+	if err != nil {
+		// fmt.Errorf("could not create a gNMI client: %v", err)
+		fmt.Print("Could not create a gNMI client: ")
+		fmt.Println(err)
+	}
+
+	// "path: <target: 'storage-service', elem: <name: 'interfaces'> elem: <name: 'interface' key: <key: 'name' value: 'sw0p5'>>>"
+
+	// r := &gpb.Set{}
+
+	// err = proto.UnmarshalText(`path: <target: '`+target+`', elem: <name: 'interfaces'>
+	// 				elem: <name: 'interface' key: <key: 'name' value: 'sw0p5'>>>`, r)
+
+	// if err != nil {
+	// 	// fmt.Errorf("unable to parse gnmi.GetRequest: %v", err)
+	// 	fmt.Print("Unable to parse gnmi.GetRequest: ")
+	// 	fmt.Println(err)
+	// }
+
+	response, err := c.(*gclient.Client).Set(ctx, req)
+
+	if err != nil {
+		// fmt.Errorf("target returned RPC error for Get(%q): %v", r.String(), err)
+		fmt.Print("Target returned RPC error for Get(")
+		fmt.Print(req.String())
+		fmt.Print("): ")
+		fmt.Println(err)
+	}
+
+	// var config types.ConfigRequest
+	// yaml.Unmarshal(response.Notification[0].Update[0].Value.Value, &config)
+
+	fmt.Println(response)
+
+	return err
+}

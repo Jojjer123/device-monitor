@@ -10,6 +10,8 @@ import (
 	"golang.org/x/net/context"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	confInterface "github.com/onosproject/device-monitor/pkg/config"
 )
 
 func (s *server) Set(ctx context.Context, req *gnmi.SetRequest) (*gnmi.SetResponse, error) {
@@ -21,14 +23,40 @@ func (s *server) Set(ctx context.Context, req *gnmi.SetRequest) (*gnmi.SetRespon
 	}
 	fmt.Println("Allowed a Set request")
 
-	// cmd, err := value.ToScalar(req.Update[0].Val)
-
-	// if err != nil {
-	// 	fmt.Println("Failed to convert gnmi.TypedValue to scalar")
-	// }
-
 	var updateResult []*gnmi.UpdateResult
 
+	for _, update := range req.Update {
+		if update.Path.Elem[0].Name == "Action" {
+			switch update.Path.Elem[0].Key["Action"] {
+			case "Create":
+				{
+					updateResult = append(updateResult, s.createRequest(req))
+				}
+			case "Update":
+				{
+					updateResult = append(updateResult, s.updateDeviceMonitorRequest(req))
+				}
+			case "Change config":
+				{
+					updateResult = append(updateResult, s.updateConfigRequest(req))
+				}
+			default:
+				{
+					fmt.Println("Action not found!")
+				}
+			}
+		}
+	}
+
+	response := gnmi.SetResponse{
+		Response:  updateResult,
+		Timestamp: time.Now().UnixNano(),
+	}
+
+	return &response, nil
+}
+
+func (s *server) createRequest(req *gnmi.SetRequest) *gnmi.UpdateResult {
 	var action string
 	var configIndex int
 	var err error
@@ -51,20 +79,27 @@ func (s *server) Set(ctx context.Context, req *gnmi.SetRequest) (*gnmi.SetRespon
 	} else {
 		update = gnmi.UpdateResult{
 			Path: &gnmi.Path{
-				Element: []string{s.ExecuteSetCmd(action /*cmd.(string)*/, req.Update[0].Path.Target, configIndex /*index of selected config*/)},
+				Element: []string{s.ExecuteSetCmd(action, req.Update[0].Path.Target, configIndex)},
 				Target:  req.Update[0].Path.Target,
 			},
 		}
 	}
 
-	updateResult = append(updateResult, &update)
+	return &update
+}
 
-	response := gnmi.SetResponse{
-		Response:  updateResult,
-		Timestamp: time.Now().UnixNano(),
+func (s *server) updateConfigRequest(req *gnmi.SetRequest) *gnmi.UpdateResult {
+	err := confInterface.UpdateConfig(req)
+	if err != nil {
+		fmt.Println("Failed to update configuration!")
 	}
 
-	return &response, nil
-	// setResponse, err := s.Server.Set(ctx, req)
-	// return setResponse, err
+	// TODO: Add correct result
+
+	return &gnmi.UpdateResult{}
+}
+
+func (s *server) updateDeviceMonitorRequest(req *gnmi.SetRequest) *gnmi.UpdateResult {
+
+	return &gnmi.UpdateResult{}
 }
