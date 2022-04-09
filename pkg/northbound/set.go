@@ -30,7 +30,8 @@ func (s *server) Set(ctx context.Context, req *gnmi.SetRequest) (*gnmi.SetRespon
 			switch update.Path.Elem[0].Key["Action"] {
 			case "Create":
 				{
-					updateResult = append(updateResult, s.createRequest(req))
+					// Change input param to update or path
+					updateResult = append(updateResult, s.createRequest(update.Path))
 				}
 			case "Update":
 				{
@@ -56,36 +57,41 @@ func (s *server) Set(ctx context.Context, req *gnmi.SetRequest) (*gnmi.SetRespon
 	return &response, nil
 }
 
-func (s *server) createRequest(req *gnmi.SetRequest) *gnmi.UpdateResult {
-	var action string
+// Change input param to update or even path
+func (s *server) createRequest(path *gnmi.Path) *gnmi.UpdateResult {
+	// var action string
 	var configIndex int
 	var err error
 
-	if req.Update[0].Path.Elem[0].Name == "Action" {
-		action = req.Update[0].Path.Elem[0].Key["Action"]
-	}
-	if req.Update[0].Path.Elem[1].Name == "ConfigIndex" {
-		configIndex, err = strconv.Atoi(req.Update[0].Path.Elem[1].Key["ConfigIndex"])
-
-		if err != nil {
-			fmt.Println("Failed to convert ConfigIndex from string to int")
-		}
+	// Might not be necessary with this check, it is already done before calling this method.
+	// if path.Elem[0].Name == "Action" {
+	action := path.Elem[0].Key["Action"]
+	// }
+	if path.Elem[1].Name == "ConfigIndex" {
+		configIndex, err = strconv.Atoi(path.Elem[1].Key["ConfigIndex"])
 	}
 
-	var update gnmi.UpdateResult
+	// var update gnmi.UpdateResult
 
-	if configIndex > len(req.Update[0].Path.Elem)-1 || configIndex < 0 {
-		fmt.Println("Configuration index is out of bounds!")
+	// // Unnecessary check?
+	// if configIndex > len(path.Elem)-1 || configIndex < 0 {
+	// 	fmt.Println("Configuration index is out of bounds!")
+	// } else {
+	if err != nil {
+		fmt.Println("Failed to convert ConfigIndex from string to int")
 	} else {
-		update = gnmi.UpdateResult{
+		update := gnmi.UpdateResult{
 			Path: &gnmi.Path{
-				Element: []string{s.ExecuteSetCmd(action, req.Update[0].Path.Target, configIndex)},
-				Target:  req.Update[0].Path.Target,
+				Element: []string{s.ExecuteSetCmd(action, path.Target, configIndex)},
+				Target:  path.Target,
 			},
 		}
+		// }
+
+		return &update
 	}
 
-	return &update
+	return nil
 }
 
 func (s *server) updateConfigRequest(req *gnmi.SetRequest) *gnmi.UpdateResult {

@@ -5,10 +5,12 @@ import (
 	"sync"
 
 	reqBuilder "github.com/onosproject/device-monitor/pkg/requestBuilder"
-	types "github.com/onosproject/device-monitor/pkg/types"
+	"github.com/onosproject/device-monitor/pkg/types"
 )
 
 // const maxNumberOfDeviceMonitors = 10
+
+var deviceMonitorStore []types.DeviceMonitor
 
 func DeviceManager(waitGroup *sync.WaitGroup, adminChannel chan types.AdminChannelMessage) {
 	fmt.Println("DeviceManager started")
@@ -35,9 +37,9 @@ func DeviceManager(waitGroup *sync.WaitGroup, adminChannel chan types.AdminChann
 	// 	}
 	// }
 
-	if false {
-		go createDeviceMonitor(nil, nil, nil)
-	}
+	// if false {
+	// 	go createDeviceMonitor(nil, nil, nil)
+	// }
 
 	deviceMonitorWaitGroup.Wait()
 	// fmt.Println("Device manager shutting down...")
@@ -48,11 +50,16 @@ func executeAdminSetCmd(cmd string, target string, configIndex int) string {
 	switch cmd {
 	case "Create":
 		{
-			fmt.Println("Creating new device monitor for target: " + target)
-			// TODO: Build request, then create device monitor with the request.
-			requests := reqBuilder.GetRequest(target, "default", configIndex) // confType options: default & temporary
+			// Get slice of the different paths with their intervals and the appropriate
+			// adapter if one is necessary
+			requests, adapter, target := reqBuilder.GetConfig(target, configIndex)
 
 			fmt.Println(requests)
+			fmt.Println(adapter)
+			fmt.Println(target)
+
+			// TODO: Create and register a device-monitor in a table?
+			createDeviceMonitor(requests, adapter, target)
 		}
 	case "Update": // Should not be implemented before discussed design (how it should update configs).
 		{
@@ -85,10 +92,20 @@ func registerServerChannel(serverChannel chan string, channelWaitGroup *sync.Wai
 	serverChannel <- response
 }
 
-func createDeviceMonitor(numberOfDeviceMonitors *int, managerChannel <-chan string, deviceMonitorWaitGroup *sync.WaitGroup) {
-	*numberOfDeviceMonitors += 1
-	deviceMonitorWaitGroup.Add(1)
+func createDeviceMonitor(requests []types.Request, adapter types.Adapter, target string) {
+	managerChannel := make(chan string)
 
-	config := "test-configuration"
-	go deviceMonitor(config, numberOfDeviceMonitors, managerChannel, deviceMonitorWaitGroup)
+	deviceMonitorStore = append(deviceMonitorStore, types.DeviceMonitor{
+		Target:         target,
+		Adapter:        adapter,
+		ManagerChannel: managerChannel,
+	})
+
+	go deviceMonitor(target, adapter, requests, managerChannel)
+
+	// *numberOfDeviceMonitors += 1
+	// deviceMonitorWaitGroup.Add(1)
+
+	// config := "test-configuration"
+	// go deviceMonitor(config, numberOfDeviceMonitors, managerChannel, deviceMonitorWaitGroup)
 }

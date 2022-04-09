@@ -1,6 +1,10 @@
 package types
 
-import "sync"
+import (
+	"sync"
+
+	"github.com/openconfig/gnmi/proto/gnmi"
+)
 
 type AdminChannelMessage struct {
 	RegisterFunction func(chan string, *sync.WaitGroup)
@@ -24,5 +28,16 @@ type ConfigRequest struct {
 type Request struct {
 	Name     string
 	Interval int
-	Path     string
+	Path     []*gnmi.PathElem
+}
+
+type Adapter struct {
+	Protocol string `json:"protocol"`
+	Address  string `json:"address"`
+}
+
+type DeviceMonitor struct {
+	Target         string
+	Adapter        Adapter
+	ManagerChannel <-chan string
 }
