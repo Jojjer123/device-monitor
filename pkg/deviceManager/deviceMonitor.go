@@ -3,9 +3,7 @@ package deviceManager
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
-	"strconv"
 	"sync"
 	"time"
 
@@ -101,14 +99,15 @@ func newCounter(req types.Request, target string, adapter types.Adapter, waitGro
 				}
 
 				// This is not necessary either if better serialization is used.
-				var val int
-				val, err = getSchemaTreeValue(schemaTree.Children[0], r.Path[0].Elem, 0)
+				// var val int
+				// val, err = getSchemaTreeValue(schemaTree.Children[0], r.Path[0].Elem, 0)
+				getSchemaTreeValue(schemaTree.Children[0], r.Path[0].Elem, 0)
 
-				if err != nil {
-					fmt.Println(err)
-				} else {
-					fmt.Println(val)
-				}
+				// if err != nil {
+				// 	fmt.Println(err)
+				// } else {
+				// 	fmt.Println(val)
+				// }
 			}
 		}
 	}
@@ -116,11 +115,12 @@ func newCounter(req types.Request, target string, adapter types.Adapter, waitGro
 	fmt.Println("Exits counter now")
 }
 
-func getSchemaTreeValue(schemaTree *SchemaTree, pathElems []*gnmi.PathElem, startIndex int) (int, error) {
+func getSchemaTreeValue(schemaTree *SchemaTree, pathElems []*gnmi.PathElem, startIndex int) {
 	if startIndex < len(pathElems) {
 		if pathElems[startIndex].Name == schemaTree.Name {
 			if startIndex == len(pathElems)-1 {
-				return strconv.Atoi(schemaTree.Value)
+				// return strconv.Atoi(schemaTree.Value)
+				fmt.Println(schemaTree.Value)
 			}
 			for _, child := range schemaTree.Children {
 				getSchemaTreeValue(child, pathElems, startIndex+1)
@@ -128,7 +128,7 @@ func getSchemaTreeValue(schemaTree *SchemaTree, pathElems []*gnmi.PathElem, star
 		}
 	}
 
-	return -1, errors.New("Could not find value")
+	// return -1, errors.New("Could not find value")
 }
 
 func printSchemaTree(schemaTree *SchemaTree) {
