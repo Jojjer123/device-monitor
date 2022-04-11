@@ -109,14 +109,12 @@ func newCounter(req types.Request, target string, adapter types.Adapter, waitGro
 }
 
 func printSchemaTreeValue(schemaTree *SchemaTree, pathElems []*gnmi.PathElem, startIndex int) {
-	// fmt.Println(startIndex, len(pathElems))
 	if startIndex < len(pathElems) {
-		fmt.Println(pathElems[startIndex].Name, schemaTree.Name)
 		if pathElems[startIndex].Name == schemaTree.Name {
-			fmt.Printf("Inside %s", schemaTree.Name)
-			fmt.Println("")
+			// fmt.Printf("Inside %s", schemaTree.Name)
+			// fmt.Println("")
 			if startIndex == len(pathElems)-1 {
-				fmt.Printf("%s - %s - %v - %s\n", schemaTree.Parent.Name, schemaTree.Name, schemaTree.Namespace, schemaTree.Value)
+				fmt.Printf("%s\n", schemaTree.Value)
 			}
 			for _, child := range schemaTree.Children {
 				printSchemaTreeValue(child, pathElems, startIndex+1)
