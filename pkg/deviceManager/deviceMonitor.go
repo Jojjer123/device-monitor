@@ -98,14 +98,27 @@ func newCounter(req types.Request, target string, adapter types.Adapter, waitGro
 					schemaTree = getTreeStructure(schema)
 				}
 
-				fmt.Println(r)
+				// fmt.Println(r)
 
-				printSchemaTree(schemaTree)
+				printSchemaTreeValue(schemaTree, r.Path[0].Elem, 0)
 			}
 		}
 	}
 
 	fmt.Println("Exits counter now")
+}
+
+func printSchemaTreeValue(schemaTree *SchemaTree, pathElems []*gnmi.PathElem, startIndex int) {
+	if startIndex < len(pathElems) {
+		if pathElems[startIndex].Name == schemaTree.Name {
+			if startIndex == len(pathElems)-1 {
+				fmt.Printf("%s - %s - %v - %s\n", schemaTree.Parent.Name, schemaTree.Name, schemaTree.Namespace, schemaTree.Value)
+			}
+			for _, child := range schemaTree.Children {
+				printSchemaTreeValue(child, pathElems, startIndex+1)
+			}
+		}
+	}
 }
 
 func printSchemaTree(schemaTree *SchemaTree) {
