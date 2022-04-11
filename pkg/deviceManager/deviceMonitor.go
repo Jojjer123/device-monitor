@@ -94,9 +94,11 @@ func newCounter(req types.Request, target string, adapter types.Adapter, waitGro
 				if len(response.Notification) > 0 {
 					json.Unmarshal(response.Notification[0].Update[0].Val.GetBytesVal(), &schema)
 
-					fmt.Println(schema)
+					// fmt.Println(schema)
 					schemaTree = getTreeStructure(schema)
 				}
+
+				fmt.Println(r)
 
 				printSchemaTree(schemaTree)
 			}
