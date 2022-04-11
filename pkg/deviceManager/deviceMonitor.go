@@ -3,7 +3,9 @@ package deviceManager
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"strconv"
 	"sync"
 	"time"
 
@@ -92,15 +94,21 @@ func newCounter(req types.Request, target string, adapter types.Adapter, waitGro
 				var schema Schema
 				var schemaTree *SchemaTree
 				if len(response.Notification) > 0 {
+					// Should replace serialization from json to proto, it is supposed to be faster.
 					json.Unmarshal(response.Notification[0].Update[0].Val.GetBytesVal(), &schema)
-
-					// fmt.Println(schema)
+					// This is not necessary if better serialization that can serialize recursive objects is used.
 					schemaTree = getTreeStructure(schema)
 				}
 
-				// fmt.Println(r)
+				// This is not necessary either if better serialization is used.
+				var val int
+				val, err = getSchemaTreeValue(schemaTree.Children[0], r.Path[0].Elem, 0)
 
-				printSchemaTreeValue(schemaTree.Children[0], r.Path[0].Elem, 0)
+				if err != nil {
+					fmt.Println(err)
+				} else {
+					fmt.Println(val)
+				}
 			}
 		}
 	}
@@ -108,19 +116,19 @@ func newCounter(req types.Request, target string, adapter types.Adapter, waitGro
 	fmt.Println("Exits counter now")
 }
 
-func printSchemaTreeValue(schemaTree *SchemaTree, pathElems []*gnmi.PathElem, startIndex int) {
+func getSchemaTreeValue(schemaTree *SchemaTree, pathElems []*gnmi.PathElem, startIndex int) (int, error) {
 	if startIndex < len(pathElems) {
 		if pathElems[startIndex].Name == schemaTree.Name {
-			// fmt.Printf("Inside %s", schemaTree.Name)
-			// fmt.Println("")
 			if startIndex == len(pathElems)-1 {
-				fmt.Printf("%s\n", schemaTree.Value)
+				return strconv.Atoi(schemaTree.Value)
 			}
 			for _, child := range schemaTree.Children {
-				printSchemaTreeValue(child, pathElems, startIndex+1)
+				getSchemaTreeValue(child, pathElems, startIndex+1)
 			}
 		}
 	}
+
+	return -1, errors.New("Could not find value")
 }
 
 func printSchemaTree(schemaTree *SchemaTree) {
