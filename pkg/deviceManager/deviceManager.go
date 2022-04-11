@@ -2,6 +2,7 @@ package deviceManager
 
 import (
 	"fmt"
+	"strconv"
 	"sync"
 
 	reqBuilder "github.com/onosproject/device-monitor/pkg/requestBuilder"
@@ -10,7 +11,7 @@ import (
 
 // const maxNumberOfDeviceMonitors = 10
 
-var deviceMonitorStore []*types.DeviceMonitor
+var deviceMonitorStore []types.DeviceMonitor
 
 func DeviceManager(waitGroup *sync.WaitGroup, adminChannel chan types.AdminChannelMessage) {
 	fmt.Println("DeviceManager started")
@@ -95,7 +96,7 @@ func updateDeviceMonitor(requests []types.Request, target string) {
 	for _, monitor := range deviceMonitorStore {
 		if monitor.Target == target {
 			// fmt.Println("Found target, sending update...")
-
+			fmt.Println("Old requests interval: " + strconv.Itoa(monitor.Requests[0].Interval) + ", new: " + strconv.Itoa(requests[0].Interval))
 			monitor.Requests = requests
 			monitor.ManagerChannel <- "update"
 
@@ -131,7 +132,7 @@ func createDeviceMonitor(requests []types.Request, adapter types.Adapter, target
 		ManagerChannel: managerChannel,
 	}
 
-	deviceMonitorStore = append(deviceMonitorStore, &monitor)
+	deviceMonitorStore = append(deviceMonitorStore, monitor)
 
 	go deviceMonitor(monitor)
 
