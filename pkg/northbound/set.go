@@ -29,22 +29,16 @@ func (s *server) Set(ctx context.Context, req *gnmi.SetRequest) (*gnmi.SetRespon
 		if update.Path.Elem[0].Name == "Action" {
 			switch update.Path.Elem[0].Key["Action"] {
 			case "Create":
-				{
-					// Change input param to update or path
-					updateResult = append(updateResult, s.createRequest(update.Path))
-				}
+				// Change input param to update or path
+				updateResult = append(updateResult, s.createRequest(update.Path))
 			case "Update":
-				{
-					updateResult = append(updateResult, s.updateDeviceMonitorRequest(req))
-				}
+				updateResult = append(updateResult, s.updateDeviceMonitorRequest(req))
 			case "Change config":
-				{
-					updateResult = append(updateResult, s.updateConfigRequest(req))
-				}
+				updateResult = append(updateResult, s.updateConfigRequest(req))
+			case "Delete":
+				updateResult = append(updateResult, s.deleteRequest(update.Path))
 			default:
-				{
-					fmt.Println("Action not found!")
-				}
+				fmt.Println("Action not found!")
 			}
 		}
 	}
@@ -57,7 +51,17 @@ func (s *server) Set(ctx context.Context, req *gnmi.SetRequest) (*gnmi.SetRespon
 	return &response, nil
 }
 
-// Change input param to update or even path
+func (s *server) deleteRequest(path *gnmi.Path) *gnmi.UpdateResult {
+	update := gnmi.UpdateResult{
+		Path: &gnmi.Path{
+			Element: []string{s.ExecuteSetCmd(path.Elem[0].Key["Action"], path.Target)},
+			Target:  path.Target,
+		},
+	}
+
+	return &update
+}
+
 func (s *server) createRequest(path *gnmi.Path) *gnmi.UpdateResult {
 	// var action string
 	var configIndex int
