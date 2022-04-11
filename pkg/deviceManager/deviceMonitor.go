@@ -101,6 +101,7 @@ func newCounter(req types.Request, target string, adapter types.Adapter, waitGro
 				// This is not necessary either if better serialization is used.
 				// var val int
 				// val, err = getSchemaTreeValue(schemaTree.Children[0], r.Path[0].Elem, 0)
+				fmt.Printf("%s : ", r.Path[0].Target)
 				getSchemaTreeValue(schemaTree.Children[0], r.Path[0].Elem, 0)
 
 				// if err != nil {
@@ -129,13 +130,6 @@ func getSchemaTreeValue(schemaTree *SchemaTree, pathElems []*gnmi.PathElem, star
 	}
 
 	// return -1, errors.New("Could not find value")
-}
-
-func printSchemaTree(schemaTree *SchemaTree) {
-	fmt.Printf("%s - %s - %v - %s\n", schemaTree.Parent.Name, schemaTree.Name, schemaTree.Namespace, schemaTree.Value)
-	for _, child := range schemaTree.Children {
-		printSchemaTree(child)
-	}
 }
 
 func getTreeStructure(schema Schema) *SchemaTree {
