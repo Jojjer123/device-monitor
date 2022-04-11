@@ -51,7 +51,7 @@ func executeAdminSetCmd(cmd string, target string, configIndex ...int) string {
 	case "Create":
 		// Get slice of the different paths with their intervals and the appropriate
 		// adapter if one is necessary
-		requests, adapter, target := reqBuilder.GetConfig(target, configIndex[0])
+		requests, adapter := reqBuilder.GetConfig(target, configIndex[0])
 
 		// fmt.Println(requests)
 		// fmt.Println(adapter)
@@ -60,8 +60,8 @@ func executeAdminSetCmd(cmd string, target string, configIndex ...int) string {
 		// TODO: Create and register a device-monitor in a table?
 		createDeviceMonitor(requests, adapter, target)
 	case "Update":
-		// Should not be implemented before discussed design (how it should update configs).
-		fmt.Println("Updating device monitor with target: " + target)
+		requests, _ := reqBuilder.GetConfig(target, configIndex[0])
+		updateDeviceMonitor(requests, target)
 	case "Delete":
 		deleteDeviceMonitor(target)
 	default:
@@ -91,6 +91,20 @@ func registerServerChannel(serverChannel chan string, channelWaitGroup *sync.Wai
 	serverChannel <- response
 }
 
+func updateDeviceMonitor(requests []types.Request, target string) {
+	for _, monitor := range deviceMonitorStore {
+		if monitor.Target == target {
+			fmt.Println("Found target, sending update...")
+
+			monitor.Requests = requests
+			monitor.ManagerChannel <- "update"
+
+			fmt.Println("Updated deviceMonitor")
+			return
+		}
+	}
+}
+
 func deleteDeviceMonitor(target string) {
 	for index, monitor := range deviceMonitorStore {
 		if monitor.Target == target {
@@ -101,6 +115,7 @@ func deleteDeviceMonitor(target string) {
 			deviceMonitorStore[index] = deviceMonitorStore[len(deviceMonitorStore)-1]
 			deviceMonitorStore = deviceMonitorStore[:len(deviceMonitorStore)-1]
 			fmt.Println("Removed deviceMonitor from store")
+			return
 		}
 	}
 }

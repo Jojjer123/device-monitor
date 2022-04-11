@@ -17,7 +17,7 @@ func RequestBuilder(waitGroup *sync.WaitGroup) {
 
 }
 
-func GetConfig(target string, configSelected int) ([]types.Request, types.Adapter, string) {
+func GetConfig(target string, configSelected int) ([]types.Request, types.Adapter) {
 	conf := confInterface.GetConfig(target)
 
 	// TODO: Add check for empty config, and dont crash if that is the case.
@@ -47,7 +47,7 @@ func GetConfig(target string, configSelected int) ([]types.Request, types.Adapte
 		adapter = confInterface.GetAdapter(conf.Protocol)
 	}
 
-	return requests, adapter, conf.DeviceIP
+	return requests, adapter
 }
 
 //  <name: 'interfaces' key: <key: 'namespace' value: 'urn:ietf:params:xml:ns:yang:ietf-interfaces'>>

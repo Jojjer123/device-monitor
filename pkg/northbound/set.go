@@ -30,9 +30,9 @@ func (s *server) Set(ctx context.Context, req *gnmi.SetRequest) (*gnmi.SetRespon
 			switch update.Path.Elem[0].Key["Action"] {
 			case "Create":
 				// Change input param to update or path
-				updateResult = append(updateResult, s.createRequest(update.Path))
+				updateResult = append(updateResult, s.setRequest(update.Path))
 			case "Update":
-				updateResult = append(updateResult, s.updateDeviceMonitorRequest(req))
+				updateResult = append(updateResult, s.setRequest(update.Path))
 			case "Change config":
 				updateResult = append(updateResult, s.updateConfigRequest(req))
 			case "Delete":
@@ -62,25 +62,16 @@ func (s *server) deleteRequest(path *gnmi.Path) *gnmi.UpdateResult {
 	return &update
 }
 
-func (s *server) createRequest(path *gnmi.Path) *gnmi.UpdateResult {
-	// var action string
+func (s *server) setRequest(path *gnmi.Path) *gnmi.UpdateResult {
 	var configIndex int
 	var err error
 
-	// Might not be necessary with this check, it is already done before calling this method.
-	// if path.Elem[0].Name == "Action" {
 	action := path.Elem[0].Key["Action"]
-	// }
+
 	if path.Elem[1].Name == "ConfigIndex" {
 		configIndex, err = strconv.Atoi(path.Elem[1].Key["ConfigIndex"])
 	}
 
-	// var update gnmi.UpdateResult
-
-	// // Unnecessary check?
-	// if configIndex > len(path.Elem)-1 || configIndex < 0 {
-	// 	fmt.Println("Configuration index is out of bounds!")
-	// } else {
 	if err != nil {
 		fmt.Println("Failed to convert ConfigIndex from string to int")
 	} else {
@@ -90,7 +81,6 @@ func (s *server) createRequest(path *gnmi.Path) *gnmi.UpdateResult {
 				Target:  path.Target,
 			},
 		}
-		// }
 
 		return &update
 	}
@@ -105,11 +95,6 @@ func (s *server) updateConfigRequest(req *gnmi.SetRequest) *gnmi.UpdateResult {
 	}
 
 	// TODO: Add correct result
-
-	return &gnmi.UpdateResult{}
-}
-
-func (s *server) updateDeviceMonitorRequest(req *gnmi.SetRequest) *gnmi.UpdateResult {
 
 	return &gnmi.UpdateResult{}
 }
