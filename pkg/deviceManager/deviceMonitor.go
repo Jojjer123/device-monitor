@@ -100,7 +100,7 @@ func newCounter(req types.Request, target string, adapter types.Adapter, waitGro
 
 				// fmt.Println(r)
 
-				printSchemaTreeValue(schemaTree, r.Path[0].Elem, 0)
+				printSchemaTreeValue(schemaTree.Children[0], r.Path[0].Elem, 0)
 			}
 		}
 	}
