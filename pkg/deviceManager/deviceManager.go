@@ -54,9 +54,9 @@ func executeAdminSetCmd(cmd string, target string, configIndex int) string {
 			// adapter if one is necessary
 			requests, adapter, target := reqBuilder.GetConfig(target, configIndex)
 
-			fmt.Println(requests)
-			fmt.Println(adapter)
-			fmt.Println(target)
+			// fmt.Println(requests)
+			// fmt.Println(adapter)
+			// fmt.Println(target)
 
 			// TODO: Create and register a device-monitor in a table?
 			createDeviceMonitor(requests, adapter, target)
