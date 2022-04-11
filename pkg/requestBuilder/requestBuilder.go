@@ -20,6 +20,8 @@ func RequestBuilder(waitGroup *sync.WaitGroup) {
 func GetConfig(target string, configSelected int) ([]types.Request, types.Adapter, string) {
 	conf := confInterface.GetConfig(target)
 
+	// TODO: Add check for empty config, and dont crash if that is the case.
+
 	var requests []types.Request
 
 	for _, req := range conf.Configs[configSelected].DeviceCounters {

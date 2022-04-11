@@ -95,11 +95,14 @@ func registerServerChannel(serverChannel chan string, channelWaitGroup *sync.Wai
 func createDeviceMonitor(requests []types.Request, adapter types.Adapter, target string) {
 	managerChannel := make(chan string)
 
+	// Consider adding field with requests to update only if changed.
 	deviceMonitorStore = append(deviceMonitorStore, types.DeviceMonitor{
 		Target:         target,
 		Adapter:        adapter,
 		ManagerChannel: managerChannel,
 	})
+
+	fmt.Println(deviceMonitorStore)
 
 	go deviceMonitor(target, adapter, requests, managerChannel)
 

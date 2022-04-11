@@ -76,39 +76,18 @@ func newCounter(req types.Request, target string, adapter types.Adapter, waitGro
 	counterIsActive := true
 	for counterIsActive {
 		select {
-		case <-counterChannel:
-			intervalTicker.Stop()
-			counterIsActive = false
+		case msg := <-counterChannel:
+			if msg == "shutdown" {
+				intervalTicker.Stop()
+				counterIsActive = false
+			}
 		case <-intervalTicker.C:
 			// TODO: Get the counters for the given interval here and send them to the data processing part.
-			// fmt.Println("Ticker triggered")
 			response, err := c.(*gclient.Client).Get(ctx, r)
 			if err != nil {
-				fmt.Print("Target returned RPC error for Get(")
-				fmt.Print(r.String())
-				fmt.Print("): ")
-				fmt.Println(err)
+				fmt.Printf("Target returned RPC error: %v", err)
 			} else {
-				var schema Schema
-				var schemaTree *SchemaTree
-				if len(response.Notification) > 0 {
-					// Should replace serialization from json to proto, it is supposed to be faster.
-					json.Unmarshal(response.Notification[0].Update[0].Val.GetBytesVal(), &schema)
-					// This is not necessary if better serialization that can serialize recursive objects is used.
-					schemaTree = getTreeStructure(schema)
-				}
-
-				// This is not necessary either if better serialization is used.
-				// var val int
-				// val, err = getSchemaTreeValue(schemaTree.Children[0], r.Path[0].Elem, 0)
-				fmt.Printf("%s : ", r.Path[0].Target)
-				getSchemaTreeValue(schemaTree.Children[0], r.Path[0].Elem, 0)
-
-				// if err != nil {
-				// 	fmt.Println(err)
-				// } else {
-				// 	fmt.Println(val)
-				// }
+				extractData(response, r)
 			}
 		}
 	}
@@ -116,7 +95,30 @@ func newCounter(req types.Request, target string, adapter types.Adapter, waitGro
 	fmt.Println("Exits counter now")
 }
 
-func getSchemaTreeValue(schemaTree *SchemaTree, pathElems []*gnmi.PathElem, startIndex int) {
+func extractData(response *gnmi.GetResponse, req *gnmi.GetRequest) {
+	var schema types.Schema
+	var schemaTree *types.SchemaTree
+	if len(response.Notification) > 0 {
+		// Should replace serialization from json to proto, it is supposed to be faster.
+		json.Unmarshal(response.Notification[0].Update[0].Val.GetBytesVal(), &schema)
+		// This is not necessary if better serialization that can serialize recursive objects is used.
+		schemaTree = getTreeStructure(schema)
+	}
+
+	// This is not necessary either if better serialization is used.
+	// var val int
+	// val, err = getSchemaTreeValue(schemaTree.Children[0], r.Path[0].Elem, 0)
+	fmt.Printf("%s : ", req.Path[0].Target)
+	getSchemaTreeValue(schemaTree.Children[0], req.Path[0].Elem, 0)
+
+	// if err != nil {
+	// 	fmt.Println(err)
+	// } else {
+	// 	fmt.Println(val)
+	// }
+}
+
+func getSchemaTreeValue(schemaTree *types.SchemaTree, pathElems []*gnmi.PathElem, startIndex int) {
 	if startIndex < len(pathElems) {
 		if pathElems[startIndex].Name == schemaTree.Name {
 			if startIndex == len(pathElems)-1 {
@@ -132,9 +134,9 @@ func getSchemaTreeValue(schemaTree *SchemaTree, pathElems []*gnmi.PathElem, star
 	// return -1, errors.New("Could not find value")
 }
 
-func getTreeStructure(schema Schema) *SchemaTree {
-	var newTree *SchemaTree
-	tree := &SchemaTree{}
+func getTreeStructure(schema types.Schema) *types.SchemaTree {
+	var newTree *types.SchemaTree
+	tree := &types.SchemaTree{}
 	lastNode := ""
 	for _, entry := range schema.Entries {
 		if entry.Value == "" { // Directory
@@ -149,7 +151,7 @@ func getTreeStructure(schema Schema) *SchemaTree {
 				}
 			} else {
 
-				newTree = &SchemaTree{Parent: tree}
+				newTree = &types.SchemaTree{Parent: tree}
 
 				newTree.Name = entry.Name
 				newTree.Namespace = entry.Namespace
@@ -158,7 +160,7 @@ func getTreeStructure(schema Schema) *SchemaTree {
 				tree = newTree
 			}
 		} else { // Leaf
-			newTree = &SchemaTree{Parent: tree}
+			newTree = &types.SchemaTree{Parent: tree}
 
 			newTree.Name = entry.Name
 			newTree.Value = entry.Value
@@ -168,23 +170,4 @@ func getTreeStructure(schema Schema) *SchemaTree {
 		}
 	}
 	return tree
-}
-
-type SchemaTree struct {
-	Name      string
-	Namespace string
-	Children  []*SchemaTree
-	Parent    *SchemaTree
-	Value     string
-}
-
-type Schema struct {
-	Entries []SchemaEntry
-}
-
-type SchemaEntry struct {
-	Name      string
-	Tag       string
-	Namespace string
-	Value     string
 }

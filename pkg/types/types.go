@@ -41,3 +41,24 @@ type DeviceMonitor struct {
 	Adapter        Adapter
 	ManagerChannel <-chan string
 }
+
+// The following types are used for deconstructing data from the adapter.
+
+type SchemaTree struct {
+	Name      string
+	Namespace string
+	Children  []*SchemaTree
+	Parent    *SchemaTree
+	Value     string
+}
+
+type Schema struct {
+	Entries []SchemaEntry
+}
+
+type SchemaEntry struct {
+	Name      string
+	Tag       string
+	Namespace string
+	Value     string
+}
