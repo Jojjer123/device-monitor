@@ -2,6 +2,7 @@ package deviceManager
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"sync"
 	"time"
@@ -88,10 +89,83 @@ func newCounter(req types.Request, target string, adapter types.Adapter, waitGro
 				fmt.Print("): ")
 				fmt.Println(err)
 			} else {
-				fmt.Println(response)
+				var schema Schema
+				var schemaTree *SchemaTree
+				if len(response.Notification) > 0 {
+					json.Unmarshal(response.Notification[0].Update[0].Val.GetBytesVal(), &schema)
+
+					// fmt.Println(schema)
+					schemaTree = getTreeStructure(schema)
+				}
+
+				printSchemaTree(schemaTree)
 			}
 		}
 	}
 
 	fmt.Println("Exits counter now")
+}
+
+func printSchemaTree(schemaTree *SchemaTree) {
+	fmt.Printf("%s - %s - %v - %s\n", schemaTree.Parent.Name, schemaTree.Name, schemaTree.Namespace, schemaTree.Value)
+	for _, child := range schemaTree.Children {
+		printSchemaTree(child)
+	}
+}
+
+func getTreeStructure(schema Schema) *SchemaTree {
+	var newTree *SchemaTree
+	tree := &SchemaTree{}
+	lastNode := ""
+	for _, entry := range schema.Entries {
+		if entry.Value == "" { // Directory
+			if entry.Tag == "end" {
+				if entry.Name != "data" {
+					if lastNode != "leaf" {
+						// fmt.Println(tree.Name)
+						tree = tree.Parent
+					}
+					lastNode = ""
+					// continue
+				}
+			} else {
+
+				newTree = &SchemaTree{Parent: tree}
+
+				newTree.Name = entry.Name
+				newTree.Namespace = entry.Namespace
+				newTree.Parent.Children = append(newTree.Parent.Children, newTree)
+
+				tree = newTree
+			}
+		} else { // Leaf
+			newTree = &SchemaTree{Parent: tree}
+
+			newTree.Name = entry.Name
+			newTree.Value = entry.Value
+			newTree.Parent.Children = append(newTree.Parent.Children, newTree)
+
+			lastNode = "leaf"
+		}
+	}
+	return tree
+}
+
+type SchemaTree struct {
+	Name      string
+	Namespace string
+	Children  []*SchemaTree
+	Parent    *SchemaTree
+	Value     string
+}
+
+type Schema struct {
+	Entries []SchemaEntry
+}
+
+type SchemaEntry struct {
+	Name      string
+	Tag       string
+	Namespace string
+	Value     string
 }
