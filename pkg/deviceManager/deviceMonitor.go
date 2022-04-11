@@ -14,19 +14,20 @@ import (
 	"github.com/openconfig/gnmi/proto/gnmi"
 )
 
-func deviceMonitor(target string, adapter types.Adapter, requests []types.Request, managerChannel <-chan string) {
+// target string, adapter types.Adapter, requests []types.Request, managerChannel <-chan string
+func deviceMonitor(monitor types.DeviceMonitor) {
 	var counterWaitGroup sync.WaitGroup
 	var counterChannels []chan string
 
-	for index, req := range requests {
+	for index, req := range monitor.Requests {
 		counterWaitGroup.Add(1)
 		counterChannels = append(counterChannels, make(chan string))
-		go newCounter(req, target, adapter, &counterWaitGroup, counterChannels[index])
+		go newCounter(req, monitor.Target, monitor.Adapter, &counterWaitGroup, counterChannels[index])
 	}
 
 	alive := true
 	for alive {
-		x := <-managerChannel
+		x := <-monitor.ManagerChannel
 		if x == "shutdown" {
 			fmt.Println("Received shutdown command on channel now...")
 

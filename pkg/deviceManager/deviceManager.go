@@ -45,26 +45,25 @@ func DeviceManager(waitGroup *sync.WaitGroup, adminChannel chan types.AdminChann
 	// fmt.Println("Device manager shutting down...")
 }
 
-func executeAdminSetCmd(cmd string, target string, configIndex int) string {
+func executeAdminSetCmd(cmd string, target string, configIndex ...int) string {
 	// fmt.Println(cmd)
 	switch cmd {
 	case "Create":
-		{
-			// Get slice of the different paths with their intervals and the appropriate
-			// adapter if one is necessary
-			requests, adapter, target := reqBuilder.GetConfig(target, configIndex)
+		// Get slice of the different paths with their intervals and the appropriate
+		// adapter if one is necessary
+		requests, adapter, target := reqBuilder.GetConfig(target, configIndex[0])
 
-			// fmt.Println(requests)
-			// fmt.Println(adapter)
-			// fmt.Println(target)
+		// fmt.Println(requests)
+		// fmt.Println(adapter)
+		// fmt.Println(target)
 
-			// TODO: Create and register a device-monitor in a table?
-			createDeviceMonitor(requests, adapter, target)
-		}
-	case "Update": // Should not be implemented before discussed design (how it should update configs).
-		{
-			fmt.Println("Updating device monitor with target: " + target)
-		}
+		// TODO: Create and register a device-monitor in a table?
+		createDeviceMonitor(requests, adapter, target)
+	case "Update":
+		// Should not be implemented before discussed design (how it should update configs).
+		fmt.Println("Updating device monitor with target: " + target)
+	case "Delete":
+		deleteDeviceMonitor(target)
 	default:
 		{
 			fmt.Println("Could not find command: " + cmd)
@@ -92,19 +91,34 @@ func registerServerChannel(serverChannel chan string, channelWaitGroup *sync.Wai
 	serverChannel <- response
 }
 
+func deleteDeviceMonitor(target string) {
+	for index, monitor := range deviceMonitorStore {
+		if monitor.Target == target {
+			fmt.Println("Found target, sending shutdown...")
+
+			monitor.ManagerChannel <- "shutdown"
+
+			deviceMonitorStore[index] = deviceMonitorStore[len(deviceMonitorStore)-1]
+			deviceMonitorStore = deviceMonitorStore[:len(deviceMonitorStore)-1]
+			fmt.Println("Removed deviceMonitor from store")
+		}
+	}
+}
+
 func createDeviceMonitor(requests []types.Request, adapter types.Adapter, target string) {
 	managerChannel := make(chan string)
 
 	// Consider adding field with requests to update only if changed.
-	deviceMonitorStore = append(deviceMonitorStore, types.DeviceMonitor{
+	monitor := types.DeviceMonitor{
 		Target:         target,
 		Adapter:        adapter,
+		Requests:       requests,
 		ManagerChannel: managerChannel,
-	})
+	}
 
-	fmt.Println(deviceMonitorStore)
+	deviceMonitorStore = append(deviceMonitorStore, monitor)
 
-	go deviceMonitor(target, adapter, requests, managerChannel)
+	go deviceMonitor(monitor)
 
 	// *numberOfDeviceMonitors += 1
 	// deviceMonitorWaitGroup.Add(1)

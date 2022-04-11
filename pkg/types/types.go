@@ -8,7 +8,7 @@ import (
 
 type AdminChannelMessage struct {
 	RegisterFunction func(chan string, *sync.WaitGroup)
-	ExecuteSetCmd    func(string, string, int) string
+	ExecuteSetCmd    func(string, string, ...int) string
 	Message          string
 }
 
@@ -39,7 +39,8 @@ type Adapter struct {
 type DeviceMonitor struct {
 	Target         string
 	Adapter        Adapter
-	ManagerChannel <-chan string
+	Requests       []Request
+	ManagerChannel chan string
 }
 
 // The following types are used for deconstructing data from the adapter.
