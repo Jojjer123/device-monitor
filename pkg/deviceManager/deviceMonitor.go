@@ -19,7 +19,7 @@ func deviceMonitor(monitor types.DeviceMonitor) {
 	var counterWaitGroup sync.WaitGroup
 	var counterChannels []chan string
 
-	fmt.Println("First requests name: " + monitor.Requests[0].Name)
+	// fmt.Println("First requests name: " + monitor.Requests[0].Name)
 
 	for index, req := range monitor.Requests {
 		counterWaitGroup.Add(1)
@@ -44,7 +44,7 @@ func deviceMonitor(monitor types.DeviceMonitor) {
 
 			fmt.Println("Removed all previous counters")
 
-			fmt.Println("First requests name: " + monitor.Requests[0].Name)
+			// fmt.Println("First requests name: " + monitor.Requests[0].Name)
 
 			for index, req := range monitor.Requests {
 				counterWaitGroup.Add(1)
@@ -54,7 +54,7 @@ func deviceMonitor(monitor types.DeviceMonitor) {
 		}
 	}
 
-	fmt.Println("Shutting down device monitor now...")
+	// fmt.Println("Shutting down device monitor now...")
 	counterWaitGroup.Wait()
 }
 

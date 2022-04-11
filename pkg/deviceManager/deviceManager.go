@@ -94,7 +94,7 @@ func registerServerChannel(serverChannel chan string, channelWaitGroup *sync.Wai
 func updateDeviceMonitor(requests []types.Request, target string) {
 	for _, monitor := range deviceMonitorStore {
 		if monitor.Target == target {
-			fmt.Println("Found target, sending update...")
+			// fmt.Println("Found target, sending update...")
 
 			monitor.Requests = requests
 			monitor.ManagerChannel <- "update"
