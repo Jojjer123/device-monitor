@@ -13,7 +13,7 @@ import (
 var deviceMonitorStore []types.DeviceMonitor
 
 func DeviceManager(waitGroup *sync.WaitGroup, adminChannel chan types.AdminChannelMessage) {
-	fmt.Println("DeviceManager started")
+	// fmt.Println("DeviceManager started")
 	defer waitGroup.Done()
 
 	var deviceMonitorWaitGroup sync.WaitGroup

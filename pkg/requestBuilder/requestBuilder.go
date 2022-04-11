@@ -1,7 +1,6 @@
 package requestBuilder
 
 import (
-	"fmt"
 	"strings"
 	"sync"
 
@@ -12,7 +11,7 @@ import (
 )
 
 func RequestBuilder(waitGroup *sync.WaitGroup) {
-	fmt.Println("RequestBuilder started")
+	// fmt.Println("RequestBuilder started")
 	defer waitGroup.Done()
 
 }

@@ -31,8 +31,7 @@ func deviceMonitor(monitor types.DeviceMonitor) {
 	for alive {
 		cmd := <-monitor.ManagerChannel
 		if cmd == "shutdown" {
-			fmt.Println("Received shutdown command on channel now...")
-
+			// fmt.Println("Received shutdown command on channel now...")
 			for _, ch := range counterChannels {
 				ch <- cmd
 			}
@@ -42,14 +41,14 @@ func deviceMonitor(monitor types.DeviceMonitor) {
 				ch <- "shutdown"
 			}
 
-			fmt.Println("----------------------")
-			fmt.Println(monitor.Requests)
+			// fmt.Println("----------------------")
+			// fmt.Println(monitor.Requests)
 
 			monitor.Requests = <-monitor.RequestsChannel
 
-			fmt.Println("##########")
-			fmt.Println(monitor.Requests)
-			fmt.Println("----------------------")
+			// fmt.Println("##########")
+			// fmt.Println(monitor.Requests)
+			// fmt.Println("----------------------")
 
 			for index, req := range monitor.Requests {
 				counterWaitGroup.Add(1)

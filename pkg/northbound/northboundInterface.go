@@ -1,7 +1,6 @@
 package northboundInterface
 
 import (
-	"fmt"
 	"sync"
 	"time"
 
@@ -9,7 +8,7 @@ import (
 )
 
 func Northbound(waitGroup *sync.WaitGroup, adminChannel chan types.AdminChannelMessage) {
-	fmt.Println("AdminInterface started")
+	// fmt.Println("AdminInterface started")
 	defer waitGroup.Done()
 
 	// var serverWaitGroup sync.WaitGroup
