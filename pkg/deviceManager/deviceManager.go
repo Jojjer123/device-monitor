@@ -97,7 +97,7 @@ func updateDeviceMonitor(requests []types.Request, target string) {
 			monitor.ManagerChannel <- "update"
 			monitor.RequestsChannel <- requests
 
-			fmt.Println("Updated deviceMonitor")
+			// fmt.Println("Updated deviceMonitor")
 			return
 		}
 	}
@@ -106,13 +106,13 @@ func updateDeviceMonitor(requests []types.Request, target string) {
 func deleteDeviceMonitor(target string) {
 	for index, monitor := range deviceMonitorStore {
 		if monitor.Target == target {
-			fmt.Println("Found target, sending shutdown...")
+			// fmt.Println("Found target, sending shutdown...")
 
 			monitor.ManagerChannel <- "shutdown"
 
 			deviceMonitorStore[index] = deviceMonitorStore[len(deviceMonitorStore)-1]
 			deviceMonitorStore = deviceMonitorStore[:len(deviceMonitorStore)-1]
-			fmt.Println("Removed deviceMonitor from store")
+			// fmt.Println("Removed deviceMonitor from store")
 			return
 		}
 	}

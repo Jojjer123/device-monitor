@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"strconv"
 	"sync"
 	"time"
 
@@ -43,14 +42,16 @@ func deviceMonitor(monitor types.DeviceMonitor) {
 				ch <- "shutdown"
 			}
 
+			fmt.Println("----------------------")
+			fmt.Println(monitor.Requests)
+
 			monitor.Requests = <-monitor.RequestsChannel
 
-			// fmt.Println("Removed all previous counters")
-
-			// fmt.Println("First requests name: " + monitor.Requests[0].Name)
+			fmt.Println("##########")
+			fmt.Println(monitor.Requests)
+			fmt.Println("----------------------")
 
 			for index, req := range monitor.Requests {
-				fmt.Println("The interval is: " + strconv.Itoa(req.Interval))
 				counterWaitGroup.Add(1)
 				counterChannels = append(counterChannels, make(chan string))
 				go newCounter(req, monitor.Target, monitor.Adapter, &counterWaitGroup, counterChannels[index])
