@@ -2,7 +2,6 @@ package deviceManager
 
 import (
 	"fmt"
-	"strconv"
 	"sync"
 
 	reqBuilder "github.com/onosproject/device-monitor/pkg/requestBuilder"
@@ -95,10 +94,8 @@ func registerServerChannel(serverChannel chan string, channelWaitGroup *sync.Wai
 func updateDeviceMonitor(requests []types.Request, target string) {
 	for _, monitor := range deviceMonitorStore {
 		if monitor.Target == target {
-			// fmt.Println("Found target, sending update...")
-			fmt.Println("Old requests interval: " + strconv.Itoa(monitor.Requests[0].Interval) + ", new: " + strconv.Itoa(requests[0].Interval))
-			monitor.Requests = requests
 			monitor.ManagerChannel <- "update"
+			monitor.RequestsChannel <- requests
 
 			fmt.Println("Updated deviceMonitor")
 			return
@@ -123,13 +120,15 @@ func deleteDeviceMonitor(target string) {
 
 func createDeviceMonitor(requests []types.Request, adapter types.Adapter, target string) {
 	managerChannel := make(chan string)
+	requestsChannel := make(chan []types.Request)
 
 	// Consider adding field with requests to update only if changed.
 	monitor := types.DeviceMonitor{
-		Target:         target,
-		Adapter:        adapter,
-		Requests:       requests,
-		ManagerChannel: managerChannel,
+		Target:          target,
+		Adapter:         adapter,
+		Requests:        requests,
+		RequestsChannel: requestsChannel,
+		ManagerChannel:  managerChannel,
 	}
 
 	deviceMonitorStore = append(deviceMonitorStore, monitor)

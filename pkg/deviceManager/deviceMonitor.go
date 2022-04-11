@@ -30,18 +30,20 @@ func deviceMonitor(monitor types.DeviceMonitor) {
 
 	alive := true
 	for alive {
-		x := <-monitor.ManagerChannel
-		if x == "shutdown" {
+		cmd := <-monitor.ManagerChannel
+		if cmd == "shutdown" {
 			fmt.Println("Received shutdown command on channel now...")
 
 			for _, ch := range counterChannels {
-				ch <- x
+				ch <- cmd
 			}
 			alive = false
-		} else if x == "update" {
+		} else if cmd == "update" {
 			for _, ch := range counterChannels {
 				ch <- "shutdown"
 			}
+
+			monitor.Requests = <-monitor.RequestsChannel
 
 			// fmt.Println("Removed all previous counters")
 

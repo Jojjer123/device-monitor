@@ -37,10 +37,11 @@ type Adapter struct {
 }
 
 type DeviceMonitor struct {
-	Target         string
-	Adapter        Adapter
-	Requests       []Request
-	ManagerChannel chan string
+	Target          string
+	Adapter         Adapter
+	Requests        []Request
+	RequestsChannel chan []Request
+	ManagerChannel  chan string
 }
 
 // The following types are used for deconstructing data from the adapter.
