@@ -91,7 +91,7 @@ func newCounter(req types.Request, target string, adapter types.Adapter, waitGro
 		},
 	}
 
-	// Start a ticker which will trigger repeatedly after (interval) seconds.
+	// Start a ticker which will trigger repeatedly after (interval) milliseconds.
 	intervalTicker := time.NewTicker(time.Duration(req.Interval) * time.Millisecond)
 
 	counterIsActive := true
@@ -103,11 +103,12 @@ func newCounter(req types.Request, target string, adapter types.Adapter, waitGro
 				counterIsActive = false
 			}
 		case <-intervalTicker.C:
-			// TODO: Get the counters for the given interval here and send them to the data processing part.
+			// Get the counter here and send it to the data processing.
 			response, err := c.(*gclient.Client).Get(ctx, r)
 			if err != nil {
 				fmt.Printf("Target returned RPC error: %v", err)
 			} else {
+				// TODO: Send counter to data processing.
 				extractData(response, r)
 			}
 		}
