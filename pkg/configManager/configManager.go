@@ -12,7 +12,7 @@ import (
 
 var deviceMonitorStore []types.DeviceMonitor
 
-func DeviceManager(waitGroup *sync.WaitGroup, adminChannel chan types.AdminChannelMessage) {
+func ConfigManager(waitGroup *sync.WaitGroup, adminChannel chan types.AdminChannelMessage) {
 	// fmt.Println("DeviceManager started")
 	defer waitGroup.Done()
 

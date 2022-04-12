@@ -11,7 +11,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	confInterface "github.com/onosproject/device-monitor/pkg/config"
+	storageInterface "github.com/onosproject/device-monitor/pkg/storage"
 )
 
 func (s *server) Set(ctx context.Context, req *gnmi.SetRequest) (*gnmi.SetResponse, error) {
@@ -89,7 +89,7 @@ func (s *server) setRequest(path *gnmi.Path) *gnmi.UpdateResult {
 }
 
 func (s *server) updateConfigRequest(req *gnmi.SetRequest) *gnmi.UpdateResult {
-	err := confInterface.UpdateConfig(req)
+	err := storageInterface.UpdateConfig(req)
 	if err != nil {
 		fmt.Println("Failed to update configuration!")
 	}

@@ -3,12 +3,11 @@ package main
 import (
 	"sync"
 
-	conf "github.com/onosproject/device-monitor/pkg/config"
-	dataProc "github.com/onosproject/device-monitor/pkg/dataProcessing"
-	deviceMgr "github.com/onosproject/device-monitor/pkg/deviceManager"
+	confMgr "github.com/onosproject/device-monitor/pkg/configManager"
+	dataProcMgr "github.com/onosproject/device-monitor/pkg/dataProcessingManager"
 	north "github.com/onosproject/device-monitor/pkg/northbound"
 	reqBuilder "github.com/onosproject/device-monitor/pkg/requestBuilder"
-	topo "github.com/onosproject/device-monitor/pkg/topo"
+	storage "github.com/onosproject/device-monitor/pkg/storage"
 
 	types "github.com/onosproject/device-monitor/pkg/types"
 )
@@ -23,12 +22,11 @@ func main() {
 	// WARNING potential problem: buffered vs unbuffered channels block in different stages of the communication.
 	adminChannel := make(chan types.AdminChannelMessage)
 
-	go topo.TopoInterface(&waitGroup)
-	go conf.ConfigInterface(&waitGroup)
+	go storage.ConfigInterface(&waitGroup)
 	go north.Northbound(&waitGroup, adminChannel)
 	go reqBuilder.RequestBuilder(&waitGroup)
-	go deviceMgr.DeviceManager(&waitGroup, adminChannel)
-	go dataProc.DataProcessing(&waitGroup)
+	go confMgr.ConfigManager(&waitGroup, adminChannel)
+	go dataProcMgr.DataProcessingManager(&waitGroup)
 
 	waitGroup.Wait()
 }

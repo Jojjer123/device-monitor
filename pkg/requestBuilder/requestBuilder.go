@@ -5,7 +5,7 @@ import (
 	"sync"
 
 	// "github.com/google/gnxi/gnmi"
-	confInterface "github.com/onosproject/device-monitor/pkg/config"
+	storageInterface "github.com/onosproject/device-monitor/pkg/storage"
 	types "github.com/onosproject/device-monitor/pkg/types"
 	"github.com/openconfig/gnmi/proto/gnmi"
 )
@@ -17,7 +17,7 @@ func RequestBuilder(waitGroup *sync.WaitGroup) {
 }
 
 func GetConfig(target string, configSelected int) ([]types.Request, types.Adapter) {
-	conf := confInterface.GetConfig(target)
+	conf := storageInterface.GetConfig(target)
 
 	// TODO: Add check for empty config, and dont crash if that is the case.
 
@@ -43,7 +43,7 @@ func GetConfig(target string, configSelected int) ([]types.Request, types.Adapte
 	var adapter types.Adapter
 
 	if conf.Protocol != "GNMI" {
-		adapter = confInterface.GetAdapter(conf.Protocol)
+		adapter = storageInterface.GetAdapter(conf.Protocol)
 	}
 
 	return requests, adapter

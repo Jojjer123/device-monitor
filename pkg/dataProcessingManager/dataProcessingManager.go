@@ -4,7 +4,7 @@ import (
 	"sync"
 )
 
-func DataProcessing(waitGroup *sync.WaitGroup) {
+func DataProcessingManager(waitGroup *sync.WaitGroup) {
 	// fmt.Println("DataProcessing started")
 	defer waitGroup.Done()
 }
