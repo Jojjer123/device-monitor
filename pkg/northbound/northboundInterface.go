@@ -4,7 +4,7 @@ import (
 	"sync"
 	"time"
 
-	types "github.com/onosproject/device-monitor/pkg/types"
+	types "github.com/onosproject/monitor-service/pkg/types"
 )
 
 func Northbound(waitGroup *sync.WaitGroup, adminChannel chan types.AdminChannelMessage) {

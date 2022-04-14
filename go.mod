@@ -1,4 +1,4 @@
-module github.com/onosproject/device-monitor
+module github.com/onosproject/monitor-service
 
 go 1.16
 

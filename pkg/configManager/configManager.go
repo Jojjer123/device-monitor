@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"sync"
 
-	reqBuilder "github.com/onosproject/device-monitor/pkg/requestBuilder"
-	"github.com/onosproject/device-monitor/pkg/types"
+	reqBuilder "github.com/onosproject/monitor-service/pkg/requestBuilder"
+	"github.com/onosproject/monitor-service/pkg/types"
 )
 
 var deviceMonitorStore []types.DeviceMonitor

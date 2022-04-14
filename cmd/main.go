@@ -3,18 +3,18 @@ package main
 import (
 	"sync"
 
-	confMgr "github.com/onosproject/device-monitor/pkg/configManager"
-	dataProcMgr "github.com/onosproject/device-monitor/pkg/dataProcessingManager"
-	north "github.com/onosproject/device-monitor/pkg/northbound"
-	reqBuilder "github.com/onosproject/device-monitor/pkg/requestBuilder"
-	storage "github.com/onosproject/device-monitor/pkg/storage"
+	confMgr "github.com/onosproject/monitor-service/pkg/configManager"
+	dataProcMgr "github.com/onosproject/monitor-service/pkg/dataProcessingManager"
+	north "github.com/onosproject/monitor-service/pkg/northbound"
+	reqBuilder "github.com/onosproject/monitor-service/pkg/requestBuilder"
+	storage "github.com/onosproject/monitor-service/pkg/storage"
 
-	types "github.com/onosproject/device-monitor/pkg/types"
+	types "github.com/onosproject/monitor-service/pkg/types"
 )
 
 const numberOfComponents = 6
 
-// Starts the main components of the device-monitor
+// Starts the main components of the monitor-service
 func main() {
 	var waitGroup sync.WaitGroup
 	waitGroup.Add(numberOfComponents)

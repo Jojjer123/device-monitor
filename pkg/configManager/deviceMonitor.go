@@ -7,7 +7,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/onosproject/device-monitor/pkg/types"
+	"github.com/onosproject/monitor-service/pkg/types"
 
 	"github.com/openconfig/gnmi/client"
 	gclient "github.com/openconfig/gnmi/client/gnmi"

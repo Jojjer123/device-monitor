@@ -5,8 +5,8 @@ import (
 	"sync"
 
 	// "github.com/google/gnxi/gnmi"
-	storageInterface "github.com/onosproject/device-monitor/pkg/storage"
-	types "github.com/onosproject/device-monitor/pkg/types"
+	storageInterface "github.com/onosproject/monitor-service/pkg/storage"
+	types "github.com/onosproject/monitor-service/pkg/types"
 	"github.com/openconfig/gnmi/proto/gnmi"
 )
 

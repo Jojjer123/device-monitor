@@ -12,7 +12,7 @@ import (
 	"github.com/openconfig/gnmi/proto/gnmi"
 	"gopkg.in/yaml.v2"
 
-	types "github.com/onosproject/device-monitor/pkg/types"
+	types "github.com/onosproject/monitor-service/pkg/types"
 )
 
 func ConfigInterface(waitGroup *sync.WaitGroup) {
