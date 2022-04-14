@@ -31,11 +31,12 @@ func (s *server) Subscribe(stream pb.GNMI_SubscribeServer) error {
 
 	}
 
-	fmt.Print("target: ")
-	fmt.Println(subRequest.GetSubscribe().Prefix.Target)
+	// fmt.Print("target: ")
+	// fmt.Println(subRequest.GetSubscribe().Prefix.Target)
+	target := subRequest.GetSubscribe().Prefix.Target
 
-	fmt.Print("subscription: ")
-	fmt.Println(subRequest.GetSubscribe().GetSubscription())
+	// fmt.Print("subscription: ")
+	// fmt.Println(subRequest.GetSubscribe().GetSubscription())
 
 	// fmt.Println(subRequest)
 
@@ -52,11 +53,16 @@ func (s *server) Subscribe(stream pb.GNMI_SubscribeServer) error {
 	var updateList []*pb.Update
 
 	data := pb.TypedValue_StringVal{
-		StringVal: "data for switch 0",
+		StringVal: "123Testing123",
 	}
 
 	path := pb.Path{
-		Target: "switch 0",
+		Target: target,
+		Elem: []*pb.PathElem{
+			{
+				Name: "interfaces",
+			},
+		},
 	}
 
 	update := pb.Update{

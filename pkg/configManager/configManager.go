@@ -8,8 +8,6 @@ import (
 	"github.com/onosproject/device-monitor/pkg/types"
 )
 
-// const maxNumberOfDeviceMonitors = 10
-
 var deviceMonitorStore []types.DeviceMonitor
 
 func ConfigManager(waitGroup *sync.WaitGroup, adminChannel chan types.AdminChannelMessage) {
@@ -22,8 +20,6 @@ func ConfigManager(waitGroup *sync.WaitGroup, adminChannel chan types.AdminChann
 	adminMessage.ExecuteSetCmd = executeAdminSetCmd
 
 	adminChannel <- adminMessage
-
-	// fmt.Println(<-adminChannel)
 
 	deviceMonitorWaitGroup.Wait()
 	// fmt.Println("Device manager shutting down...")

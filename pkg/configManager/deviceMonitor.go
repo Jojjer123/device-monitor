@@ -19,8 +19,6 @@ func deviceMonitor(monitor types.DeviceMonitor) {
 	var counterWaitGroup sync.WaitGroup
 	var counterChannels []chan string
 
-	// fmt.Println("First requests name: " + monitor.Requests[0].Name)
-
 	for index, req := range monitor.Requests {
 		counterWaitGroup.Add(1)
 		counterChannels = append(counterChannels, make(chan string))
@@ -31,7 +29,6 @@ func deviceMonitor(monitor types.DeviceMonitor) {
 	for alive {
 		cmd := <-monitor.ManagerChannel
 		if cmd == "shutdown" {
-			// fmt.Println("Received shutdown command on channel now...")
 			for _, ch := range counterChannels {
 				ch <- cmd
 			}
@@ -41,14 +38,7 @@ func deviceMonitor(monitor types.DeviceMonitor) {
 				ch <- "shutdown"
 			}
 
-			// fmt.Println("----------------------")
-			// fmt.Println(monitor.Requests)
-
 			monitor.Requests = <-monitor.RequestsChannel
-
-			// fmt.Println("##########")
-			// fmt.Println(monitor.Requests)
-			// fmt.Println("----------------------")
 
 			for index, req := range monitor.Requests {
 				counterWaitGroup.Add(1)
@@ -58,11 +48,9 @@ func deviceMonitor(monitor types.DeviceMonitor) {
 		}
 	}
 
-	// fmt.Println("Shutting down device monitor now...")
 	counterWaitGroup.Wait()
 }
 
-// req, target, adapter, counterWaitGroup, counterChannels[index]
 func newCounter(req types.Request, target string, adapter types.Adapter, waitGroup *sync.WaitGroup, counterChannel <-chan string) {
 	defer waitGroup.Done()
 
@@ -161,7 +149,8 @@ func getTreeStructure(schema types.Schema) *types.SchemaTree {
 	tree := &types.SchemaTree{}
 	lastNode := ""
 	for _, entry := range schema.Entries {
-		if entry.Value == "" { // Directory
+		if entry.Value == "" {
+			// In a directory
 			if entry.Tag == "end" {
 				if entry.Name != "data" {
 					if lastNode != "leaf" {
@@ -181,7 +170,8 @@ func getTreeStructure(schema types.Schema) *types.SchemaTree {
 
 				tree = newTree
 			}
-		} else { // Leaf
+		} else {
+			// In a leaf
 			newTree = &types.SchemaTree{Parent: tree}
 
 			newTree.Name = entry.Name
