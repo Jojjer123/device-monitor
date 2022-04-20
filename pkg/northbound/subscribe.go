@@ -43,6 +43,25 @@ func (s *server) Subscribe(stream pb.GNMI_SubscribeServer) error {
 
 	// TODO: Add response notifying sender the success of creation?
 
+	response := pb.SubscribeResponse{
+		Response: &pb.SubscribeResponse_Update{
+			Update: &pb.Notification{
+				Update: []*pb.Update{
+					{
+						Path: subRequest.GetSubscribe().Prefix,
+						Val: &pb.TypedValue{
+							Value: &pb.TypedValue_StringVal{
+								StringVal: "Success",
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+
+	stream.Send(&response)
+
 	// target := subRequest.GetSubscribe().Prefix.Target
 
 	// path := pb.Path{
