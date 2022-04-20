@@ -1,15 +1,24 @@
 package types
 
 import (
-	"sync"
-
 	"github.com/openconfig/gnmi/proto/gnmi"
 )
 
-type AdminChannelMessage struct {
-	RegisterFunction func(chan string, *sync.WaitGroup)
-	ExecuteSetCmd    func(string, string, ...int) string
-	Message          string
+type ConfigAdminChannelMessage struct {
+	// RegisterFunction func(chan string, *sync.WaitGroup)
+	ExecuteSetCmd func(string, string, ...int) string
+	// Message       string
+}
+
+type StreamMgrChannelMessage struct {
+	ManageCmd func(Stream, string) string
+	// ExecuteSetCmd    func(string, string, ...int) string
+	// Message          string
+}
+
+type Stream struct {
+	StreamHandle gnmi.GNMI_SubscribeServer
+	Target       string
 }
 
 type ConfigRequest struct {

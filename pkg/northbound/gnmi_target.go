@@ -15,9 +15,11 @@ import (
 	"github.com/google/gnxi/gnmi/modeldata"
 	"github.com/google/gnxi/gnmi/modeldata/gostruct"
 	pb "github.com/openconfig/gnmi/proto/gnmi"
+
+	"github.com/onosproject/monitor-service/pkg/types"
 )
 
-func startServer(address string, executeSetCmd func(string, string, ...int) string) {
+func startServer(address string, executeSetCmd func(string, string, ...int) string, streamMgrCmd func(types.Stream, string) string) {
 	model := gnmi.NewModel(modeldata.ModelData,
 		reflect.TypeOf((*gostruct.Device)(nil)),
 		gostruct.SchemaTree["Device"],

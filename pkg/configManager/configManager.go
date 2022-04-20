@@ -10,13 +10,14 @@ import (
 
 var deviceMonitorStore []types.DeviceMonitor
 
-func ConfigManager(waitGroup *sync.WaitGroup, adminChannel chan types.AdminChannelMessage) {
-	// fmt.Println("DeviceManager started")
+func ConfigManager(waitGroup *sync.WaitGroup, adminChannel chan types.ConfigAdminChannelMessage) {
 	defer waitGroup.Done()
+
+	// TODO: Remove deviceMonitorWaitGroup and add better way of keeping module "alive".
 
 	var deviceMonitorWaitGroup sync.WaitGroup
 
-	var adminMessage types.AdminChannelMessage
+	var adminMessage types.ConfigAdminChannelMessage
 	adminMessage.ExecuteSetCmd = executeAdminSetCmd
 
 	adminChannel <- adminMessage

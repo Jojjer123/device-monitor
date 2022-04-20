@@ -2,13 +2,14 @@ package northboundInterface
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/google/gnxi/utils/credentials"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
 	pb "github.com/openconfig/gnmi/proto/gnmi"
+
+	"github.com/onosproject/monitor-service/pkg/types"
 )
 
 func (s *server) Subscribe(stream pb.GNMI_SubscribeServer) error {
@@ -28,64 +29,53 @@ func (s *server) Subscribe(stream pb.GNMI_SubscribeServer) error {
 	if err != nil {
 		fmt.Print("Failed to receive from stream: ")
 		fmt.Println(err)
-
 	}
 
-	// fmt.Print("target: ")
-	// fmt.Println(subRequest.GetSubscribe().Prefix.Target)
-	target := subRequest.GetSubscribe().Prefix.Target
+	// TODO: Add stream-handle to table of active subscriptions with the topic that the stream is subscribing to.
 
-	// fmt.Print("subscription: ")
-	// fmt.Println(subRequest.GetSubscribe().GetSubscription())
+	newStream := types.Stream{
+		StreamHandle: stream,
+		Target:       subRequest.GetSubscribe().Prefix.Target,
+	}
 
-	// fmt.Println(subRequest)
+	s.StreamMgrCmd(newStream, "Add")
 
-	// upd := []*pb.Update{
-	// 	Value: &pb.Value{
-	// 		Value: []byte("Hello from the other side"),
+	// TODO: Add response notifying sender the success of creation?
+
+	// target := subRequest.GetSubscribe().Prefix.Target
+
+	// path := pb.Path{
+	// 	Target: target,
+	// 	Elem: []*pb.PathElem{
+	// 		{
+	// 			Name: "interfaces",
+	// 		},
 	// 	},
 	// }
 
-	// var notification *pb.Notification
+	// val := &pb.TypedValue{
+	// 	Value: &pb.TypedValue_StringVal{
+	// 		StringVal: "123Testing123",
+	// 	},
+	// }
 
-	// notification.Update[0].Value.Value = []byte("test")
+	// response := pb.SubscribeResponse{
+	// 	Response: &pb.SubscribeResponse_Update{
+	// 		Update: &pb.Notification{
+	// 			Update: []*pb.Update{
+	// 				{
+	// 					Path: &path,
+	// 					Val:  val,
+	// 				},
+	// 			},
+	// 		},
+	// 	},
+	// }
 
-	var updateList []*pb.Update
-
-	data := pb.TypedValue_StringVal{
-		StringVal: "123Testing123",
-	}
-
-	path := pb.Path{
-		Target: target,
-		Elem: []*pb.PathElem{
-			{
-				Name: "interfaces",
-			},
-		},
-	}
-
-	update := pb.Update{
-		Path: &path,
-		Val: &pb.TypedValue{
-			Value: &data,
-		},
-	}
-
-	updateList = append(updateList, &update)
-
-	response := pb.SubscribeResponse{
-		Response: &pb.SubscribeResponse_Update{
-			Update: &pb.Notification{
-				Update: updateList,
-			},
-		},
-	}
-
-	for i := 0; i < 10; i++ {
-		stream.Send(&response)
-		time.Sleep(5 * time.Second)
-	}
+	// for i := 0; i < 10; i++ {
+	// 	stream.Send(&response)
+	// 	time.Sleep(5 * time.Second)
+	// }
 
 	return nil //s.Server.Subscribe(stream)
 }
