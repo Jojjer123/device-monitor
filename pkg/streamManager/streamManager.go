@@ -43,9 +43,10 @@ func streamMgrCmd(stream types.Stream, cmd string) string {
 
 func GetSubscriberStream(target string) types.Stream {
 	// TODO: Add search for stream given the target.
-
+	var test types.Stream
 	for index, stream := range streamStore {
 		if index == 0 {
+			test = stream
 			stream.StreamHandle.Send(&gnmi.SubscribeResponse{
 				Response: &gnmi.SubscribeResponse_Update{
 					Update: &gnmi.Notification{
@@ -66,6 +67,10 @@ func GetSubscriberStream(target string) types.Stream {
 			})
 		}
 	}
+
+	fmt.Println(&gnmi.Path{
+		Elem: test.Target,
+	})
 
 	return types.Stream{}
 }

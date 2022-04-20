@@ -55,6 +55,8 @@ func (s *server) Subscribe(stream pb.GNMI_SubscribeServer) error {
 
 	stream.Send(&response)
 
+	fmt.Println(subRequest.GetSubscribe().Subscription[0].Path)
+
 	// TODO: Add stream-handle to table of active subscriptions with the topic that the stream is subscribing to.
 
 	newStream := types.Stream{
