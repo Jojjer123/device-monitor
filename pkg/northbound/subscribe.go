@@ -38,6 +38,7 @@ func (s *server) Subscribe(stream pb.GNMI_SubscribeServer) error {
 		Target:       subRequest.GetSubscribe().Prefix.Target,
 	}
 
+	fmt.Println("Going to run cmd function now...")
 	s.StreamMgrCmd(newStream, "Add")
 
 	// TODO: Add response notifying sender the success of creation?
