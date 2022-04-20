@@ -32,13 +32,6 @@ func (s *server) Subscribe(stream pb.GNMI_SubscribeServer) error {
 		fmt.Println(err)
 	}
 
-	// TODO: Add stream-handle to table of active subscriptions with the topic that the stream is subscribing to.
-
-	newStream := types.Stream{
-		StreamHandle: stream,
-		Target:       subRequest.GetSubscribe().Prefix.Target,
-	}
-
 	// fmt.Println("Going to run cmd function now...")
 
 	// TODO: Add response notifying sender the success of creation?
@@ -61,6 +54,13 @@ func (s *server) Subscribe(stream pb.GNMI_SubscribeServer) error {
 	}
 
 	stream.Send(&response)
+
+	// TODO: Add stream-handle to table of active subscriptions with the topic that the stream is subscribing to.
+
+	newStream := types.Stream{
+		StreamHandle: stream,
+		Target:       subRequest.GetSubscribe().Subscription[0].Path.Target,
+	}
 
 	s.StreamMgrCmd(newStream, "Add")
 
