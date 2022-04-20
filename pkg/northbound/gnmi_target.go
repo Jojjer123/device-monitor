@@ -56,6 +56,7 @@ func startServer(address string, executeSetCmd func(string, string, ...int) stri
 	s, err := newServer(model, configData)
 
 	s.ExecuteSetCmd = executeSetCmd
+	s.StreamMgrCmd = streamMgrCmd
 
 	if err != nil {
 		// log.Fatalf("Error in creating gnmi target: %v", err)
