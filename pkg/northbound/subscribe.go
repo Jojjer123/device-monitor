@@ -59,7 +59,7 @@ func (s *server) Subscribe(stream pb.GNMI_SubscribeServer) error {
 
 	newStream := types.Stream{
 		StreamHandle: stream,
-		Target:       *subRequest.GetSubscribe().Subscription[0].Path,
+		Target:       *&subRequest.GetSubscribe().Subscription[0].Path.Elem,
 	}
 
 	// fmt.Println(subRequest)

@@ -18,7 +18,7 @@ type StreamMgrChannelMessage struct {
 
 type Stream struct {
 	StreamHandle gnmi.GNMI_SubscribeServer
-	Target       gnmi.Path
+	Target       []*gnmi.PathElem
 }
 
 type ConfigRequest struct {
