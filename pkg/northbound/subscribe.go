@@ -2,6 +2,7 @@ package northboundInterface
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/google/gnxi/utils/credentials"
 	"google.golang.org/grpc/codes"
@@ -38,8 +39,7 @@ func (s *server) Subscribe(stream pb.GNMI_SubscribeServer) error {
 		Target:       subRequest.GetSubscribe().Prefix.Target,
 	}
 
-	fmt.Println("Going to run cmd function now...")
-	s.StreamMgrCmd(newStream, "Add")
+	// fmt.Println("Going to run cmd function now...")
 
 	// TODO: Add response notifying sender the success of creation?
 
@@ -61,6 +61,14 @@ func (s *server) Subscribe(stream pb.GNMI_SubscribeServer) error {
 	}
 
 	stream.Send(&response)
+
+	s.StreamMgrCmd(newStream, "Add")
+
+	for {
+		time.Sleep(time.Second * 20)
+	}
+
+	return nil
 
 	// target := subRequest.GetSubscribe().Prefix.Target
 
@@ -97,5 +105,5 @@ func (s *server) Subscribe(stream pb.GNMI_SubscribeServer) error {
 	// 	time.Sleep(5 * time.Second)
 	// }
 
-	return nil //s.Server.Subscribe(stream)
+	// return nil // s.Server.Subscribe(stream)
 }
