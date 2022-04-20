@@ -23,7 +23,7 @@ func ConfigManager(waitGroup *sync.WaitGroup, adminChannel chan types.ConfigAdmi
 	adminChannel <- adminMessage
 
 	deviceMonitorWaitGroup.Wait()
-	// fmt.Println("Device manager shutting down...")
+	fmt.Println("Device manager shutting down...")
 }
 
 func executeAdminSetCmd(cmd string, target string, configIndex ...int) string {
