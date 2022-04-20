@@ -59,10 +59,10 @@ func (s *server) Subscribe(stream pb.GNMI_SubscribeServer) error {
 
 	newStream := types.Stream{
 		StreamHandle: stream,
-		Target:       subRequest.GetSubscribe().Subscription[0].Path.Target,
+		Target:       *subRequest.GetSubscribe().Subscription[0].Path,
 	}
 
-	fmt.Println(subRequest)
+	// fmt.Println(subRequest)
 
 	s.StreamMgrCmd(newStream, "Add")
 
