@@ -12,6 +12,9 @@ import (
 	"github.com/openconfig/gnmi/client"
 	gclient "github.com/openconfig/gnmi/client/gnmi"
 	"github.com/openconfig/gnmi/proto/gnmi"
+
+	// TEMPORARY
+	"github.com/onosproject/monitor-service/pkg/streamManager"
 )
 
 // target string, adapter types.Adapter, requests []types.Request, managerChannel <-chan string
@@ -134,6 +137,7 @@ func getSchemaTreeValue(schemaTree *types.SchemaTree, pathElems []*gnmi.PathElem
 			if startIndex == len(pathElems)-1 {
 				// return strconv.Atoi(schemaTree.Value)
 				fmt.Println(schemaTree.Value)
+				streamManager.GetSubscriberStream(schemaTree.Value)
 			}
 			for _, child := range schemaTree.Children {
 				getSchemaTreeValue(child, pathElems, startIndex+1)

@@ -5,9 +5,10 @@ import (
 	"sync"
 
 	"github.com/onosproject/monitor-service/pkg/types"
+	"github.com/openconfig/gnmi/proto/gnmi"
 )
 
-// var streamStore []types.Stream
+var streamStore []types.Stream
 
 func StreamManager(waitGroup *sync.WaitGroup, streamMgrChannel chan types.StreamMgrChannelMessage) { //, adminChannel chan types.AdminChannelMessage) {
 	// fmt.Println("Started StreamManager")
@@ -29,7 +30,42 @@ func StreamManager(waitGroup *sync.WaitGroup, streamMgrChannel chan types.Stream
 
 func streamMgrCmd(stream types.Stream, cmd string) string {
 	// fmt.Println("Cmd arrived to StreamManager")
+	switch cmd {
+	case "Add":
+		streamStore = append(streamStore, stream)
+	default:
+		fmt.Printf("Did not recognize cmd: %s\n", cmd)
+	}
 	fmt.Println(stream.Target, cmd)
 
 	return ""
+}
+
+func GetSubscriberStream(target string) types.Stream {
+	// TODO: Add search for stream given the target.
+
+	for index, stream := range streamStore {
+		if index == 0 {
+			stream.StreamHandle.Send(&gnmi.SubscribeResponse{
+				Response: &gnmi.SubscribeResponse_Update{
+					Update: &gnmi.Notification{
+						Update: []*gnmi.Update{
+							{
+								Path: &gnmi.Path{
+									Elem: stream.Target,
+								},
+								Val: &gnmi.TypedValue{
+									Value: &gnmi.TypedValue_StringVal{
+										StringVal: target,
+									},
+								},
+							},
+						},
+					},
+				},
+			})
+		}
+	}
+
+	return types.Stream{}
 }
