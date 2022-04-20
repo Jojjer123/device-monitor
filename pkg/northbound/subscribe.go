@@ -48,7 +48,7 @@ func (s *server) Subscribe(stream pb.GNMI_SubscribeServer) error {
 			Update: &pb.Notification{
 				Update: []*pb.Update{
 					{
-						Path: subRequest.GetSubscribe().Prefix,
+						Path: subRequest.GetSubscribe().Subscription[0].Path,
 						Val: &pb.TypedValue{
 							Value: &pb.TypedValue_StringVal{
 								StringVal: "Success",
