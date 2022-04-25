@@ -25,6 +25,8 @@ func (s *server) Set(ctx context.Context, req *gnmi.SetRequest) (*gnmi.SetRespon
 
 	var updateResult []*gnmi.UpdateResult
 
+	// TODO: Add logging to let the user know that monitoring has started.
+
 	for _, update := range req.Update {
 		if update.Path.Elem[0].Name == "Action" {
 			switch update.Path.Elem[0].Key["Action"] {
