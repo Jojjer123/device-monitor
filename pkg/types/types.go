@@ -74,10 +74,10 @@ func (m *AdapterResponse) String() string { return proto.CompactTextString(m) }
 func (m *AdapterResponse) ProtoMessage()  {}
 
 type SchemaEntry struct {
-	NameIdentifier string `protobuf:"bytes,2,opt,name=NameIdentifier,proto3"`
-	Tag            string `protobuf:"bytes,2,opt,name=Tag,proto3"`
-	Namespace      string `protobuf:"bytes,2,opt,name=Namespace,proto3"`
-	Value          string `protobuf:"bytes,2,opt,name=Value,proto3"`
+	Name      string `protobuf:"bytes,2,opt,name=NameIdentifier,proto3"`
+	Tag       string `protobuf:"bytes,2,opt,name=Tag,proto3"`
+	Namespace string `protobuf:"bytes,2,opt,name=Namespace,proto3"`
+	Value     string `protobuf:"bytes,2,opt,name=Value,proto3"`
 }
 
 type GatewayData struct {
