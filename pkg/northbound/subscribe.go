@@ -32,39 +32,12 @@ func (s *server) Subscribe(stream pb.GNMI_SubscribeServer) error {
 		fmt.Println(err)
 	}
 
-	// fmt.Println("Going to run cmd function now...")
-
-	// TODO: Add response notifying sender the success of creation?
-
-	// response := pb.SubscribeResponse{
-	// 	Response: &pb.SubscribeResponse_Update{
-	// 		Update: &pb.Notification{
-	// 			Update: []*pb.Update{
-	// 				{
-	// 					Path: subRequest.GetSubscribe().Subscription[0].Path,
-	// 					Val: &pb.TypedValue{
-	// 						Value: &pb.TypedValue_StringVal{
-	// 							StringVal: "Success",
-	// 						},
-	// 					},
-	// 				},
-	// 			},
-	// 		},
-	// 	},
-	// }
-
-	// stream.Send(&response)
-
-	fmt.Println(subRequest.GetSubscribe().Subscription[0].Path)
-
-	// TODO: Add stream-handle to table of active subscriptions with the topic that the stream is subscribing to.
+	// fmt.Println(subRequest.GetSubscribe().Subscription[0].Path)
 
 	newStream := types.Stream{
 		StreamHandle: stream,
 		Target:       *&subRequest.GetSubscribe().Subscription[0].Path.Elem,
 	}
-
-	// fmt.Println(subRequest)
 
 	s.StreamMgrCmd(newStream, "Add")
 
@@ -82,41 +55,4 @@ func (s *server) Subscribe(stream pb.GNMI_SubscribeServer) error {
 	}
 
 	return nil
-
-	// target := subRequest.GetSubscribe().Prefix.Target
-
-	// path := pb.Path{
-	// 	Target: target,
-	// 	Elem: []*pb.PathElem{
-	// 		{
-	// 			Name: "interfaces",
-	// 		},
-	// 	},
-	// }
-
-	// val := &pb.TypedValue{
-	// 	Value: &pb.TypedValue_StringVal{
-	// 		StringVal: "123Testing123",
-	// 	},
-	// }
-
-	// response := pb.SubscribeResponse{
-	// 	Response: &pb.SubscribeResponse_Update{
-	// 		Update: &pb.Notification{
-	// 			Update: []*pb.Update{
-	// 				{
-	// 					Path: &path,
-	// 					Val:  val,
-	// 				},
-	// 			},
-	// 		},
-	// 	},
-	// }
-
-	// for i := 0; i < 10; i++ {
-	// 	stream.Send(&response)
-	// 	time.Sleep(5 * time.Second)
-	// }
-
-	// return nil // s.Server.Subscribe(stream)
 }
