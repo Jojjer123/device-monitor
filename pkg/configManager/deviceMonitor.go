@@ -118,19 +118,7 @@ func extractData(response *gnmi.GetResponse, req *gnmi.GetRequest, name string) 
 		}
 		// json.Unmarshal(response.Notification[0].Update[0].Val.GetBytesVal(), &adapterResponse)
 
-		// startTime := time.Now().UnixNano()
-		// testSlice, err := proto.Marshal(&adapterResponse)
-		// if err != nil {
-		// 	fmt.Printf("error marshaling response using proto: %v", err)
-		// } else {
-		// 	//fmt.Println(testSlice)
-		// 	var test types.AdapterResponse
-		// 	if err := proto.Unmarshal(testSlice, &test); err != nil {
-		// 		fmt.Printf("Failed to unmarshal testSlice: %v", err)
-		// 	} else {
-		// 		fmt.Println(test)
-		// 	}
-		// }
+		fmt.Println(adapterResponse)
 
 		// This is not necessary if better serialization that can serialize recursive objects is used.
 		schemaTree = getTreeStructure(adapterResponse.Entries)
