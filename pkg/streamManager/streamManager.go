@@ -5,7 +5,10 @@ import (
 	"sync"
 
 	"github.com/onosproject/monitor-service/pkg/types"
+	// "github.com/openconfig/gnmi/ctree"
 	"github.com/openconfig/gnmi/proto/gnmi"
+	// "github.com/openconfig/goyang/pkg/yang"
+	// "google.golang.org/protobuf/proto"
 )
 
 var streamStore []types.Stream
@@ -41,12 +44,28 @@ func streamMgrCmd(stream types.Stream, cmd string) string {
 	return ""
 }
 
+// Needs to be renamed to something like AddDataToStream
 func GetSubscriberStream(target string) types.Stream {
 	// TODO: Add search for stream given the target.
-	var test types.Stream
+	// var test types.Stream
 	for index, stream := range streamStore {
 		if index == 0 {
-			test = stream
+			test := stream
+
+			// entry := yang.Entry{
+			// 	Name:    "FirstEntry",
+			// 	Kind:    yang.LeafEntry,
+			// 	Default: "FirstVal",
+			// }
+
+			// tree := ctree.Tree{}
+			// tree.Add([]string{"interface"}, entry)
+
+			// bytesTree, err := proto.Marshal(tree)
+			// if err != nil {
+			// 	fmt.Printf("Failed to marshal tree with err: %v\n", err)
+			// }
+
 			stream.StreamHandle.Send(&gnmi.SubscribeResponse{
 				Response: &gnmi.SubscribeResponse_Update{
 					Update: &gnmi.Notification{
@@ -55,6 +74,11 @@ func GetSubscriberStream(target string) types.Stream {
 								Path: &gnmi.Path{
 									Elem: stream.Target,
 								},
+								// Val: &gnmi.TypedValue{
+								// 	Value: &gnmi.TypedValue_ProtoBytes{
+								// 		ProtoBytes: bytesTree,
+								// 	},
+								// },
 								Val: &gnmi.TypedValue{
 									Value: &gnmi.TypedValue_StringVal{
 										StringVal: target,
@@ -65,12 +89,12 @@ func GetSubscriberStream(target string) types.Stream {
 					},
 				},
 			})
+
+			fmt.Println(&gnmi.Path{
+				Elem: test.Target,
+			})
 		}
 	}
-
-	fmt.Println(&gnmi.Path{
-		Elem: test.Target,
-	})
 
 	return types.Stream{}
 }
