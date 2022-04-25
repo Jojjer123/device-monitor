@@ -133,7 +133,24 @@ func extractData(response *gnmi.GetResponse, req *gnmi.GetRequest, name string) 
 				fmt.Println(test)
 			}
 		}
-		fmt.Printf("Time to marshal and unmarshal: %v", time.Now().UnixNano()-startTime)
+		fmt.Printf("Time to marshal and unmarshal: %v\n", time.Now().UnixNano()-startTime)
+
+		fmt.Println("##############")
+
+		startTime = time.Now().UnixNano()
+		testSlice, err = json.Marshal(&adapterResponse)
+		if err != nil {
+			fmt.Printf("error marshaling response using proto: %v", err)
+		} else {
+			//fmt.Println(testSlice)
+			var test types.AdapterResponse
+			if err := json.Unmarshal(testSlice, &test); err != nil {
+				fmt.Printf("Failed to unmarshal testSlice: %v", err)
+			} else {
+				fmt.Println(test)
+			}
+		}
+		fmt.Printf("Time to marshal and unmarshal: %v\n", time.Now().UnixNano()-startTime)
 
 		fmt.Println("--------------------")
 
