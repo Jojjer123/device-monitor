@@ -3,6 +3,7 @@ package streamManager
 import (
 	"fmt"
 	"sync"
+	"time"
 
 	"github.com/onosproject/monitor-service/pkg/types"
 	// "github.com/openconfig/gnmi/ctree"
@@ -72,6 +73,7 @@ func GetSubscriberStream(target string) types.Stream {
 			stream.StreamHandle.Send(&gnmi.SubscribeResponse{
 				Response: &gnmi.SubscribeResponse_Update{
 					Update: &gnmi.Notification{
+						Timestamp: time.Now().Unix(),
 						Update: []*gnmi.Update{
 							{
 								Path: &gnmi.Path{
