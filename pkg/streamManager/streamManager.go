@@ -9,9 +9,9 @@ import (
 
 	"github.com/onosproject/monitor-service/pkg/types"
 
-	"github.com/openconfig/gnmi/ctree"
+	// "github.com/openconfig/gnmi/ctree"
 	"github.com/openconfig/gnmi/proto/gnmi"
-	"github.com/openconfig/goyang/pkg/yang"
+	// "github.com/openconfig/goyang/pkg/yang"
 )
 
 var streamStore []types.Stream
@@ -60,24 +60,23 @@ func streamMgrCmd(stream types.Stream, cmd string) string {
 func AddDataToStream(dataVal string, subscriptionIdentifier string) types.Stream {
 	for _, stream := range streamStore {
 		if stream.Target[0].Name == subscriptionIdentifier {
-			entry := yang.Entry{
-				Name:    "FirstEntry",
-				Kind:    yang.LeafEntry,
-				Default: "FirstVal",
-			}
+			// entry := yang.Entry{
+			// 	Name:    "FirstEntry",
+			// 	Kind:    yang.LeafEntry,
+			// 	Default: "FirstVal",
+			// }
 
-			tree := ctree.Tree{}
-			tree.Add([]string{"interface"}, entry)
+			// tree := ctree.Tree{}
+			// tree.Add([]string{"interface"}, entry)
 
-			entry = yang.Entry{
-				Name:    "SecondEntry",
-				Kind:    yang.DirectoryEntry,
-				Default: "SecondVal",
-			}
+			// entry = yang.Entry{
+			// 	Name:    "SecondEntry",
+			// 	Kind:    yang.DirectoryEntry,
+			// 	Default: "SecondVal",
+			// }
 
-			tree.Add([]string{"otherThing"}, entry)
-
-			fmt.Printf("tree:\n%v\n", tree)
+			// tree.Add([]string{"otherThing"}, entry)
+			// fmt.Printf("tree:\n%v\n", tree)
 
 			// bytesTree, err := proto.Marshal(tree)
 			// if err != nil {
