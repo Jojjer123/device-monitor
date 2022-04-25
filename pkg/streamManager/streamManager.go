@@ -33,7 +33,6 @@ func StreamManager(waitGroup *sync.WaitGroup, streamMgrChannel chan types.Stream
 }
 
 func streamMgrCmd(stream types.Stream, cmd string) string {
-	// fmt.Println("Cmd arrived to StreamManager")
 	switch cmd {
 	case "Add":
 		streamStore = append(streamStore, stream)
@@ -52,20 +51,12 @@ func streamMgrCmd(stream types.Stream, cmd string) string {
 	default:
 		fmt.Printf("Did not recognize cmd: %s\n", cmd)
 	}
-	// fmt.Println(stream.Target, cmd)
 
 	return ""
 }
 
 func AddDataToStream(dataVal string, subscriptionIdentifier string) types.Stream {
-	// TODO: Add search for stream given the target.
-
-	// fmt.Printf("The stream store contains: \n%v\n", streamStore)
-
-	fmt.Printf("SubscriptionIdentifier: %s\n", subscriptionIdentifier)
-
 	for _, stream := range streamStore {
-		fmt.Println(stream.Target[0].Name)
 		if stream.Target[0].Name == subscriptionIdentifier {
 			// entry := yang.Entry{
 			// 	Name:    "FirstEntry",
