@@ -77,7 +77,7 @@ func AddDataToStream(dataVal string, subscriptionIdentifier string) types.Stream
 
 			tree.Add([]string{"interface"}, entry)
 
-			fmt.Printf("tree:\n%v\n")
+			fmt.Printf("tree:\n%v\n", tree)
 
 			// bytesTree, err := proto.Marshal(tree)
 			// if err != nil {
