@@ -118,11 +118,13 @@ func extractData(response *gnmi.GetResponse, req *gnmi.GetRequest) {
 		schemaTree = getTreeStructure(schema)
 	}
 
+	fmt.Printf("%v\n", req)
+
 	// This is not necessary either if better serialization is used.
 	// var val int
 	// val, err = getSchemaTreeValue(schemaTree.Children[0], r.Path[0].Elem, 0)
-	fmt.Printf("%s: ", req.Path[0].Target)
-	getSchemaTreeValue(schemaTree.Children[0], req.Path[0].Elem, 0)
+	// fmt.Printf("%s: ", req.Path[0].Target)
+	addSchemaTreeValueToStream(schemaTree.Children[0], req.Path[0].Elem, 0)
 
 	// if err != nil {
 	// 	fmt.Println(err)
@@ -131,21 +133,18 @@ func extractData(response *gnmi.GetResponse, req *gnmi.GetRequest) {
 	// }
 }
 
-func getSchemaTreeValue(schemaTree *types.SchemaTree, pathElems []*gnmi.PathElem, startIndex int) {
+func addSchemaTreeValueToStream(schemaTree *types.SchemaTree, pathElems []*gnmi.PathElem, startIndex int) {
 	if startIndex < len(pathElems) {
 		if pathElems[startIndex].Name == schemaTree.Name {
 			if startIndex == len(pathElems)-1 {
-				// return strconv.Atoi(schemaTree.Value)
-				fmt.Println(schemaTree.Value)
+				// fmt.Println(schemaTree.Value)
 				streamManager.AddDataToStream(schemaTree.Value)
 			}
 			for _, child := range schemaTree.Children {
-				getSchemaTreeValue(child, pathElems, startIndex+1)
+				addSchemaTreeValueToStream(child, pathElems, startIndex+1)
 			}
 		}
 	}
-
-	// return -1, errors.New("Could not find value")
 }
 
 func getTreeStructure(schema types.Schema) *types.SchemaTree {
