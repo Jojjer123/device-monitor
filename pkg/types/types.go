@@ -66,7 +66,7 @@ type SchemaTree struct {
 
 type AdapterResponse struct {
 	Entries   []SchemaEntry `protobuf:"bytes,1,opt,name=Entries,proto3"`
-	Timestamp int64         `protobuf:"bytes,2,opt,name=Timestamp,proto3"`
+	Timestamp int64         `protobuf:"int64,2,opt,name=Timestamp,proto3"`
 }
 
 func (m *AdapterResponse) Reset()         { *m = AdapterResponse{} }
