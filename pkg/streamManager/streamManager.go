@@ -37,6 +37,18 @@ func streamMgrCmd(stream types.Stream, cmd string) string {
 	switch cmd {
 	case "Add":
 		streamStore = append(streamStore, stream)
+	case "Remove":
+		indexToBeRemoved := -1
+		for index, activeStream := range streamStore {
+			if activeStream.StreamHandle == stream.StreamHandle {
+				indexToBeRemoved = index
+			}
+		}
+
+		if indexToBeRemoved != -1 {
+			streamStore = append(streamStore[:indexToBeRemoved], streamStore[indexToBeRemoved+1:]...)
+		}
+
 	default:
 		fmt.Printf("Did not recognize cmd: %s\n", cmd)
 	}

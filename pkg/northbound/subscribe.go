@@ -69,14 +69,14 @@ func (s *server) Subscribe(stream pb.GNMI_SubscribeServer) error {
 	s.StreamMgrCmd(newStream, "Add")
 
 	go func() {
-		test, err := stream.Recv()
+		_, err := stream.Recv()
 		if err != nil {
-			fmt.Printf("Error on stream: %v\n", err)
-		} else {
-			fmt.Printf("Received %v on stream\n", test)
+			fmt.Println("Subscriber has disconnected")
+			s.StreamMgrCmd(newStream, "Remove")
 		}
 	}()
 
+	// TODO: Remove the bs stalling and have a correct ending of the function.
 	for {
 		time.Sleep(time.Second * 20)
 	}
