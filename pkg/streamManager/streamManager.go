@@ -60,11 +60,11 @@ func streamMgrCmd(stream types.Stream, cmd string) string {
 func AddDataToStream(target string) types.Stream {
 	// TODO: Add search for stream given the target.
 
-	fmt.Printf("The stream store contains: \n%v\n", streamStore)
+	// fmt.Printf("The stream store contains: \n%v\n", streamStore)
 
 	for index, stream := range streamStore {
 		if index == 0 {
-			test := stream
+			// test := stream
 
 			// entry := yang.Entry{
 			// 	Name:    "FirstEntry",
@@ -105,9 +105,9 @@ func AddDataToStream(target string) types.Stream {
 				},
 			})
 
-			fmt.Println(&gnmi.Path{
-				Elem: test.Target,
-			})
+			// fmt.Println(&gnmi.Path{
+			// 	Elem: test.Target,
+			// })
 		}
 	}
 
