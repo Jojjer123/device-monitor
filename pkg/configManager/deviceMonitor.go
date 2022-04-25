@@ -7,6 +7,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/gogo/protobuf/proto"
 	"github.com/onosproject/monitor-service/pkg/types"
 
 	"github.com/openconfig/gnmi/client"
@@ -114,6 +115,26 @@ func extractData(response *gnmi.GetResponse, req *gnmi.GetRequest, name string) 
 	if len(response.Notification) > 0 {
 		// Should replace serialization from json to proto, it is supposed to be faster.
 		json.Unmarshal(response.Notification[0].Update[0].Val.GetBytesVal(), &adapterResponse)
+
+		fmt.Println(adapterResponse)
+
+		fmt.Println("--------------------")
+
+		testSlice, err := proto.Marshal(&adapterResponse)
+		if err != nil {
+			fmt.Printf("error marshaling response using proto: %v", err)
+		} else {
+			//fmt.Println(testSlice)
+			var test types.AdapterResponse
+			if err := proto.Unmarshal(testSlice, &test); err != nil {
+				fmt.Printf("Failed to unmarshal testSlice: %v", err)
+			} else {
+				fmt.Println(test)
+			}
+		}
+
+		fmt.Println("--------------------")
+
 		// This is not necessary if better serialization that can serialize recursive objects is used.
 		schemaTree = getTreeStructure(adapterResponse.Entries)
 	}

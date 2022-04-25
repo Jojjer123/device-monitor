@@ -1,6 +1,7 @@
 package types
 
 import (
+	"github.com/golang/protobuf/proto"
 	"github.com/openconfig/gnmi/proto/gnmi"
 )
 
@@ -64,9 +65,13 @@ type SchemaTree struct {
 }
 
 type AdapterResponse struct {
-	Entries   []SchemaEntry
-	Timestamp int64
+	Entries   []SchemaEntry `protobuf:"bytes,1,opt,name=Entries,proto3"`
+	Timestamp int64         `protobuf:"bytes,2,opt,name=Timestamp,proto3"`
 }
+
+func (m *AdapterResponse) Reset()         { *m = AdapterResponse{} }
+func (m *AdapterResponse) String() string { return proto.CompactTextString(m) }
+func (m *AdapterResponse) ProtoMessage()  {}
 
 type SchemaEntry struct {
 	Name      string
