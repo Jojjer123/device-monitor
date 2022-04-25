@@ -5,7 +5,10 @@ import (
 	"sync"
 	"time"
 
+	"encoding/json"
+
 	"github.com/onosproject/monitor-service/pkg/types"
+
 	// "github.com/openconfig/gnmi/ctree"
 	"github.com/openconfig/gnmi/proto/gnmi"
 	// "github.com/openconfig/goyang/pkg/yang"
@@ -71,6 +74,16 @@ func AddDataToStream(dataVal string, subscriptionIdentifier string) types.Stream
 			// if err != nil {
 			// 	fmt.Printf("Failed to marshal tree with err: %v\n", err)
 			// }
+			objectToSend := types.GatewayData{
+				Data:      dataVal,
+				Timestamp: time.Now().Unix(),
+			}
+
+			jsonBytes, err := json.Marshal(objectToSend)
+			if err != nil {
+				fmt.Printf("Failed to marshal to json, err: %v", err)
+			}
+			fmt.Println(jsonBytes)
 
 			stream.StreamHandle.Send(&gnmi.SubscribeResponse{
 				Response: &gnmi.SubscribeResponse_Update{
@@ -81,9 +94,14 @@ func AddDataToStream(dataVal string, subscriptionIdentifier string) types.Stream
 								Path: &gnmi.Path{
 									Elem: stream.Target,
 								},
+								// Val: &gnmi.TypedValue{
+								// 	Value: &gnmi.TypedValue_StringVal{
+								// 		StringVal: dataVal,
+								// 	},
+								// },
 								Val: &gnmi.TypedValue{
-									Value: &gnmi.TypedValue_StringVal{
-										StringVal: dataVal,
+									Value: &gnmi.TypedValue_JsonVal{
+										JsonVal: jsonBytes,
 									},
 								},
 							},
