@@ -120,6 +120,7 @@ func extractData(response *gnmi.GetResponse, req *gnmi.GetRequest, name string) 
 
 		fmt.Println("--------------------")
 
+		startTime := time.Now().UnixNano()
 		testSlice, err := proto.Marshal(&adapterResponse)
 		if err != nil {
 			fmt.Printf("error marshaling response using proto: %v", err)
@@ -132,6 +133,7 @@ func extractData(response *gnmi.GetResponse, req *gnmi.GetRequest, name string) 
 				fmt.Println(test)
 			}
 		}
+		fmt.Printf("Time to marshal and unmarshal: %v", time.Now().UnixNano()-startTime)
 
 		fmt.Println("--------------------")
 
