@@ -176,7 +176,7 @@ func getTreeStructure(schemaEntries []types.SchemaEntry) *types.SchemaTree {
 		if entry.Value == "" {
 			// In a directory
 			if entry.Tag == "end" {
-				if entry.NameIdentifier != "data" {
+				if entry.Name != "data" {
 					if lastNode != "leaf" {
 						// fmt.Println(tree.Name)
 						tree = tree.Parent
@@ -188,7 +188,7 @@ func getTreeStructure(schemaEntries []types.SchemaEntry) *types.SchemaTree {
 
 				newTree = &types.SchemaTree{Parent: tree}
 
-				newTree.Name = entry.NameIdentifier
+				newTree.Name = entry.Name
 				newTree.Namespace = entry.Namespace
 				newTree.Parent.Children = append(newTree.Parent.Children, newTree)
 
@@ -198,7 +198,7 @@ func getTreeStructure(schemaEntries []types.SchemaEntry) *types.SchemaTree {
 			// In a leaf
 			newTree = &types.SchemaTree{Parent: tree}
 
-			newTree.Name = entry.NameIdentifier
+			newTree.Name = entry.Name
 			newTree.Value = entry.Value
 			newTree.Parent.Children = append(newTree.Parent.Children, newTree)
 
