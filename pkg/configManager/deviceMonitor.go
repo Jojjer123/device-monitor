@@ -2,7 +2,6 @@ package deviceManager
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"sync"
 	"time"
@@ -114,45 +113,24 @@ func extractData(response *gnmi.GetResponse, req *gnmi.GetRequest, name string) 
 	var schemaTree *types.SchemaTree
 	if len(response.Notification) > 0 {
 		// Should replace serialization from json to proto, it is supposed to be faster.
-		json.Unmarshal(response.Notification[0].Update[0].Val.GetBytesVal(), &adapterResponse)
-
-		fmt.Println(adapterResponse)
-
-		fmt.Println("--------------------")
-
-		startTime := time.Now().UnixNano()
-		testSlice, err := proto.Marshal(&adapterResponse)
-		if err != nil {
-			fmt.Printf("error marshaling response using proto: %v", err)
-		} else {
-			//fmt.Println(testSlice)
-			var test types.AdapterResponse
-			if err := proto.Unmarshal(testSlice, &test); err != nil {
-				fmt.Printf("Failed to unmarshal testSlice: %v", err)
-			} else {
-				fmt.Println(test)
-			}
+		if err := proto.Unmarshal(response.Notification[0].Update[0].Val.GetProtoBytes(), &adapterResponse); err != nil {
+			fmt.Printf("Failed to unmarshal ProtoBytes: %v", err)
 		}
-		fmt.Printf("Time to marshal and unmarshal: %v\n", time.Now().UnixNano()-startTime)
+		// json.Unmarshal(response.Notification[0].Update[0].Val.GetBytesVal(), &adapterResponse)
 
-		fmt.Println("##############")
-
-		startTime = time.Now().UnixNano()
-		testSlice, err = json.Marshal(&adapterResponse)
-		if err != nil {
-			fmt.Printf("error marshaling response using proto: %v", err)
-		} else {
-			//fmt.Println(testSlice)
-			var test types.AdapterResponse
-			if err := json.Unmarshal(testSlice, &test); err != nil {
-				fmt.Printf("Failed to unmarshal testSlice: %v", err)
-			} else {
-				fmt.Println(test)
-			}
-		}
-		fmt.Printf("Time to marshal and unmarshal: %v\n", time.Now().UnixNano()-startTime)
-
-		fmt.Println("--------------------")
+		// startTime := time.Now().UnixNano()
+		// testSlice, err := proto.Marshal(&adapterResponse)
+		// if err != nil {
+		// 	fmt.Printf("error marshaling response using proto: %v", err)
+		// } else {
+		// 	//fmt.Println(testSlice)
+		// 	var test types.AdapterResponse
+		// 	if err := proto.Unmarshal(testSlice, &test); err != nil {
+		// 		fmt.Printf("Failed to unmarshal testSlice: %v", err)
+		// 	} else {
+		// 		fmt.Println(test)
+		// 	}
+		// }
 
 		// This is not necessary if better serialization that can serialize recursive objects is used.
 		schemaTree = getTreeStructure(adapterResponse.Entries)
