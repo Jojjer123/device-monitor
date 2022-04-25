@@ -63,8 +63,9 @@ type SchemaTree struct {
 	Value     string
 }
 
-type Schema struct {
-	Entries []SchemaEntry
+type AdapterResponse struct {
+	Entries   []SchemaEntry
+	Timestamp int64
 }
 
 type SchemaEntry struct {
@@ -74,7 +75,8 @@ type SchemaEntry struct {
 	Value     string
 }
 
-// type GatewayData struct {
-// 	Data      string `json:"data"`
-// 	Timestamp int64  `json:"timestamp"`
-// }
+type GatewayData struct {
+	Data             string `json:"data"`
+	MonitorTimestamp int64  `json:"monitorTimestamp"`
+	AdapterTimestamp int64  `json:"adapterTimestamp"`
+}

@@ -5,7 +5,7 @@ import (
 	"sync"
 	"time"
 
-	// "encoding/json"
+	"encoding/json"
 
 	"github.com/onosproject/monitor-service/pkg/types"
 
@@ -57,7 +57,7 @@ func streamMgrCmd(stream types.Stream, cmd string) string {
 	return ""
 }
 
-func AddDataToStream(dataVal string, subscriptionIdentifier string) types.Stream {
+func AddDataToStream(dataVal string, subscriptionIdentifier string, adapterTs int64) types.Stream {
 	for _, stream := range streamStore {
 		if stream.Target[0].Name == subscriptionIdentifier {
 			// entry := yang.Entry{
@@ -83,15 +83,16 @@ func AddDataToStream(dataVal string, subscriptionIdentifier string) types.Stream
 			// 	fmt.Printf("Failed to marshal tree with err: %v\n", err)
 			// }
 
-			// objectToSend := types.GatewayData{
-			// 	Data:      dataVal,
-			// 	Timestamp: time.Now().Unix(),
-			// }
+			objectToSend := types.GatewayData{
+				Data:             dataVal,
+				MonitorTimestamp: time.Now().Unix(),
+				AdapterTimestamp: adapterTs,
+			}
 
-			// jsonBytes, err := json.Marshal(objectToSend)
-			// if err != nil {
-			// 	fmt.Printf("Failed to marshal to json, err: %v", err)
-			// }
+			jsonBytes, err := json.Marshal(objectToSend)
+			if err != nil {
+				fmt.Printf("Failed to marshal to json, err: %v", err)
+			}
 
 			stream.StreamHandle.Send(&gnmi.SubscribeResponse{
 				Response: &gnmi.SubscribeResponse_Update{
@@ -102,16 +103,16 @@ func AddDataToStream(dataVal string, subscriptionIdentifier string) types.Stream
 								Path: &gnmi.Path{
 									Elem: stream.Target,
 								},
-								Val: &gnmi.TypedValue{
-									Value: &gnmi.TypedValue_StringVal{
-										StringVal: dataVal,
-									},
-								},
 								// Val: &gnmi.TypedValue{
-								// 	Value: &gnmi.TypedValue_JsonVal{
-								// 		JsonVal: jsonBytes,
+								// 	Value: &gnmi.TypedValue_StringVal{
+								// 		StringVal: dataVal,
 								// 	},
 								// },
+								Val: &gnmi.TypedValue{
+									Value: &gnmi.TypedValue_JsonVal{
+										JsonVal: jsonBytes,
+									},
+								},
 							},
 						},
 					},

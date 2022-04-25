@@ -109,13 +109,13 @@ func newCounter(req types.Request, target string, adapter types.Adapter, waitGro
 }
 
 func extractData(response *gnmi.GetResponse, req *gnmi.GetRequest, name string) {
-	var schema types.Schema
+	var adapterResponse types.AdapterResponse
 	var schemaTree *types.SchemaTree
 	if len(response.Notification) > 0 {
 		// Should replace serialization from json to proto, it is supposed to be faster.
-		json.Unmarshal(response.Notification[0].Update[0].Val.GetBytesVal(), &schema)
+		json.Unmarshal(response.Notification[0].Update[0].Val.GetBytesVal(), &adapterResponse)
 		// This is not necessary if better serialization that can serialize recursive objects is used.
-		schemaTree = getTreeStructure(schema)
+		schemaTree = getTreeStructure(adapterResponse.Entries)
 	}
 
 	// fmt.Printf("%v\n", req)
@@ -124,7 +124,7 @@ func extractData(response *gnmi.GetResponse, req *gnmi.GetRequest, name string) 
 	// var val int
 	// val, err = getSchemaTreeValue(schemaTree.Children[0], r.Path[0].Elem, 0)
 	// fmt.Printf("%s: ", req.Path[0].Target)
-	addSchemaTreeValueToStream(schemaTree.Children[0], req.Path[0].Elem, 0, name)
+	addSchemaTreeValueToStream(schemaTree.Children[0], req.Path[0].Elem, 0, name, adapterResponse.Timestamp)
 
 	// if err != nil {
 	// 	fmt.Println(err)
@@ -133,25 +133,25 @@ func extractData(response *gnmi.GetResponse, req *gnmi.GetRequest, name string) 
 	// }
 }
 
-func addSchemaTreeValueToStream(schemaTree *types.SchemaTree, pathElems []*gnmi.PathElem, startIndex int, name string) {
+func addSchemaTreeValueToStream(schemaTree *types.SchemaTree, pathElems []*gnmi.PathElem, startIndex int, name string, adapterTs int64) {
 	if startIndex < len(pathElems) {
 		if pathElems[startIndex].Name == schemaTree.Name {
 			if startIndex == len(pathElems)-1 {
 				// fmt.Println(schemaTree.Value)
-				streamManager.AddDataToStream(schemaTree.Value, name)
+				streamManager.AddDataToStream(schemaTree.Value, name, adapterTs)
 			}
 			for _, child := range schemaTree.Children {
-				addSchemaTreeValueToStream(child, pathElems, startIndex+1, name)
+				addSchemaTreeValueToStream(child, pathElems, startIndex+1, name, adapterTs)
 			}
 		}
 	}
 }
 
-func getTreeStructure(schema types.Schema) *types.SchemaTree {
+func getTreeStructure(schemaEntries []types.SchemaEntry) *types.SchemaTree {
 	var newTree *types.SchemaTree
 	tree := &types.SchemaTree{}
 	lastNode := ""
-	for _, entry := range schema.Entries {
+	for _, entry := range schemaEntries {
 		if entry.Value == "" {
 			// In a directory
 			if entry.Tag == "end" {
