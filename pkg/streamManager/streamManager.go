@@ -57,13 +57,13 @@ func streamMgrCmd(stream types.Stream, cmd string) string {
 	return ""
 }
 
-func AddDataToStream(dataVal string) types.Stream {
+func AddDataToStream(dataVal string, subscriptionIdentifier string) types.Stream {
 	// TODO: Add search for stream given the target.
 
 	// fmt.Printf("The stream store contains: \n%v\n", streamStore)
 
-	for index, stream := range streamStore {
-		if index == 0 {
+	for _, stream := range streamStore {
+		if stream.Target[0].Name == subscriptionIdentifier {
 			// entry := yang.Entry{
 			// 	Name:    "FirstEntry",
 			// 	Kind:    yang.LeafEntry,

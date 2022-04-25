@@ -100,7 +100,7 @@ func newCounter(req types.Request, target string, adapter types.Adapter, waitGro
 				fmt.Printf("Target returned RPC error: %v", err)
 			} else {
 				// TODO: Send counter to data processing.
-				extractData(response, r)
+				extractData(response, r, req.Name)
 			}
 		}
 	}
@@ -108,7 +108,7 @@ func newCounter(req types.Request, target string, adapter types.Adapter, waitGro
 	fmt.Println("Exits counter now")
 }
 
-func extractData(response *gnmi.GetResponse, req *gnmi.GetRequest) {
+func extractData(response *gnmi.GetResponse, req *gnmi.GetRequest, name string) {
 	var schema types.Schema
 	var schemaTree *types.SchemaTree
 	if len(response.Notification) > 0 {
@@ -124,7 +124,7 @@ func extractData(response *gnmi.GetResponse, req *gnmi.GetRequest) {
 	// var val int
 	// val, err = getSchemaTreeValue(schemaTree.Children[0], r.Path[0].Elem, 0)
 	// fmt.Printf("%s: ", req.Path[0].Target)
-	addSchemaTreeValueToStream(schemaTree.Children[0], req.Path[0].Elem, 0)
+	addSchemaTreeValueToStream(schemaTree.Children[0], req.Path[0].Elem, 0, name)
 
 	// if err != nil {
 	// 	fmt.Println(err)
@@ -133,15 +133,15 @@ func extractData(response *gnmi.GetResponse, req *gnmi.GetRequest) {
 	// }
 }
 
-func addSchemaTreeValueToStream(schemaTree *types.SchemaTree, pathElems []*gnmi.PathElem, startIndex int) {
+func addSchemaTreeValueToStream(schemaTree *types.SchemaTree, pathElems []*gnmi.PathElem, startIndex int, name string) {
 	if startIndex < len(pathElems) {
 		if pathElems[startIndex].Name == schemaTree.Name {
 			if startIndex == len(pathElems)-1 {
 				// fmt.Println(schemaTree.Value)
-				streamManager.AddDataToStream(schemaTree.Value)
+				streamManager.AddDataToStream(schemaTree.Value, name)
 			}
 			for _, child := range schemaTree.Children {
-				addSchemaTreeValueToStream(child, pathElems, startIndex+1)
+				addSchemaTreeValueToStream(child, pathElems, startIndex+1, name)
 			}
 		}
 	}
