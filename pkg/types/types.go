@@ -74,7 +74,7 @@ type SchemaEntry struct {
 	Value     string
 }
 
-type GatewayData struct {
-	Data      string `json:"data"`
-	Timestamp int64  `json:"timestamp"`
-}
+// type GatewayData struct {
+// 	Data      string `json:"data"`
+// 	Timestamp int64  `json:"timestamp"`
+// }

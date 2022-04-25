@@ -5,14 +5,13 @@ import (
 	"sync"
 	"time"
 
-	"encoding/json"
+	// "encoding/json"
 
 	"github.com/onosproject/monitor-service/pkg/types"
 
-	// "github.com/openconfig/gnmi/ctree"
+	"github.com/openconfig/gnmi/ctree"
 	"github.com/openconfig/gnmi/proto/gnmi"
-	// "github.com/openconfig/goyang/pkg/yang"
-	// "google.golang.org/protobuf/proto"
+	"github.com/openconfig/goyang/pkg/yang"
 )
 
 var streamStore []types.Stream
@@ -61,29 +60,39 @@ func streamMgrCmd(stream types.Stream, cmd string) string {
 func AddDataToStream(dataVal string, subscriptionIdentifier string) types.Stream {
 	for _, stream := range streamStore {
 		if stream.Target[0].Name == subscriptionIdentifier {
-			// entry := yang.Entry{
-			// 	Name:    "FirstEntry",
-			// 	Kind:    yang.LeafEntry,
-			// 	Default: "FirstVal",
-			// }
+			entry := yang.Entry{
+				Name:    "FirstEntry",
+				Kind:    yang.LeafEntry,
+				Default: "FirstVal",
+			}
 
-			// tree := ctree.Tree{}
-			// tree.Add([]string{"interface"}, entry)
+			tree := ctree.Tree{}
+			tree.Add([]string{"interface"}, entry)
+
+			entry = yang.Entry{
+				Name:    "SecondEntry",
+				Kind:    yang.DirectoryEntry,
+				Default: "SecondVal",
+			}
+
+			tree.Add([]string{"interface"}, entry)
+
+			fmt.Printf("tree:\n%v\n")
 
 			// bytesTree, err := proto.Marshal(tree)
 			// if err != nil {
 			// 	fmt.Printf("Failed to marshal tree with err: %v\n", err)
 			// }
-			objectToSend := types.GatewayData{
-				Data:      dataVal,
-				Timestamp: time.Now().Unix(),
-			}
 
-			jsonBytes, err := json.Marshal(objectToSend)
-			if err != nil {
-				fmt.Printf("Failed to marshal to json, err: %v", err)
-			}
-			fmt.Println(jsonBytes)
+			// objectToSend := types.GatewayData{
+			// 	Data:      dataVal,
+			// 	Timestamp: time.Now().Unix(),
+			// }
+
+			// jsonBytes, err := json.Marshal(objectToSend)
+			// if err != nil {
+			// 	fmt.Printf("Failed to marshal to json, err: %v", err)
+			// }
 
 			stream.StreamHandle.Send(&gnmi.SubscribeResponse{
 				Response: &gnmi.SubscribeResponse_Update{
@@ -94,16 +103,16 @@ func AddDataToStream(dataVal string, subscriptionIdentifier string) types.Stream
 								Path: &gnmi.Path{
 									Elem: stream.Target,
 								},
-								// Val: &gnmi.TypedValue{
-								// 	Value: &gnmi.TypedValue_StringVal{
-								// 		StringVal: dataVal,
-								// 	},
-								// },
 								Val: &gnmi.TypedValue{
-									Value: &gnmi.TypedValue_JsonVal{
-										JsonVal: jsonBytes,
+									Value: &gnmi.TypedValue_StringVal{
+										StringVal: dataVal,
 									},
 								},
+								// Val: &gnmi.TypedValue{
+								// 	Value: &gnmi.TypedValue_JsonVal{
+								// 		JsonVal: jsonBytes,
+								// 	},
+								// },
 							},
 						},
 					},
