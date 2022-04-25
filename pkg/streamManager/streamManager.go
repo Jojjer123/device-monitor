@@ -48,6 +48,9 @@ func streamMgrCmd(stream types.Stream, cmd string) string {
 func GetSubscriberStream(target string) types.Stream {
 	// TODO: Add search for stream given the target.
 	// var test types.Stream
+
+	fmt.Printf("The stream store contains: \n%v\n", streamStore)
+
 	for index, stream := range streamStore {
 		if index == 0 {
 			test := stream
