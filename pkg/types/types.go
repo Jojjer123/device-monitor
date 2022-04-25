@@ -65,7 +65,7 @@ type SchemaTree struct {
 }
 
 type AdapterResponse struct {
-	Entries   []SchemaEntry `protobuf:"bytes,1,opt,name=Entries,proto3"`
+	Entries   []SchemaEntry `protobuf:"bytes,2,opt,name=Entries,proto3"`
 	Timestamp int64         `protobuf:"fixed64,1,opt,name=Timestamp,proto3"`
 }
 
