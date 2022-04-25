@@ -75,7 +75,7 @@ func AddDataToStream(dataVal string, subscriptionIdentifier string) types.Stream
 				Default: "SecondVal",
 			}
 
-			tree.Add([]string{"interface"}, entry)
+			tree.Add([]string{"otherThing"}, entry)
 
 			fmt.Printf("tree:\n%v\n", tree)
 
