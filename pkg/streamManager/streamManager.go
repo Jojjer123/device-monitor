@@ -62,7 +62,10 @@ func AddDataToStream(dataVal string, subscriptionIdentifier string) types.Stream
 
 	// fmt.Printf("The stream store contains: \n%v\n", streamStore)
 
+	fmt.Printf("SubscriptionIdentifier: %s\n", subscriptionIdentifier)
+
 	for _, stream := range streamStore {
+		fmt.Println(stream.Target[0].Name)
 		if stream.Target[0].Name == subscriptionIdentifier {
 			// entry := yang.Entry{
 			// 	Name:    "FirstEntry",

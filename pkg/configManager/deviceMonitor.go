@@ -118,7 +118,7 @@ func extractData(response *gnmi.GetResponse, req *gnmi.GetRequest, name string) 
 		schemaTree = getTreeStructure(schema)
 	}
 
-	fmt.Printf("%v\n", req)
+	// fmt.Printf("%v\n", req)
 
 	// This is not necessary either if better serialization is used.
 	// var val int
