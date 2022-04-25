@@ -137,7 +137,7 @@ func getSchemaTreeValue(schemaTree *types.SchemaTree, pathElems []*gnmi.PathElem
 			if startIndex == len(pathElems)-1 {
 				// return strconv.Atoi(schemaTree.Value)
 				fmt.Println(schemaTree.Value)
-				streamManager.GetSubscriberStream(schemaTree.Value)
+				streamManager.AddDataToStream(schemaTree.Value)
 			}
 			for _, child := range schemaTree.Children {
 				getSchemaTreeValue(child, pathElems, startIndex+1)

@@ -68,6 +68,15 @@ func (s *server) Subscribe(stream pb.GNMI_SubscribeServer) error {
 
 	s.StreamMgrCmd(newStream, "Add")
 
+	go func() {
+		test, err := stream.Recv()
+		if err != nil {
+			fmt.Printf("Error on stream: %v\n", err)
+		} else {
+			fmt.Printf("Received %v on stream\n", test)
+		}
+	}()
+
 	for {
 		time.Sleep(time.Second * 20)
 	}
