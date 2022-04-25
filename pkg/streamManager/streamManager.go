@@ -83,12 +83,12 @@ func AddDataToStream(dataVal string, subscriptionIdentifier string, adapterTs in
 			// 	fmt.Printf("Failed to marshal tree with err: %v\n", err)
 			// }
 
-			fmt.Printf("Adapter TS: %v\nMonitor TS: %v", adapterTs, time.Now().Unix())
+			fmt.Printf("Adapter TS: %v\nMonitor TS: %v", adapterTs, time.Now().UnixMicro())
 			fmt.Println("")
 
 			objectToSend := types.GatewayData{
 				Data:             dataVal,
-				MonitorTimestamp: time.Now().Unix(),
+				MonitorTimestamp: time.Now().UnixMicro(),
 				AdapterTimestamp: adapterTs,
 			}
 
@@ -100,7 +100,7 @@ func AddDataToStream(dataVal string, subscriptionIdentifier string, adapterTs in
 			stream.StreamHandle.Send(&gnmi.SubscribeResponse{
 				Response: &gnmi.SubscribeResponse_Update{
 					Update: &gnmi.Notification{
-						Timestamp: time.Now().Unix(),
+						Timestamp: time.Now().UnixMicro(),
 						Update: []*gnmi.Update{
 							{
 								Path: &gnmi.Path{
