@@ -57,16 +57,12 @@ type DeviceMonitor struct {
 // The following types are used for deconstructing data from the adapter.
 
 type SchemaTree struct {
-	Name      string        `protobuf:"bytes,1,req,name=Name" json:"name"`
-	Namespace string        `protobuf:"bytes,2,opt,name=Namespace" json:"namespace,omitempty"`
-	Children  []*SchemaTree `protobuf:"bytes,3,req,name=Children" json:"children,omitempty"`
-	Parent    *SchemaTree   `protobuf:"bytes,4,opt,name=Parent" json:"parent,omitempty"`
-	Value     string        `protobuf:"bytes,5,opt,name=Value" json:"value,omitempty"`
+	Name      string
+	Namespace string
+	Children  []*SchemaTree
+	Parent    *SchemaTree
+	Value     string
 }
-
-func (m *SchemaTree) Reset()         { *m = SchemaTree{} }
-func (m *SchemaTree) String() string { return proto.CompactTextString(m) }
-func (m *SchemaTree) ProtoMessage()  {}
 
 type AdapterResponse struct {
 	Entries   []SchemaEntry `protobuf:"bytes,1,opt,name=Entries"`

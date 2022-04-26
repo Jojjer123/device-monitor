@@ -2,7 +2,6 @@ package deviceManager
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"sync"
 	"time"
@@ -119,24 +118,10 @@ func extractData(response *gnmi.GetResponse, req *gnmi.GetRequest, name string) 
 		}
 		// json.Unmarshal(response.Notification[0].Update[0].Val.GetBytesVal(), &adapterResponse)
 
-		// fmt.Println(adapterResponse)
-
-		// This is not necessary if better serialization that can serialize recursive objects is used.
+		startTime := time.Now().UnixNano()
 		schemaTree = getTreeStructure(adapterResponse.Entries)
+		fmt.Printf("Time to rebuild tree: %v", time.Now().UnixNano()-startTime)
 	}
-
-	// Testing serialization of recursive structs using protobuf
-
-	// Initialize the recursive fields with null so that
-	// the serializer wont die.
-	_, err := json.Marshal(schemaTree)
-	if err != nil {
-		fmt.Printf("Failed to marshal schemaTree: %v\n", err)
-	} else {
-		fmt.Println("Successfully marshaled schemaTree")
-	}
-
-	// End of testing
 
 	addSchemaTreeValueToStream(schemaTree.Children[0], req.Path[0].Elem, 0, name, adapterResponse.Timestamp)
 }
@@ -165,25 +150,15 @@ func getTreeStructure(schemaEntries []types.SchemaEntry) *types.SchemaTree {
 			if entry.Tag == "end" {
 				if entry.Name != "data" {
 					if lastNode != "leaf" {
-						// fmt.Println(tree.Name)
 						tree = tree.Parent
 					}
 					lastNode = ""
-					// continue
 				}
 			} else {
 				newTree = &types.SchemaTree{Parent: tree}
 
 				newTree.Name = entry.Name
 				newTree.Namespace = entry.Namespace
-
-				// fmt.Println(newTree.Children)
-				// newTree.Children = nil
-				// fmt.Println(newTree.Children)
-
-				// if newTree.Parent.Children == nil {
-				// 	newTree.Parent.Children = []*types.SchemaTree
-				// }
 				newTree.Parent.Children = append(newTree.Parent.Children, newTree)
 
 				tree = newTree
