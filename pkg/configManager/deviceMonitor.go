@@ -95,10 +95,7 @@ func newCounter(req types.Request, target string, adapter types.Adapter, waitGro
 			}
 		case <-intervalTicker.C:
 			// Get the counter here and send it to the data processing.
-			startTime := time.Now().UnixNano()
 			response, err := c.(*gclient.Client).Get(ctx, r)
-			fmt.Printf("Time to send req and get resp: %v\n", time.Now().UnixNano()-startTime)
-			fmt.Println("---")
 			if err != nil {
 				fmt.Printf("Target returned RPC error: %v", err)
 			} else {
