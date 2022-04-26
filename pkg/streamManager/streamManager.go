@@ -60,29 +60,6 @@ func streamMgrCmd(stream types.Stream, cmd string) string {
 func AddDataToStream(dataVal string, subscriptionIdentifier string, adapterTs int64) types.Stream {
 	for _, stream := range streamStore {
 		if stream.Target[0].Name == subscriptionIdentifier {
-			// entry := yang.Entry{
-			// 	Name:    "FirstEntry",
-			// 	Kind:    yang.LeafEntry,
-			// 	Default: "FirstVal",
-			// }
-
-			// tree := ctree.Tree{}
-			// tree.Add([]string{"interface"}, entry)
-
-			// entry = yang.Entry{
-			// 	Name:    "SecondEntry",
-			// 	Kind:    yang.DirectoryEntry,
-			// 	Default: "SecondVal",
-			// }
-
-			// tree.Add([]string{"otherThing"}, entry)
-			// fmt.Printf("tree:\n%v\n", tree)
-
-			// bytesTree, err := proto.Marshal(tree)
-			// if err != nil {
-			// 	fmt.Printf("Failed to marshal tree with err: %v\n", err)
-			// }
-
 			objectToSend := types.GatewayData{
 				Data:             dataVal,
 				MonitorTimestamp: time.Now().UnixNano(),
@@ -103,11 +80,6 @@ func AddDataToStream(dataVal string, subscriptionIdentifier string, adapterTs in
 								Path: &gnmi.Path{
 									Elem: stream.Target,
 								},
-								// Val: &gnmi.TypedValue{
-								// 	Value: &gnmi.TypedValue_StringVal{
-								// 		StringVal: dataVal,
-								// 	},
-								// },
 								Val: &gnmi.TypedValue{
 									Value: &gnmi.TypedValue_JsonVal{
 										JsonVal: jsonBytes,

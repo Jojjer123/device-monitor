@@ -124,19 +124,18 @@ func extractData(response *gnmi.GetResponse, req *gnmi.GetRequest, name string) 
 		schemaTree = getTreeStructure(adapterResponse.Entries)
 	}
 
-	// fmt.Printf("%v\n", req)
+	// Testing serialization of recursive structs using protobuf
 
-	// This is not necessary either if better serialization is used.
-	// var val int
-	// val, err = getSchemaTreeValue(schemaTree.Children[0], r.Path[0].Elem, 0)
-	// fmt.Printf("%s: ", req.Path[0].Target)
+	_, err := proto.Marshal(schemaTree)
+	if err != nil {
+		fmt.Printf("Failed to marshal schemaTree: %v\n", err)
+	} else {
+		fmt.Println("Successfully marshaled schemaTree")
+	}
+
+	// End of testing
+
 	addSchemaTreeValueToStream(schemaTree.Children[0], req.Path[0].Elem, 0, name, adapterResponse.Timestamp)
-
-	// if err != nil {
-	// 	fmt.Println(err)
-	// } else {
-	// 	fmt.Println(val)
-	// }
 }
 
 func addSchemaTreeValueToStream(schemaTree *types.SchemaTree, pathElems []*gnmi.PathElem, startIndex int, name string, adapterTs int64) {
