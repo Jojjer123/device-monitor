@@ -57,7 +57,7 @@ type DeviceMonitor struct {
 // The following types are used for deconstructing data from the adapter.
 
 type SchemaTree struct {
-	Name      string        `protobuf:"bytes,1,opt,name=Name"`
+	Name      string        `protobuf:"bytes,1,req,name=Name"`
 	Namespace string        `protobuf:"bytes,2,opt,name=Namespace"`
 	Children  []*SchemaTree `protobuf:"bytes,3,opt,name=Children"`
 	Parent    *SchemaTree   `protobuf:"bytes,4,opt,name=Parent"`
