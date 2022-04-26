@@ -2,6 +2,7 @@ package deviceManager
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"sync"
 	"time"
@@ -128,7 +129,7 @@ func extractData(response *gnmi.GetResponse, req *gnmi.GetRequest, name string) 
 
 	// Initialize the recursive fields with null so that
 	// the serializer wont die.
-	_, err := proto.Marshal(schemaTree)
+	_, err := json.Marshal(schemaTree)
 	if err != nil {
 		fmt.Printf("Failed to marshal schemaTree: %v\n", err)
 	} else {
