@@ -120,7 +120,8 @@ func extractData(response *gnmi.GetResponse, req *gnmi.GetRequest, name string) 
 
 		startTime := time.Now().UnixNano()
 		schemaTree = getTreeStructure(adapterResponse.Entries)
-		fmt.Printf("Time to rebuild tree: %v", time.Now().UnixNano()-startTime)
+		fmt.Printf("Time to rebuild tree: %v\n", time.Now().UnixNano()-startTime)
+		fmt.Println("---")
 	}
 
 	addSchemaTreeValueToStream(schemaTree.Children[0], req.Path[0].Elem, 0, name, adapterResponse.Timestamp)
