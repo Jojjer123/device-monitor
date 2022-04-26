@@ -176,9 +176,9 @@ func getTreeStructure(schemaEntries []types.SchemaEntry) *types.SchemaTree {
 				newTree.Name = entry.Name
 				newTree.Namespace = entry.Namespace
 
-				fmt.Println(newTree.Children)
-				newTree.Children = nil
-				fmt.Println(newTree.Children)
+				// fmt.Println(newTree.Children)
+				// newTree.Children = nil
+				// fmt.Println(newTree.Children)
 
 				// if newTree.Parent.Children == nil {
 				// 	newTree.Parent.Children = []*types.SchemaTree
