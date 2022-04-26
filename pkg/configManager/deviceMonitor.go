@@ -95,7 +95,10 @@ func newCounter(req types.Request, target string, adapter types.Adapter, waitGro
 			}
 		case <-intervalTicker.C:
 			// Get the counter here and send it to the data processing.
+			startTime := time.Now().UnixNano()
 			response, err := c.(*gclient.Client).Get(ctx, r)
+			fmt.Printf("Time to send req and get resp: %v\n", time.Now().UnixNano()-startTime)
+			fmt.Println("---")
 			if err != nil {
 				fmt.Printf("Target returned RPC error: %v", err)
 			} else {
@@ -118,10 +121,8 @@ func extractData(response *gnmi.GetResponse, req *gnmi.GetRequest, name string) 
 		}
 		// json.Unmarshal(response.Notification[0].Update[0].Val.GetBytesVal(), &adapterResponse)
 
-		startTime := time.Now().UnixNano()
+		// Takes 2-3 microseconds for a single value (counter).
 		schemaTree = getTreeStructure(adapterResponse.Entries)
-		fmt.Printf("Time to rebuild tree: %v\n", time.Now().UnixNano()-startTime)
-		fmt.Println("---")
 	}
 
 	addSchemaTreeValueToStream(schemaTree.Children[0], req.Path[0].Elem, 0, name, adapterResponse.Timestamp)
