@@ -126,6 +126,8 @@ func extractData(response *gnmi.GetResponse, req *gnmi.GetRequest, name string) 
 
 	// Testing serialization of recursive structs using protobuf
 
+	// Initialize the recursive fields with null so that
+	// the serializer wont die.
 	_, err := proto.Marshal(schemaTree)
 	if err != nil {
 		fmt.Printf("Failed to marshal schemaTree: %v\n", err)
@@ -169,18 +171,21 @@ func getTreeStructure(schemaEntries []types.SchemaEntry) *types.SchemaTree {
 					// continue
 				}
 			} else {
-
-				newTree = &types.SchemaTree{Parent: tree}
+				newTree = &types.SchemaTree{Parent: tree, Children: nil}
 
 				newTree.Name = entry.Name
 				newTree.Namespace = entry.Namespace
+
+				// if newTree.Parent.Children == nil {
+				// 	newTree.Parent.Children = []*types.SchemaTree
+				// }
 				newTree.Parent.Children = append(newTree.Parent.Children, newTree)
 
 				tree = newTree
 			}
 		} else {
 			// In a leaf
-			newTree = &types.SchemaTree{Parent: tree}
+			newTree = &types.SchemaTree{Parent: tree, Children: nil}
 
 			newTree.Name = entry.Name
 			newTree.Value = entry.Value
