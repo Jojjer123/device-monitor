@@ -59,7 +59,7 @@ type DeviceMonitor struct {
 type SchemaTree struct {
 	Name      string        `protobuf:"bytes,1,req,name=Name"`
 	Namespace string        `protobuf:"bytes,2,opt,name=Namespace"`
-	Children  []*SchemaTree `protobuf:"bytes,req,opt,name=Children"`
+	Children  []*SchemaTree `protobuf:"bytes,3,req,opt,name=Children"`
 	Parent    *SchemaTree   `protobuf:"bytes,4,opt,name=Parent"`
 	Value     string        `protobuf:"bytes,5,opt,name=Value"`
 }
