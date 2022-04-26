@@ -171,10 +171,14 @@ func getTreeStructure(schemaEntries []types.SchemaEntry) *types.SchemaTree {
 					// continue
 				}
 			} else {
-				newTree = &types.SchemaTree{Parent: tree, Children: nil}
+				newTree = &types.SchemaTree{Parent: tree}
 
 				newTree.Name = entry.Name
 				newTree.Namespace = entry.Namespace
+
+				fmt.Println(newTree.Children)
+				newTree.Children = nil
+				fmt.Println(newTree.Children)
 
 				// if newTree.Parent.Children == nil {
 				// 	newTree.Parent.Children = []*types.SchemaTree
@@ -185,7 +189,7 @@ func getTreeStructure(schemaEntries []types.SchemaEntry) *types.SchemaTree {
 			}
 		} else {
 			// In a leaf
-			newTree = &types.SchemaTree{Parent: tree, Children: nil}
+			newTree = &types.SchemaTree{Parent: tree}
 
 			newTree.Name = entry.Name
 			newTree.Value = entry.Value
