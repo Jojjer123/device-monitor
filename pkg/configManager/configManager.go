@@ -82,5 +82,6 @@ func createDeviceMonitor(requests []types.Request, adapter types.Adapter, target
 
 	deviceMonitorStore = append(deviceMonitorStore, monitor)
 
+	// fmt.Println("Starting deviceMonitor now...")
 	go deviceMonitor(monitor)
 }

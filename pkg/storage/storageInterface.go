@@ -27,7 +27,7 @@ func ConfigInterface(waitGroup *sync.WaitGroup) {
 	// fmt.Println(response)
 }
 
-func GetConfig(target string) types.ConfigRequest {
+func GetConfig(target string) types.ConfigObject {
 	ctx := context.Background()
 
 	address := []string{"storage-service:11161"}
@@ -65,7 +65,7 @@ func GetConfig(target string) types.ConfigRequest {
 		fmt.Println(err)
 	}
 
-	var config types.ConfigRequest
+	var config types.ConfigObject
 	yaml.Unmarshal(response.Notification[0].Update[0].Val.GetBytesVal(), &config)
 
 	return config

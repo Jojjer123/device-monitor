@@ -23,21 +23,29 @@ func GetConfig(target string, configSelected int) ([]types.Request, types.Adapte
 
 	var requests []types.Request
 
-	for _, req := range conf.Configs[configSelected].DeviceCounters {
-		requestObj := types.Request{
-			Name:     req.Name,
-			Interval: req.Interval,
-			Path:     getPathFromString(req.Path),
+	// fmt.Println("----CONFIG----")
+	// fmt.Printf("%v\n", conf.Configs[configSelected])
+	// fmt.Println("--------------")
+
+	// TODO: Change from single reqeustObj to batchObj that is based on interval
+	for _, intCounters := range conf.Configs[configSelected].Counters {
+		request := types.Request{
+			Interval: intCounters.Interval,
 		}
-		// reqBytes, err := yaml.Marshal(req)
-		// if err != nil {
-		// 	fmt.Println("Failed to convert device counter to byte slice!")
+
+		for _, counter := range intCounters.Counters {
+			request.Counters = append(request.Counters, types.Counter{
+				Name: counter.Name,
+				Path: getPathFromString(counter.Path),
+			})
+		}
+		// requestObj := types.Request{
+		// 	Name:     req.Name,
+		// 	Interval: req.Interval,
+		// 	Path:     getPathFromString(req.Path),
 		// }
-		// err = yaml.Unmarshal(reqBytes, &requestObj)
-		// if err != nil {
-		// 	fmt.Println("Failed to convert byte slice to request struct")
-		// }
-		requests = append(requests, requestObj)
+
+		requests = append(requests, request)
 	}
 
 	var adapter types.Adapter

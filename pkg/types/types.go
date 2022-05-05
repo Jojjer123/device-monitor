@@ -22,24 +22,56 @@ type Stream struct {
 	Target       []*gnmi.PathElem
 }
 
-type ConfigRequest struct {
+// CONFIG STRUCTURE FOR MONITORING:
+type DeviceCounter struct {
+	Name string `yaml:"name"`
+	Path string `yaml:"path"`
+}
+
+type IntervalCounters struct {
+	Interval int             `yaml:"interval"`
+	Counters []DeviceCounter `yaml:"counters"`
+}
+
+type Conf struct {
+	Counters []IntervalCounters `yaml:"config"`
+}
+
+type ConfigObject struct {
 	DeviceIP   string `yaml:"device_ip"`
 	DeviceName string `yaml:"device_name"`
 	Protocol   string `yaml:"protocol"`
-	Configs    []struct {
-		DeviceCounters []struct {
-			Name     string `yaml:"name"`
-			Interval int    `yaml:"interval"`
-			Path     string `yaml:"path"`
-		} `yaml:"device_counters"`
-	} `yaml:"configs"`
+	Configs    []Conf `yaml:"configs"`
+}
+
+// type ConfigObject struct {
+// 	DeviceIP   string `yaml:"device_ip"`
+// 	DeviceName string `yaml:"device_name"`
+// 	Protocol   string `yaml:"protocol"`
+// 	Configs    []struct {
+// 		DeviceCounters []struct {
+// 			Name     string `yaml:"name"`
+// 			Interval int    `yaml:"interval"`
+// 			Path     string `yaml:"path"`
+// 		} `yaml:"device_counters"`
+// 	} `yaml:"configs"`
+// }
+
+type Counter struct {
+	Name string
+	Path []*gnmi.PathElem
 }
 
 type Request struct {
-	Name     string
 	Interval int
-	Path     []*gnmi.PathElem
+	Counters []Counter
 }
+
+// type Request struct {
+// 	Name     string
+// 	Interval int
+// 	Path     []*gnmi.PathElem
+// }
 
 type Adapter struct {
 	Protocol string `json:"protocol"`
