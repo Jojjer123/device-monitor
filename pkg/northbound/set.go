@@ -27,6 +27,7 @@ func (s *server) Set(ctx context.Context, req *gnmi.SetRequest) (*gnmi.SetRespon
 
 	// TODO: Add logging to let the user know that monitoring has started.
 
+	// TODO: Change to 3 cases, Start, Update, and Stop.
 	for _, update := range req.Update {
 		if update.Path.Elem[0].Name == "Action" {
 			switch update.Path.Elem[0].Key["Action"] {

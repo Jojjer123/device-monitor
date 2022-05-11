@@ -16,6 +16,8 @@ import (
 
 var streamStore []types.Stream
 
+// TODO: Rename module to Subscription Manager
+
 func StreamManager(waitGroup *sync.WaitGroup, streamMgrChannel chan types.StreamMgrChannelMessage) { //, adminChannel chan types.AdminChannelMessage) {
 	// fmt.Println("Started StreamManager")
 	defer waitGroup.Done()

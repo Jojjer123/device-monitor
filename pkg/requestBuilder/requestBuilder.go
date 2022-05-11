@@ -10,6 +10,7 @@ import (
 	"github.com/openconfig/gnmi/proto/gnmi"
 )
 
+// TODO: Remove this bs init function that is doing nothing.
 func RequestBuilder(waitGroup *sync.WaitGroup) {
 	// fmt.Println("RequestBuilder started")
 	defer waitGroup.Done()

@@ -17,6 +17,8 @@ import (
 	"github.com/onosproject/monitor-service/pkg/streamManager"
 )
 
+// TODO: Place file in new folder representing its own module.
+
 // target string, adapter types.Adapter, requests []types.Request, managerChannel <-chan string
 func deviceMonitor(monitor types.DeviceMonitor) {
 	var counterWaitGroup sync.WaitGroup
@@ -145,9 +147,9 @@ func extractData(response *gnmi.GetResponse, req *gnmi.GetRequest, name string) 
 
 		// Takes 2-3 microseconds for a single value (counter).
 		schemaTree = getTreeStructure(adapterResponse.Entries)
-	}
 
-	addSchemaTreeValueToStream(schemaTree.Children[0], req.Path[0].Elem, 0, name, adapterResponse.Timestamp)
+		addSchemaTreeValueToStream(schemaTree.Children[0], req.Path[0].Elem, 0, name, adapterResponse.Timestamp)
+	}
 }
 
 func addSchemaTreeValueToStream(schemaTree *types.SchemaTree, pathElems []*gnmi.PathElem, startIndex int, name string, adapterTs int64) {

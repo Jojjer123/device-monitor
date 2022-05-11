@@ -15,17 +15,18 @@ import (
 	types "github.com/onosproject/monitor-service/pkg/types"
 )
 
+// TODO: Remove all bs init functions that doesn't do shit.
 func ConfigInterface(waitGroup *sync.WaitGroup) {
 	// fmt.Println("ConfigInterface started")
 	defer waitGroup.Done()
-
-	// TODO: Implement cert usage
 
 	// var c client.Impl
 	// var err error
 
 	// fmt.Println(response)
 }
+
+// TODO: Implement cert usage
 
 func GetConfig(target string) types.ConfigObject {
 	ctx := context.Background()
