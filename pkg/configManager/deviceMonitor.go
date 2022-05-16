@@ -143,17 +143,17 @@ func extractData(response *gnmi.GetResponse, req *gnmi.GetRequest, name string) 
 	// fmt.Printf("Response: %v", response)
 
 	if len(response.Notification) > 0 {
-		fmt.Println("Still fine here -1")
+		fmt.Printf("Response: %v\n", response)
+		fmt.Println("------------------------------")
 		if err := proto.Unmarshal(response.Notification[0].Update[0].Val.GetProtoBytes(), &adapterResponse); err != nil {
 			fmt.Printf("Failed to unmarshal ProtoBytes: %v", err)
 		}
+		fmt.Println("------------------------------")
 
 		// Takes 2-3 microseconds for a single value (counter).
-		fmt.Println("Still fine here 0")
 		schemaTree = getTreeStructure(adapterResponse.Entries)
-		fmt.Println("Still fine here 1")
+
 		addSchemaTreeValueToStream(schemaTree.Children[0], req.Path[0].Elem, 0, name, adapterResponse.Timestamp)
-		fmt.Println("Still fine here 2")
 	}
 }
 
