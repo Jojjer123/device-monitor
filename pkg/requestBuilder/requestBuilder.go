@@ -58,13 +58,6 @@ func GetConfig(target string, configSelected int) ([]types.Request, types.Adapte
 	return requests, adapter
 }
 
-//  <name: 'interfaces' key: <key: 'namespace' value: 'urn:ietf:params:xml:ns:yang:ietf-interfaces'>>
-//  <name: 'interface'>
-//  <name: 'sw0p1'>
-//  <name: 'ethernet' <key: 'name' value: 'urn:ieee:std:802.3:yang:ieee802-ethernet-interface'>>
-//  <name: 'statistics'>
-//  <name: 'frame'>
-//  <name: 'in-total-frames'>
 func getPathFromString(path string) []*gnmi.PathElem {
 	if !strings.Contains(path, "elem:") {
 		return nil
@@ -101,8 +94,3 @@ func getPathFromString(path string) []*gnmi.PathElem {
 
 	return pathElems
 }
-
-// func getConfig(target string) types.Config {
-
-// 	return types.Config{}
-// }

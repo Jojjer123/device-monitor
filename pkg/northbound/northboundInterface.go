@@ -11,28 +11,15 @@ func Northbound(waitGroup *sync.WaitGroup, adminChannel chan types.ConfigAdminCh
 	// fmt.Println("AdminInterface started")
 	defer waitGroup.Done()
 
-	// var serverWaitGroup sync.WaitGroup
-
-	// var registerFunction func(chan string, *sync.WaitGroup)
-
-	// select {
-	// case x := <-adminChannel:
-	// 	{
-	// 		registerFunction = x.RegisterFunction
-	// 	}
-	// }
-
 	adminChannelMessage := <-adminChannel
 	streamMgrChannelMessage := <-streamMgrChannel
 
+	// Starts a gRPC server.
 	go startServer(":11161", adminChannelMessage.ExecuteSetCmd, streamMgrChannelMessage.ManageCmd)
 
-	// // Starts the gRPC server which will be the external interface.
-	// go startServer(&serverWaitGroup, registerFunction)
+	// TODO: Create another gRPC server on secure port (10161).
 
-	// Wait for the gNMI server to exit before exiting admin interface.
-	// serverWaitGroup.Wait()
-
+	// Remove???
 	for {
 		time.Sleep(10 * time.Second)
 	}

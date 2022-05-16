@@ -17,6 +17,7 @@ import (
 var streamStore []types.Stream
 
 // TODO: Rename module to Subscription Manager
+// TODO: Remove channel in init function. Instead use public for streamMgrCmd...
 
 func StreamManager(waitGroup *sync.WaitGroup, streamMgrChannel chan types.StreamMgrChannelMessage) { //, adminChannel chan types.AdminChannelMessage) {
 	// fmt.Println("Started StreamManager")
@@ -24,7 +25,7 @@ func StreamManager(waitGroup *sync.WaitGroup, streamMgrChannel chan types.Stream
 
 	// TODO: Remove streamWaitGroup and add better way of keeping module "alive".
 
-	var streamWaitGroup sync.WaitGroup
+	// var streamWaitGroup sync.WaitGroup
 
 	// fmt.Println("Going to send function from StreamManager")
 	var streamMgrMessage types.StreamMgrChannelMessage
@@ -32,7 +33,7 @@ func StreamManager(waitGroup *sync.WaitGroup, streamMgrChannel chan types.Stream
 	streamMgrChannel <- streamMgrMessage
 	// fmt.Println("Sent function from StreamManager")
 
-	streamWaitGroup.Wait()
+	// streamWaitGroup.Wait()
 	// fmt.Println("Closed StreamManager")
 }
 
@@ -50,6 +51,8 @@ func streamMgrCmd(stream types.Stream, cmd string) string {
 
 		if indexToBeRemoved != -1 {
 			streamStore = append(streamStore[:indexToBeRemoved], streamStore[indexToBeRemoved+1:]...)
+		} else {
+			fmt.Println("Could not find stream to delete.")
 		}
 
 	default:

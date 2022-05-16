@@ -19,11 +19,6 @@ import (
 func ConfigInterface(waitGroup *sync.WaitGroup) {
 	// fmt.Println("ConfigInterface started")
 	defer waitGroup.Done()
-
-	// var c client.Impl
-	// var err error
-
-	// fmt.Println(response)
 }
 
 // TODO: Implement cert usage
