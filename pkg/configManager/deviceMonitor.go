@@ -143,6 +143,7 @@ func extractData(response *gnmi.GetResponse, req *gnmi.GetRequest, name string) 
 	// fmt.Printf("Response: %v", response)
 
 	if len(response.Notification) > 0 {
+		fmt.Println("Still fine here -1")
 		if err := proto.Unmarshal(response.Notification[0].Update[0].Val.GetProtoBytes(), &adapterResponse); err != nil {
 			fmt.Printf("Failed to unmarshal ProtoBytes: %v", err)
 		}
