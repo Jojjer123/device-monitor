@@ -17,9 +17,8 @@ import (
 	"github.com/onosproject/monitor-service/pkg/streamManager"
 )
 
-// TODO: Place file in new folder representing its own module.
+// TODO: Place file in new folder representing its own module???
 
-// target string, adapter types.Adapter, requests []types.Request, managerChannel <-chan string
 func deviceMonitor(monitor types.DeviceMonitor) {
 	var counterWaitGroup sync.WaitGroup
 	var counterChannels []chan string
@@ -140,6 +139,9 @@ func newCounter(req types.Request, target string, adapter types.Adapter, waitGro
 func extractData(response *gnmi.GetResponse, req *gnmi.GetRequest, name string) {
 	var adapterResponse types.AdapterResponse
 	var schemaTree *types.SchemaTree
+
+	fmt.Printf("Response: %v", response)
+
 	if len(response.Notification) > 0 {
 		if err := proto.Unmarshal(response.Notification[0].Update[0].Val.GetProtoBytes(), &adapterResponse); err != nil {
 			fmt.Printf("Failed to unmarshal ProtoBytes: %v", err)
