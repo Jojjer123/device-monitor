@@ -120,6 +120,7 @@ func newCounter(req types.Request, target string, adapter types.Adapter, waitGro
 			}
 		case <-intervalTicker.C:
 			// Get the counter here and send it to the data processing.
+			fmt.Println("Sending request now...")
 			response, err := c.(*gclient.Client).Get(ctx, r)
 			if err != nil {
 				fmt.Printf("Target returned RPC error: %v", err)
@@ -142,13 +143,13 @@ func extractData(response *gnmi.GetResponse, req *gnmi.GetRequest, name string) 
 
 	// fmt.Printf("Response: %v", response)
 
-	if len(response.Notification) > 0 {
-		fmt.Printf("Response: %v\n", response)
-		fmt.Println("------------------------------")
+	if len(response.Notification[0].Update) > 0 {
+		// fmt.Printf("Response: %v\n", response)
+		// fmt.Println("------------------------------")
 		if err := proto.Unmarshal(response.Notification[0].Update[0].Val.GetProtoBytes(), &adapterResponse); err != nil {
 			fmt.Printf("Failed to unmarshal ProtoBytes: %v", err)
 		}
-		fmt.Println("------------------------------")
+		// fmt.Println("------------------------------")
 
 		// Takes 2-3 microseconds for a single value (counter).
 		schemaTree = getTreeStructure(adapterResponse.Entries)
