@@ -127,7 +127,12 @@ func newCounter(req types.Request, target string, adapter types.Adapter, waitGro
 				// TODO: Send counter to data processing.
 
 				// TODO: Use switch as name?
-				extractData(response, r, "myOwnIdentifier" /*req.Name*/)
+				fmt.Println("-------------")
+				fmt.Printf("Requested: %v\n", r)
+				fmt.Printf("Response: %v\n", response)
+				fmt.Println("-------------")
+
+				// extractData(response, r, "myOwnIdentifier" /*req.Name*/)
 			}
 		}
 	}
@@ -140,7 +145,7 @@ func extractData(response *gnmi.GetResponse, req *gnmi.GetRequest, name string) 
 	var adapterResponse types.AdapterResponse
 	var schemaTree *types.SchemaTree
 
-	fmt.Printf("Response: %v", response)
+	// fmt.Printf("Response: %v", response)
 
 	if len(response.Notification) > 0 {
 		if err := proto.Unmarshal(response.Notification[0].Update[0].Val.GetProtoBytes(), &adapterResponse); err != nil {
