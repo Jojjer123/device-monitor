@@ -127,12 +127,7 @@ func newCounter(req types.Request, target string, adapter types.Adapter, waitGro
 				// TODO: Send counter to data processing.
 
 				// TODO: Use switch as name?
-				fmt.Println("-------------")
-				fmt.Printf("Requested: %v\n", r)
-				fmt.Printf("Response: %v\n", response)
-				fmt.Println("-------------")
-
-				// extractData(response, r, "myOwnIdentifier" /*req.Name*/)
+				extractData(response, r, "myOwnIdentifier" /*req.Name*/)
 			}
 		}
 	}
@@ -153,9 +148,11 @@ func extractData(response *gnmi.GetResponse, req *gnmi.GetRequest, name string) 
 		}
 
 		// Takes 2-3 microseconds for a single value (counter).
+		fmt.Println("Still fine here 0")
 		schemaTree = getTreeStructure(adapterResponse.Entries)
-
+		fmt.Println("Still fine here 1")
 		addSchemaTreeValueToStream(schemaTree.Children[0], req.Path[0].Elem, 0, name, adapterResponse.Timestamp)
+		fmt.Println("Still fine here 2")
 	}
 }
 
