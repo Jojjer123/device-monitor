@@ -149,18 +149,18 @@ func sendDataToSubMgr(schemaTree *types.SchemaTree, paths []*gnmi.Path, name str
 
 	fmt.Println("---------counterValues---------")
 	fmt.Println(counterValues)
-	fmt.Println("-------------Paths-------------")
-	fmt.Println(paths)
+	// fmt.Println("-------------Paths-------------")
+	// fmt.Println(paths)
 	fmt.Println("-------------------------------")
 }
 
 func findCounterVal(schemaTree *types.SchemaTree, pathElems []*gnmi.PathElem, startIndex int, name string, adapterTs int64) string {
-	fmt.Println("--------------")
-	fmt.Printf("startIndex = %v\nlen(pathElems) = %v\n", startIndex, len(pathElems))
+	// fmt.Println("--------------")
+	// fmt.Printf("startIndex = %v\nlen(pathElems) = %v\n", startIndex, len(pathElems))
 	if startIndex < len(pathElems) {
-		fmt.Printf("pathElems[%v].Name = %v\nschemaTree.Name = %v\n", startIndex, pathElems[startIndex].Name, schemaTree.Name)
+		// fmt.Printf("pathElems[%v].Name = %v\nschemaTree.Name = %v\n", startIndex, pathElems[startIndex].Name, schemaTree.Name)
 		if pathElems[startIndex].Name == schemaTree.Name {
-			fmt.Printf("len(pathElems)-1 = %v\n", len(pathElems)-1)
+			// fmt.Printf("len(pathElems)-1 = %v\n", len(pathElems)-1)
 			if startIndex == len(pathElems)-1 {
 				return schemaTree.Value
 			}
