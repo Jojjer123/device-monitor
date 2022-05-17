@@ -136,7 +136,7 @@ func extractData(response *gnmi.GetResponse, req *gnmi.GetRequest, name string) 
 		// fmt.Println("---------------------------------")
 
 		sendDataToSubMgr(schemaTree, req.Path, name, adapterResponse.Timestamp)
-		addSchemaTreeValueToStream(schemaTree.Children[0], req.Path[0].Elem, 0, name, adapterResponse.Timestamp)
+		// addSchemaTreeValueToStream(schemaTree.Children[0], req.Path[0].Elem, 0, name, adapterResponse.Timestamp)
 	}
 }
 
@@ -161,7 +161,7 @@ func findCounterVal(schemaTree *types.SchemaTree, pathElems []*gnmi.PathElem, st
 				return schemaTree.Value
 			}
 			for _, child := range schemaTree.Children {
-				addSchemaTreeValueToStream(child, pathElems, startIndex+1, name, adapterTs)
+				findCounterVal(child, pathElems, startIndex+1, name, adapterTs)
 			}
 		}
 	}
