@@ -101,7 +101,7 @@ type SchemaEntry struct {
 }
 
 type GatewayData struct {
-	Data             string `json:"data"`
+	Data             []byte `json:"data"`
 	MonitorTimestamp int64  `json:"monitorTimestamp"`
 	AdapterTimestamp int64  `json:"adapterTimestamp"`
 }

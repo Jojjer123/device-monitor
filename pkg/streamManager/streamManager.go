@@ -63,7 +63,7 @@ func streamMgrCmd(stream types.Stream, cmd string) string {
 }
 
 // TODO: Remove return-type
-func AddDataToStream(dataVal string, subscriptionIdentifier string, adapterTs int64) types.Stream {
+func AddDataToStream(dataVal []byte, subscriptionIdentifier string, adapterTs int64) types.Stream {
 	for _, stream := range streamStore {
 		if stream.Target[0].Name == subscriptionIdentifier {
 			objectToSend := types.GatewayData{

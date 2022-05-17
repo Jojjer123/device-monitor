@@ -157,7 +157,7 @@ func sendDataToSubMgr(schemaTree *types.SchemaTree, paths []*gnmi.Path, name str
 	streamManager.AddDataToStream(createJsonString(counterValues, paths), name, adapterTs)
 }
 
-func createJsonString(counterValues []string, paths []*gnmi.Path) string {
+func createJsonString(counterValues []string, paths []*gnmi.Path) []byte {
 	jsonStr := `{"`
 
 	for index, counterVal := range counterValues {
@@ -170,19 +170,19 @@ func createJsonString(counterValues []string, paths []*gnmi.Path) string {
 	}
 	jsonStr += `"}`
 
-	var raw map[string]string
-	if err := json.Unmarshal([]byte(jsonStr), &raw); err != nil {
-		fmt.Println("Failed to unmarshal json string.")
-	}
+	// var raw map[string]string
+	// if err := json.Unmarshal([]byte(jsonStr), &raw); err != nil {
+	// 	fmt.Println("Failed to unmarshal json string.")
+	// }
 
 	test, e := json.Marshal(jsonStr)
 	if e != nil {
 		fmt.Println("Failed to marshal json string.")
 	}
 
-	fmt.Println(test)
+	return test
 
-	return jsonStr
+	// return jsonStr
 }
 
 // Call findCounterVal with startIndex as 0, in order to start searching through pathElems from index 0.
