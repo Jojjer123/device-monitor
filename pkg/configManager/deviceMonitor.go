@@ -129,15 +129,44 @@ func extractData(response *gnmi.GetResponse, req *gnmi.GetRequest, name string) 
 
 		// Send data to subscription manager.
 
-		fmt.Println("---------schemaTree.Name---------")
-		fmt.Println(schemaTree.Name)
-		fmt.Println("------------req.Path-------------")
-		fmt.Println(req.Path)
-		fmt.Println("---------------------------------")
+		// fmt.Println("---------schemaTree.Name---------")
+		// fmt.Println(schemaTree.Name)
+		// fmt.Println("------------req.Path-------------")
+		// fmt.Println(req.Path)
+		// fmt.Println("---------------------------------")
 
-		// sendDataToSubMgr(schemaTree, req.Path)
+		sendDataToSubMgr(schemaTree, req.Path, name, adapterResponse.Timestamp)
 		addSchemaTreeValueToStream(schemaTree.Children[0], req.Path[0].Elem, 0, name, adapterResponse.Timestamp)
 	}
+}
+
+func sendDataToSubMgr(schemaTree *types.SchemaTree, paths []*gnmi.Path, name string, adapterTs int64) {
+	// Append values from the counters in the same order as the paths.
+	var counterValues []string
+	for index, counter := range schemaTree.Children {
+		counterValues = append(counterValues, findCounterVal(counter, paths[index].Elem, 0, name, adapterTs))
+	}
+
+	fmt.Println("---------counterValues---------")
+	fmt.Println(counterValues)
+	fmt.Println("-------------Paths-------------")
+	fmt.Println(paths)
+	fmt.Println("-------------------------------")
+}
+
+func findCounterVal(schemaTree *types.SchemaTree, pathElems []*gnmi.PathElem, startIndex int, name string, adapterTs int64) string {
+	if startIndex < len(pathElems) {
+		if pathElems[startIndex].Name == schemaTree.Name {
+			if startIndex == len(pathElems)-1 {
+				return schemaTree.Value
+			}
+			for _, child := range schemaTree.Children {
+				addSchemaTreeValueToStream(child, pathElems, startIndex+1, name, adapterTs)
+			}
+		}
+	}
+
+	return ""
 }
 
 // Recursively find requested value(s) and send it to the subscription manager.
