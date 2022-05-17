@@ -15,21 +15,24 @@ func ConfigManager(waitGroup *sync.WaitGroup, adminChannel chan types.ConfigAdmi
 
 	// TODO: Remove deviceMonitorWaitGroup and add better way of keeping module "alive".
 
-	var deviceMonitorWaitGroup sync.WaitGroup
+	// var deviceMonitorWaitGroup sync.WaitGroup
 
 	var adminMessage types.ConfigAdminChannelMessage
 	adminMessage.ExecuteSetCmd = executeAdminSetCmd
 
 	adminChannel <- adminMessage
 
-	deviceMonitorWaitGroup.Wait()
+	// deviceMonitorWaitGroup.Wait()
 }
 
 func executeAdminSetCmd(cmd string, target string, configIndex ...int) string {
+	if len(configIndex) > 1 {
+		fmt.Println("Config index should not be an array larger than 1")
+	}
+
 	switch cmd {
 	case "Create":
-		// Get slice of the different paths with their intervals and the appropriate
-		// adapter if one is necessary
+		// Get slice of the different paths with their intervals and the appropriate adapter if one is necessary
 		requests, adapter := reqBuilder.GetConfig(target, configIndex[0])
 		createDeviceMonitor(requests, adapter, target)
 	case "Update":
@@ -39,20 +42,10 @@ func executeAdminSetCmd(cmd string, target string, configIndex ...int) string {
 		deleteDeviceMonitor(target)
 	default:
 		fmt.Println("Could not find command: " + cmd)
-		return "Command not found!"
+		return "Could not find command: " + cmd
 	}
 
 	return "Successfully executed command sent"
-}
-
-func updateDeviceMonitor(requests []types.Request, target string) {
-	for _, monitor := range deviceMonitorStore {
-		if monitor.Target == target {
-			monitor.ManagerChannel <- "update"
-			monitor.RequestsChannel <- requests
-			return
-		}
-	}
 }
 
 func deleteDeviceMonitor(target string) {
@@ -65,19 +58,33 @@ func deleteDeviceMonitor(target string) {
 			return
 		}
 	}
+
+	fmt.Println("Could not find device monitor in store.")
+}
+
+func updateDeviceMonitor(requests []types.Request, target string) {
+	for _, monitor := range deviceMonitorStore {
+		if monitor.Target == target {
+			monitor.ManagerChannel <- "update"
+			monitor.RequestsChannel <- requests
+			return
+		}
+	}
+
+	fmt.Println("Could not find device monitor in store.")
 }
 
 func createDeviceMonitor(requests []types.Request, adapter types.Adapter, target string) {
-	managerChannel := make(chan string)
-	requestsChannel := make(chan []types.Request)
+	// managerChannel := make(chan string)
+	// requestsChannel := make(chan []types.Request)
 
 	// Consider checking Requests to update only if changed.
 	monitor := types.DeviceMonitor{
 		Target:          target,
 		Adapter:         adapter,
 		Requests:        requests,
-		RequestsChannel: requestsChannel,
-		ManagerChannel:  managerChannel,
+		RequestsChannel: make(chan []types.Request),
+		ManagerChannel:  make(chan string),
 	}
 
 	deviceMonitorStore = append(deviceMonitorStore, monitor)

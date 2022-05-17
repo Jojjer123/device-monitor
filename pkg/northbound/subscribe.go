@@ -36,7 +36,7 @@ func (s *server) Subscribe(stream pb.GNMI_SubscribeServer) error {
 
 	newStream := types.Stream{
 		StreamHandle: stream,
-		Target:       *&subRequest.GetSubscribe().Subscription[0].Path.Elem,
+		Target:       subRequest.GetSubscribe().Subscription[0].Path.Elem, // Previously was *&subRequest.GetSubscribe()...
 	}
 
 	s.StreamMgrCmd(newStream, "Add")
@@ -49,7 +49,7 @@ func (s *server) Subscribe(stream pb.GNMI_SubscribeServer) error {
 		}
 	}()
 
-	// TODO: Remove the bs stalling and have a correct ending of the function.
+	// TODO: Remove the bs stalling and have a correct ending of the function if even necessary.
 	for {
 		time.Sleep(time.Second * 20)
 	}

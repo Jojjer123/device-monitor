@@ -10,8 +10,7 @@ import (
 	"golang.org/x/net/context"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-
-	storageInterface "github.com/onosproject/monitor-service/pkg/storage"
+	// storageInterface "github.com/onosproject/monitor-service/pkg/storage"
 )
 
 func (s *server) Set(ctx context.Context, req *gnmi.SetRequest) (*gnmi.SetResponse, error) {
@@ -27,7 +26,7 @@ func (s *server) Set(ctx context.Context, req *gnmi.SetRequest) (*gnmi.SetRespon
 
 	// TODO: Add logging to let the user know that monitoring has started.
 
-	// TODO: Change to 3 cases, Start, Update, and Stop.
+	// TODO: Change to 3 cases, Start, Update, and Stop. If the setRequest and deleteRequest functions are merged, there is no need for a switch.
 	for _, update := range req.Update {
 		if update.Path.Elem[0].Name == "Action" {
 			switch update.Path.Elem[0].Key["Action"] {
@@ -36,8 +35,8 @@ func (s *server) Set(ctx context.Context, req *gnmi.SetRequest) (*gnmi.SetRespon
 				updateResult = append(updateResult, s.setRequest(update.Path))
 			case "Update":
 				updateResult = append(updateResult, s.setRequest(update.Path))
-			case "Change config":
-				updateResult = append(updateResult, s.updateConfigRequest(req))
+			// case "Change config":
+			// 	updateResult = append(updateResult, s.updateConfigRequest(req))
 			case "Delete":
 				updateResult = append(updateResult, s.deleteRequest(update.Path))
 			default:
@@ -54,6 +53,7 @@ func (s *server) Set(ctx context.Context, req *gnmi.SetRequest) (*gnmi.SetRespon
 	return &response, nil
 }
 
+// TODO: Merge with setRequest, they are similar enough to be used as one function, it only requires an extra if-statement most likely.
 func (s *server) deleteRequest(path *gnmi.Path) *gnmi.UpdateResult {
 	update := gnmi.UpdateResult{
 		Path: &gnmi.Path{
@@ -91,13 +91,13 @@ func (s *server) setRequest(path *gnmi.Path) *gnmi.UpdateResult {
 	return nil
 }
 
-func (s *server) updateConfigRequest(req *gnmi.SetRequest) *gnmi.UpdateResult {
-	err := storageInterface.UpdateConfig(req)
-	if err != nil {
-		fmt.Println("Failed to update configuration!")
-	}
+// func (s *server) updateConfigRequest(req *gnmi.SetRequest) *gnmi.UpdateResult {
+// 	err := storageInterface.UpdateConfig(req)
+// 	if err != nil {
+// 		fmt.Println("Failed to update configuration!")
+// 	}
 
-	// TODO: Add correct result
+// 	// TODO: Add correct result
 
-	return &gnmi.UpdateResult{}
-}
+// 	return &gnmi.UpdateResult{}
+// }
