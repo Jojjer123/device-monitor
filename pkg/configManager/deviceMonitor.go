@@ -164,9 +164,11 @@ func findCounterVal(schemaTree *types.SchemaTree, pathElems []*gnmi.PathElem, st
 			if startIndex == len(pathElems)-1 {
 				return schemaTree.Value
 			}
+			var childResult string
 			for _, child := range schemaTree.Children {
-				findCounterVal(child, pathElems, startIndex+1, name, adapterTs)
+				childResult += findCounterVal(child, pathElems, startIndex+1, name, adapterTs)
 			}
+			return childResult
 		}
 	}
 
