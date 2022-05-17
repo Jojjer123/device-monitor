@@ -18,6 +18,7 @@ import (
 )
 
 // TODO: Place file in new folder representing its own module???
+// TODO: Split this file into at least one more, for some helpers.
 
 func deviceMonitor(monitor types.DeviceMonitor) {
 	var counterWaitGroup sync.WaitGroup
@@ -87,7 +88,7 @@ func newCounter(req types.Request, target string, adapter types.Adapter, waitGro
 				counterIsActive = false
 			}
 		case <-intervalTicker.C:
-			// Get the counter and send it to the data processing and .
+			// Get the counter and send it to the data processing and to possible subscribers.
 			response, err := c.(*gclient.Client).Get(ctx, req.GnmiRequest)
 			if err != nil {
 				fmt.Printf("Target returned RPC error: %v", err)
@@ -103,7 +104,6 @@ func newCounter(req types.Request, target string, adapter types.Adapter, waitGro
 	fmt.Println("Exits counter now")
 }
 
-// TODO: Parse all data, not just first notification to enable batch operations.
 func extractData(response *gnmi.GetResponse, req *gnmi.GetRequest, name string) {
 	// TODO: Rename adapterResponse to something like switchResponse.
 	var adapterResponse types.AdapterResponse
@@ -120,23 +120,10 @@ func extractData(response *gnmi.GetResponse, req *gnmi.GetRequest, name string) 
 			fmt.Printf("Failed to unmarshal ProtoBytes: %v", err)
 		}
 
-		// printTree(adapterResponse.Entries)
-
 		// Get tree structure from slice.
 		schemaTree = getTreeStructure(adapterResponse.Entries)
 
-		// printTree(schemaTree)
-
-		// Send data to subscription manager.
-
-		// fmt.Println("---------schemaTree.Name---------")
-		// fmt.Println(schemaTree.Name)
-		// fmt.Println("------------req.Path-------------")
-		// fmt.Println(req.Path)
-		// fmt.Println("---------------------------------")
-
 		sendDataToSubMgr(schemaTree, req.Path, name, adapterResponse.Timestamp)
-		// addSchemaTreeValueToStream(schemaTree.Children[0], req.Path[0].Elem, 0, name, adapterResponse.Timestamp)
 	}
 }
 
@@ -152,34 +139,19 @@ func sendDataToSubMgr(schemaTree *types.SchemaTree, paths []*gnmi.Path, name str
 		return
 	}
 
-	// fmt.Println(createJsonString(counterValues, paths))
-	streamManager.AddDataToStream(createJsonString(counterValues, paths), name, adapterTs)
+	streamManager.AddDataToStream(createDictionary(counterValues, paths), name, adapterTs)
 }
 
-func createJsonString(counterValues []string, paths []*gnmi.Path) []types.Dictionary {
-	// jsonStr := `{"`
-
-	// for index, counterVal := range counterValues {
-	// 	jsonStr += paths[index].Elem[len(paths[index].Elem)-1].Name
-	// 	jsonStr += `":"`
-	// 	jsonStr += counterVal
-	// 	if index < len(counterValues)-1 {
-	// 		jsonStr += `","`
-	// 	}
-	// }
-	// jsonStr += `"}`
-
-	var test []types.Dictionary
+func createDictionary(counterValues []string, paths []*gnmi.Path) []types.Dictionary {
+	var dict []types.Dictionary
 
 	for index, counterVal := range counterValues {
-		test = append(test, types.Dictionary{
+		dict = append(dict, types.Dictionary{
 			paths[index].Elem[len(paths[index].Elem)-1].Name: counterVal,
 		})
 	}
 
-	return test
-
-	// return jsonStr
+	return dict
 }
 
 // Call findCounterVal with startIndex as 0, in order to start searching through pathElems from index 0.
@@ -199,21 +171,6 @@ func findCounterVal(schemaTree *types.SchemaTree, pathElems []*gnmi.PathElem, st
 
 	return ""
 }
-
-// // Recursively find requested value(s) and send it to the subscription manager.
-// func addSchemaTreeValueToStream(schemaTree *types.SchemaTree, pathElems []*gnmi.PathElem, startIndex int, name string, adapterTs int64) {
-// 	if startIndex < len(pathElems) {
-// 		if pathElems[startIndex].Name == schemaTree.Name {
-// 			if startIndex == len(pathElems)-1 {
-// 				// fmt.Printf("Value sent: %v - %v\n", schemaTree.Name, schemaTree.Value)
-// 				streamManager.AddDataToStream(schemaTree.Value, name, adapterTs)
-// 			}
-// 			for _, child := range schemaTree.Children {
-// 				addSchemaTreeValueToStream(child, pathElems, startIndex+1, name, adapterTs)
-// 			}
-// 		}
-// 	}
-// }
 
 func getTreeStructure(schemaEntries []types.SchemaEntry) *types.SchemaTree {
 	var newTree *types.SchemaTree
@@ -251,25 +208,3 @@ func getTreeStructure(schemaEntries []types.SchemaEntry) *types.SchemaTree {
 	}
 	return tree
 }
-
-func printTree(schemaTree *types.SchemaTree) {
-	if schemaTree.Name != "" {
-		fmt.Println(schemaTree.Name)
-		if schemaTree.Value != "" {
-			fmt.Println(schemaTree.Value)
-		}
-
-		for _, child := range schemaTree.Children {
-			printTree(child)
-		}
-	}
-}
-
-// func printTree(schemaEntries []types.SchemaEntry) {
-// 	for _, entry := range schemaEntries {
-// 		fmt.Println(entry.Name)
-// 		if entry.Value != "" {
-// 			fmt.Println(entry.Value)
-// 		}
-// 	}
-// }
