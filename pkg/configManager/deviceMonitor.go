@@ -144,17 +144,41 @@ func sendDataToSubMgr(schemaTree *types.SchemaTree, paths []*gnmi.Path, name str
 	// Append values from the counters in the same order as the paths.
 	var counterValues []string
 	for index, counter := range schemaTree.Children {
-		counterValues = append(counterValues, findCounterVal(counter, paths[index].Elem, 0, name, adapterTs))
+		counterValues = append(counterValues, findCounterVal(counter, paths[index].Elem, 0))
 	}
 
-	fmt.Println("---------counterValues---------")
-	fmt.Println(counterValues)
+	if len(counterValues) != len(paths) {
+		fmt.Println("Failed to map counter values to paths.")
+		return
+	}
+
+	fmt.Println(createJsonString(counterValues, paths))
+	// streamManager.AddDataToStream(createJsonString(counterValues, paths), name, adapterTs)
+
+	// fmt.Println("---------counterValues---------")
+	// fmt.Println(counterValues)
 	// fmt.Println("-------------Paths-------------")
 	// fmt.Println(paths)
-	fmt.Println("-------------------------------")
+	// fmt.Println("-------------------------------")
 }
 
-func findCounterVal(schemaTree *types.SchemaTree, pathElems []*gnmi.PathElem, startIndex int, name string, adapterTs int64) string {
+func createJsonString(counterValues []string, paths []*gnmi.Path) string {
+	jsonStr := "{"
+
+	for index, counterVal := range counterValues {
+		jsonStr += paths[index].Elem[len(paths[index].Elem)-1].Name
+		jsonStr += ":"
+		jsonStr += counterVal
+		if index < len(counterValues)-1 {
+			jsonStr += ","
+		}
+	}
+	jsonStr += "}"
+	return jsonStr
+}
+
+// Call findCounterVal with startIndex as 0, in order to start searching through pathElems from index 0.
+func findCounterVal(schemaTree *types.SchemaTree, pathElems []*gnmi.PathElem, startIndex int) string {
 	// fmt.Println("--------------")
 	// fmt.Printf("startIndex = %v\nlen(pathElems) = %v\n", startIndex, len(pathElems))
 	if startIndex < len(pathElems) {
@@ -166,7 +190,7 @@ func findCounterVal(schemaTree *types.SchemaTree, pathElems []*gnmi.PathElem, st
 			}
 			var childResult string
 			for _, child := range schemaTree.Children {
-				childResult += findCounterVal(child, pathElems, startIndex+1, name, adapterTs)
+				childResult += findCounterVal(child, pathElems, startIndex+1)
 			}
 			return childResult
 		}
