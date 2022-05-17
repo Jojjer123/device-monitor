@@ -137,7 +137,7 @@ func addSchemaTreeValueToStream(schemaTree *types.SchemaTree, pathElems []*gnmi.
 	if startIndex < len(pathElems) {
 		if pathElems[startIndex].Name == schemaTree.Name {
 			if startIndex == len(pathElems)-1 {
-				fmt.Printf("Value sent: %v\n", schemaTree.Value)
+				fmt.Printf("Value sent: %v - %v\n", schemaTree.Name, schemaTree.Value)
 				streamManager.AddDataToStream(schemaTree.Value, name, adapterTs)
 			}
 			for _, child := range schemaTree.Children {
