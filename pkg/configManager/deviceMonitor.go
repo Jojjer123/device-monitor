@@ -120,10 +120,12 @@ func extractData(response *gnmi.GetResponse, req *gnmi.GetRequest, name string) 
 			fmt.Printf("Failed to unmarshal ProtoBytes: %v", err)
 		}
 
-		printTree(adapterResponse.Entries)
+		// printTree(adapterResponse.Entries)
 
 		// Get tree structure from slice.
 		schemaTree = getTreeStructure(adapterResponse.Entries)
+
+		printTree(schemaTree)
 
 		// Send data to subscription manager.
 		addSchemaTreeValueToStream(schemaTree.Children[0], req.Path[0].Elem, 0, name, adapterResponse.Timestamp)
@@ -182,11 +184,24 @@ func getTreeStructure(schemaEntries []types.SchemaEntry) *types.SchemaTree {
 	return tree
 }
 
-func printTree(schemaEntries []types.SchemaEntry) {
-	for _, entry := range schemaEntries {
-		fmt.Println(entry.Name)
-		if entry.Value != "" {
-			fmt.Println(entry.Value)
+func printTree(schemaTree *types.SchemaTree) {
+	if schemaTree.Name != "" {
+		fmt.Println(schemaTree.Name)
+		if schemaTree.Value != "" {
+			fmt.Println(schemaTree.Value)
+		}
+
+		for _, child := range schemaTree.Children {
+			printTree(child)
 		}
 	}
 }
+
+// func printTree(schemaEntries []types.SchemaEntry) {
+// 	for _, entry := range schemaEntries {
+// 		fmt.Println(entry.Name)
+// 		if entry.Value != "" {
+// 			fmt.Println(entry.Value)
+// 		}
+// 	}
+// }
