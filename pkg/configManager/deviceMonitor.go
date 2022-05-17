@@ -155,8 +155,11 @@ func sendDataToSubMgr(schemaTree *types.SchemaTree, paths []*gnmi.Path, name str
 }
 
 func findCounterVal(schemaTree *types.SchemaTree, pathElems []*gnmi.PathElem, startIndex int, name string, adapterTs int64) string {
+	fmt.Printf("len(pathElems) = %v\n", len(pathElems))
 	if startIndex < len(pathElems) {
+		fmt.Printf("pathElems[%v].Name = %v\nschemaTree.Name = %v\n", startIndex, pathElems[startIndex].Name, schemaTree.Name)
 		if pathElems[startIndex].Name == schemaTree.Name {
+			fmt.Printf("len(pathElems)-1 = %v\n", len(pathElems)-1)
 			if startIndex == len(pathElems)-1 {
 				return schemaTree.Value
 			}
