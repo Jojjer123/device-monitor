@@ -2,7 +2,6 @@ package deviceManager
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"sync"
 	"time"
@@ -175,12 +174,12 @@ func createJsonString(counterValues []string, paths []*gnmi.Path) []byte {
 	// 	fmt.Println("Failed to unmarshal json string.")
 	// }
 
-	test, e := json.Marshal(jsonStr)
-	if e != nil {
-		fmt.Println("Failed to marshal json string.")
-	}
+	// test, e := json.Marshal(jsonStr)
+	// if e != nil {
+	// 	fmt.Println("Failed to marshal json string.")
+	// }
 
-	return test
+	return []byte(jsonStr)
 
 	// return jsonStr
 }
