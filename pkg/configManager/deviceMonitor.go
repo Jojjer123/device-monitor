@@ -125,7 +125,7 @@ func extractData(response *gnmi.GetResponse, req *gnmi.GetRequest, name string) 
 		// Get tree structure from slice.
 		schemaTree = getTreeStructure(adapterResponse.Entries)
 
-		printTree(schemaTree)
+		// printTree(schemaTree)
 
 		// Send data to subscription manager.
 		addSchemaTreeValueToStream(schemaTree.Children[0], req.Path[0].Elem, 0, name, adapterResponse.Timestamp)
@@ -137,7 +137,7 @@ func addSchemaTreeValueToStream(schemaTree *types.SchemaTree, pathElems []*gnmi.
 	if startIndex < len(pathElems) {
 		if pathElems[startIndex].Name == schemaTree.Name {
 			if startIndex == len(pathElems)-1 {
-				// fmt.Println(schemaTree.Value)
+				fmt.Printf("Value sent: %v\n", schemaTree.Value)
 				streamManager.AddDataToStream(schemaTree.Value, name, adapterTs)
 			}
 			for _, child := range schemaTree.Children {
