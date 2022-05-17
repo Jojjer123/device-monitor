@@ -65,7 +65,6 @@ func streamMgrCmd(stream types.Stream, cmd string) string {
 // TODO: Remove return-type
 func AddDataToStream(dataVal string, subscriptionIdentifier string, adapterTs int64) types.Stream {
 	for _, stream := range streamStore {
-		fmt.Printf("Stream.Target[0].Name = %v | subscriptionIdentifier = %v\n", stream.Target[0].Name, subscriptionIdentifier)
 		if stream.Target[0].Name == subscriptionIdentifier {
 			objectToSend := types.GatewayData{
 				Data:             dataVal,
@@ -77,8 +76,6 @@ func AddDataToStream(dataVal string, subscriptionIdentifier string, adapterTs in
 			if err != nil {
 				fmt.Printf("Failed to marshal to json, err: %v", err)
 			}
-
-			fmt.Println("Sending data to gateway now...")
 
 			stream.StreamHandle.Send(&gnmi.SubscribeResponse{
 				Response: &gnmi.SubscribeResponse_Update{

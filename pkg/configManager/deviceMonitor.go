@@ -157,17 +157,18 @@ func sendDataToSubMgr(schemaTree *types.SchemaTree, paths []*gnmi.Path, name str
 }
 
 func createJsonString(counterValues []string, paths []*gnmi.Path) string {
-	jsonStr := "{\""
+	jsonStr := `{"`
 
 	for index, counterVal := range counterValues {
 		jsonStr += paths[index].Elem[len(paths[index].Elem)-1].Name
-		jsonStr += "\":\""
+		jsonStr += `":"`
 		jsonStr += counterVal
 		if index < len(counterValues)-1 {
-			jsonStr += "\",\""
+			jsonStr += `","`
 		}
 	}
-	jsonStr += "\"}"
+	jsonStr += `"}`
+
 	return jsonStr
 }
 
