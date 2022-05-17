@@ -128,6 +128,14 @@ func extractData(response *gnmi.GetResponse, req *gnmi.GetRequest, name string) 
 		// printTree(schemaTree)
 
 		// Send data to subscription manager.
+
+		fmt.Println("---------schemaTree.Name---------")
+		fmt.Println(schemaTree.Name)
+		fmt.Println("------------req.Path-------------")
+		fmt.Println(req.Path)
+		fmt.Println("---------------------------------")
+
+		// sendDataToSubMgr(schemaTree, req.Path)
 		addSchemaTreeValueToStream(schemaTree.Children[0], req.Path[0].Elem, 0, name, adapterResponse.Timestamp)
 	}
 }
@@ -137,7 +145,7 @@ func addSchemaTreeValueToStream(schemaTree *types.SchemaTree, pathElems []*gnmi.
 	if startIndex < len(pathElems) {
 		if pathElems[startIndex].Name == schemaTree.Name {
 			if startIndex == len(pathElems)-1 {
-				fmt.Printf("Value sent: %v - %v - %v\n", schemaTree.Parent.Name, schemaTree.Name, schemaTree.Value)
+				// fmt.Printf("Value sent: %v - %v\n", schemaTree.Name, schemaTree.Value)
 				streamManager.AddDataToStream(schemaTree.Value, name, adapterTs)
 			}
 			for _, child := range schemaTree.Children {
