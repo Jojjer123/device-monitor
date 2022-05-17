@@ -40,6 +40,20 @@ func GetConfig(target string, configSelected int) ([]types.Request, types.Adapte
 				Path: getPathFromString(counter.Path),
 			})
 		}
+
+		// Create gnmi get request.
+		r := &gnmi.GetRequest{
+			Type: gnmi.GetRequest_STATE,
+		}
+
+		for _, counter := range request.Counters {
+			r.Path = append(r.Path, &gnmi.Path{
+				Target: target,
+				Elem:   counter.Path,
+			})
+		}
+
+		request.GnmiRequest = r
 		// requestObj := types.Request{
 		// 	Name:     req.Name,
 		// 	Interval: req.Interval,

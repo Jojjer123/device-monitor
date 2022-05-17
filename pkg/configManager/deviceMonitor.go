@@ -23,17 +23,10 @@ func deviceMonitor(monitor types.DeviceMonitor) {
 	var counterWaitGroup sync.WaitGroup
 	var counterChannels []chan string
 
-	// fmt.Println("----MONITOR----")
-	// fmt.Printf("%v\n", monitor)
-	// fmt.Println("---------------")
-	// TODO: Change from single counter monitor to batch monitor, based on interval
 	for index, req := range monitor.Requests {
-		// fmt.Println("----REQUEST----")
-		// fmt.Println(req)
-		// fmt.Println("---------------")
 		counterWaitGroup.Add(1)
 		counterChannels = append(counterChannels, make(chan string))
-		// fmt.Println("Creating counter now...")
+
 		go newCounter(req, monitor.Target, monitor.Adapter, &counterWaitGroup, counterChannels[index])
 	}
 
@@ -63,7 +56,7 @@ func deviceMonitor(monitor types.DeviceMonitor) {
 	counterWaitGroup.Wait()
 }
 
-// TODO: Change to instead monitor in batch based on the interval in the request
+// Requests counters at the given interval, extract response and forward it.
 func newCounter(req types.Request, target string, adapter types.Adapter, waitGroup *sync.WaitGroup, counterChannel <-chan string) {
 	defer waitGroup.Done()
 
@@ -82,31 +75,6 @@ func newCounter(req types.Request, target string, adapter types.Adapter, waitGro
 		fmt.Println(err)
 	}
 
-	r := &gnmi.GetRequest{
-		Type: gnmi.GetRequest_STATE,
-	}
-
-	for _, counter := range req.Counters {
-		r.Path = append(r.Path, &gnmi.Path{
-			Target: target,
-			Elem:   counter.Path,
-		})
-	}
-
-	// fmt.Println("-----------")
-	// fmt.Printf("%v\n", r)
-	// fmt.Println("-----------")
-
-	// r := &gnmi.GetRequest{
-	// 	Type: gnmi.GetRequest_STATE,
-	// 	Path: []*gnmi.Path{
-	// 		{
-	// 			Target: target,
-	// 			Elem:   req.Path,
-	// 		},
-	// 	},
-	// }
-
 	// Start a ticker which will trigger repeatedly after (interval) milliseconds.
 	intervalTicker := time.NewTicker(time.Duration(req.Interval) * time.Millisecond)
 
@@ -119,16 +87,15 @@ func newCounter(req types.Request, target string, adapter types.Adapter, waitGro
 				counterIsActive = false
 			}
 		case <-intervalTicker.C:
-			// Get the counter here and send it to the data processing.
-			fmt.Println("Sending request now...")
-			response, err := c.(*gclient.Client).Get(ctx, r)
+			// Get the counter and send it to the data processing and .
+			response, err := c.(*gclient.Client).Get(ctx, req.GnmiRequest)
 			if err != nil {
 				fmt.Printf("Target returned RPC error: %v", err)
 			} else {
 				// TODO: Send counter to data processing.
 
 				// TODO: Use switch as name?
-				extractData(response, r, "myOwnIdentifier" /*req.Name*/)
+				extractData(response, req.GnmiRequest, "myOwnIdentifier" /*req.Name*/)
 			}
 		}
 	}
@@ -138,10 +105,9 @@ func newCounter(req types.Request, target string, adapter types.Adapter, waitGro
 
 // TODO: Parse all data, not just first notification to enable batch operations.
 func extractData(response *gnmi.GetResponse, req *gnmi.GetRequest, name string) {
+	// TODO: Rename adapterResponse to something like switchResponse.
 	var adapterResponse types.AdapterResponse
 	var schemaTree *types.SchemaTree
-
-	// fmt.Printf("Response: %v", response)
 
 	if len(response.Notification) > 0 {
 
@@ -149,20 +115,22 @@ func extractData(response *gnmi.GetResponse, req *gnmi.GetRequest, name string) 
 			fmt.Printf("There is no data for request: %v\n", req)
 			return
 		}
-		// fmt.Printf("Response: %v\n", response)
-		// fmt.Println("------------------------------")
+
 		if err := proto.Unmarshal(response.Notification[0].Update[0].Val.GetProtoBytes(), &adapterResponse); err != nil {
 			fmt.Printf("Failed to unmarshal ProtoBytes: %v", err)
 		}
-		// fmt.Println("------------------------------")
 
-		// Takes 2-3 microseconds for a single value (counter).
+		printTree(adapterResponse.Entries)
+
+		// Get tree structure from slice.
 		schemaTree = getTreeStructure(adapterResponse.Entries)
 
+		// Send data to subscription manager.
 		addSchemaTreeValueToStream(schemaTree.Children[0], req.Path[0].Elem, 0, name, adapterResponse.Timestamp)
 	}
 }
 
+// Recursively find requested value(s) and send it to the subscription manager.
 func addSchemaTreeValueToStream(schemaTree *types.SchemaTree, pathElems []*gnmi.PathElem, startIndex int, name string, adapterTs int64) {
 	if startIndex < len(pathElems) {
 		if pathElems[startIndex].Name == schemaTree.Name {
@@ -212,4 +180,13 @@ func getTreeStructure(schemaEntries []types.SchemaEntry) *types.SchemaTree {
 		}
 	}
 	return tree
+}
+
+func printTree(schemaEntries []types.SchemaEntry) {
+	for _, entry := range schemaEntries {
+		fmt.Println(entry.Name)
+		if entry.Value != "" {
+			fmt.Println(entry.Value)
+		}
+	}
 }

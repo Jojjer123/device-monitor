@@ -50,8 +50,9 @@ type Counter struct {
 }
 
 type Request struct {
-	Interval int
-	Counters []Counter
+	Interval    int
+	Counters    []Counter
+	GnmiRequest *gnmi.GetRequest
 }
 
 // type Request struct {
