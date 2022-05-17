@@ -156,30 +156,28 @@ func sendDataToSubMgr(schemaTree *types.SchemaTree, paths []*gnmi.Path, name str
 	streamManager.AddDataToStream(createJsonString(counterValues, paths), name, adapterTs)
 }
 
-func createJsonString(counterValues []string, paths []*gnmi.Path) []byte {
-	jsonStr := `{"`
+func createJsonString(counterValues []string, paths []*gnmi.Path) []types.Dictionary {
+	// jsonStr := `{"`
+
+	// for index, counterVal := range counterValues {
+	// 	jsonStr += paths[index].Elem[len(paths[index].Elem)-1].Name
+	// 	jsonStr += `":"`
+	// 	jsonStr += counterVal
+	// 	if index < len(counterValues)-1 {
+	// 		jsonStr += `","`
+	// 	}
+	// }
+	// jsonStr += `"}`
+
+	var test []types.Dictionary
 
 	for index, counterVal := range counterValues {
-		jsonStr += paths[index].Elem[len(paths[index].Elem)-1].Name
-		jsonStr += `":"`
-		jsonStr += counterVal
-		if index < len(counterValues)-1 {
-			jsonStr += `","`
-		}
+		test = append(test, types.Dictionary{
+			paths[index].Elem[len(paths[index].Elem)-1].Name: counterVal,
+		})
 	}
-	jsonStr += `"}`
 
-	// var raw map[string]string
-	// if err := json.Unmarshal([]byte(jsonStr), &raw); err != nil {
-	// 	fmt.Println("Failed to unmarshal json string.")
-	// }
-
-	// test, e := json.Marshal(jsonStr)
-	// if e != nil {
-	// 	fmt.Println("Failed to marshal json string.")
-	// }
-
-	return []byte(jsonStr)
+	return test
 
 	// return jsonStr
 }

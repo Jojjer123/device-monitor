@@ -100,8 +100,10 @@ type SchemaEntry struct {
 	Value     string `protobuf:"bytes,4,opt,name=Value"`
 }
 
+type Dictionary map[string]interface{}
+
 type GatewayData struct {
-	Data             []byte `json:"data"`
-	MonitorTimestamp int64  `json:"monitorTimestamp"`
-	AdapterTimestamp int64  `json:"adapterTimestamp"`
+	Data             []Dictionary `json:"data"`
+	MonitorTimestamp int64        `json:"monitorTimestamp"`
+	AdapterTimestamp int64        `json:"adapterTimestamp"`
 }
