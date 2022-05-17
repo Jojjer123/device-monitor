@@ -152,14 +152,8 @@ func sendDataToSubMgr(schemaTree *types.SchemaTree, paths []*gnmi.Path, name str
 		return
 	}
 
-	fmt.Println(createJsonString(counterValues, paths))
-	// streamManager.AddDataToStream(createJsonString(counterValues, paths), name, adapterTs)
-
-	// fmt.Println("---------counterValues---------")
-	// fmt.Println(counterValues)
-	// fmt.Println("-------------Paths-------------")
-	// fmt.Println(paths)
-	// fmt.Println("-------------------------------")
+	// fmt.Println(createJsonString(counterValues, paths))
+	streamManager.AddDataToStream(createJsonString(counterValues, paths), name, adapterTs)
 }
 
 func createJsonString(counterValues []string, paths []*gnmi.Path) string {
@@ -179,12 +173,8 @@ func createJsonString(counterValues []string, paths []*gnmi.Path) string {
 
 // Call findCounterVal with startIndex as 0, in order to start searching through pathElems from index 0.
 func findCounterVal(schemaTree *types.SchemaTree, pathElems []*gnmi.PathElem, startIndex int) string {
-	// fmt.Println("--------------")
-	// fmt.Printf("startIndex = %v\nlen(pathElems) = %v\n", startIndex, len(pathElems))
 	if startIndex < len(pathElems) {
-		// fmt.Printf("pathElems[%v].Name = %v\nschemaTree.Name = %v\n", startIndex, pathElems[startIndex].Name, schemaTree.Name)
 		if pathElems[startIndex].Name == schemaTree.Name {
-			// fmt.Printf("len(pathElems)-1 = %v\n", len(pathElems)-1)
 			if startIndex == len(pathElems)-1 {
 				return schemaTree.Value
 			}
@@ -199,20 +189,20 @@ func findCounterVal(schemaTree *types.SchemaTree, pathElems []*gnmi.PathElem, st
 	return ""
 }
 
-// Recursively find requested value(s) and send it to the subscription manager.
-func addSchemaTreeValueToStream(schemaTree *types.SchemaTree, pathElems []*gnmi.PathElem, startIndex int, name string, adapterTs int64) {
-	if startIndex < len(pathElems) {
-		if pathElems[startIndex].Name == schemaTree.Name {
-			if startIndex == len(pathElems)-1 {
-				// fmt.Printf("Value sent: %v - %v\n", schemaTree.Name, schemaTree.Value)
-				streamManager.AddDataToStream(schemaTree.Value, name, adapterTs)
-			}
-			for _, child := range schemaTree.Children {
-				addSchemaTreeValueToStream(child, pathElems, startIndex+1, name, adapterTs)
-			}
-		}
-	}
-}
+// // Recursively find requested value(s) and send it to the subscription manager.
+// func addSchemaTreeValueToStream(schemaTree *types.SchemaTree, pathElems []*gnmi.PathElem, startIndex int, name string, adapterTs int64) {
+// 	if startIndex < len(pathElems) {
+// 		if pathElems[startIndex].Name == schemaTree.Name {
+// 			if startIndex == len(pathElems)-1 {
+// 				// fmt.Printf("Value sent: %v - %v\n", schemaTree.Name, schemaTree.Value)
+// 				streamManager.AddDataToStream(schemaTree.Value, name, adapterTs)
+// 			}
+// 			for _, child := range schemaTree.Children {
+// 				addSchemaTreeValueToStream(child, pathElems, startIndex+1, name, adapterTs)
+// 			}
+// 		}
+// 	}
+// }
 
 func getTreeStructure(schemaEntries []types.SchemaEntry) *types.SchemaTree {
 	var newTree *types.SchemaTree
