@@ -24,10 +24,6 @@ func GetConfig(target string, configSelected int) ([]types.Request, types.Adapte
 
 	var requests []types.Request
 
-	// fmt.Println("----CONFIG----")
-	// fmt.Printf("%v\n", conf.Configs[configSelected])
-	// fmt.Println("--------------")
-
 	// TODO: Change from single reqeustObj to batchObj that is based on interval
 	for _, intCounters := range conf.Configs[configSelected].Counters {
 		request := types.Request{
