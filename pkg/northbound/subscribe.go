@@ -1,7 +1,6 @@
 package northboundInterface
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/google/gnxi/utils/credentials"
@@ -10,26 +9,30 @@ import (
 
 	pb "github.com/openconfig/gnmi/proto/gnmi"
 
+	"github.com/onosproject/monitor-service/pkg/logger"
 	"github.com/onosproject/monitor-service/pkg/types"
 )
 
 func (s *server) Subscribe(stream pb.GNMI_SubscribeServer) error {
 	msg, ok := credentials.AuthorizeUser(stream.Context())
 	if !ok {
-		fmt.Print("Denied a Subscribe request: ")
-		fmt.Println(msg)
+		// fmt.Print("Denied a Subscribe request: ")
+		// fmt.Println(msg)
+		logger.Infof("Denied a Subscribe request: %v", msg)
 
 		return status.Error(codes.PermissionDenied, msg)
 	}
 
-	fmt.Print("Allowed a Subscribe request: ")
-	fmt.Println(msg)
+	// fmt.Print("Allowed a Subscribe request: ")
+	// fmt.Println(msg)
+	logger.Infof("Allowed a Subscribe request: %v", msg)
 
 	subRequest, err := stream.Recv()
 
 	if err != nil {
-		fmt.Print("Failed to receive from stream: ")
-		fmt.Println(err)
+		// fmt.Print("Failed to receive from stream: ")
+		// fmt.Println(err)
+		logger.Errorf("Failed to receive from stream: %v", err)
 	}
 
 	// fmt.Println(subRequest.GetSubscribe().Subscription[0].Path)
@@ -44,7 +47,8 @@ func (s *server) Subscribe(stream pb.GNMI_SubscribeServer) error {
 	go func() {
 		_, err := stream.Recv()
 		if err != nil {
-			fmt.Println("Subscriber has disconnected")
+			// fmt.Println("Subscriber has disconnected")
+			logger.Info("Subscriber has disconnected")
 			s.StreamMgrCmd(newStream, "Remove")
 		}
 	}()

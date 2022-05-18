@@ -1,12 +1,12 @@
 package streamManager
 
 import (
-	"fmt"
 	"sync"
 	"time"
 
 	"encoding/json"
 
+	"github.com/onosproject/monitor-service/pkg/logger"
 	"github.com/onosproject/monitor-service/pkg/types"
 
 	// "github.com/openconfig/gnmi/ctree"
@@ -52,11 +52,11 @@ func streamMgrCmd(stream types.Stream, cmd string) string {
 		if indexToBeRemoved != -1 {
 			streamStore = append(streamStore[:indexToBeRemoved], streamStore[indexToBeRemoved+1:]...)
 		} else {
-			fmt.Println("Could not find stream to delete.")
+			logger.Warn("Could not find stream to delete")
 		}
 
 	default:
-		fmt.Printf("Did not recognize cmd: %s\n", cmd)
+		logger.Errorf("Did not recognize cmd: %s", cmd)
 	}
 
 	return ""
@@ -74,7 +74,7 @@ func AddDataToStream(dataVal []types.Dictionary, subscriptionIdentifier string, 
 
 			jsonBytes, err := json.Marshal(objectToSend)
 			if err != nil {
-				fmt.Printf("Failed to marshal to json, err: %v", err)
+				logger.Errorf("Failed to marshal to json, err: %v", err)
 			}
 
 			stream.StreamHandle.Send(&gnmi.SubscribeResponse{

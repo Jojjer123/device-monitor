@@ -3,7 +3,6 @@ package config
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 
 	// "sync"
 	"time"
@@ -13,6 +12,7 @@ import (
 	"github.com/openconfig/gnmi/proto/gnmi"
 	"gopkg.in/yaml.v2"
 
+	"github.com/onosproject/monitor-service/pkg/logger"
 	types "github.com/onosproject/monitor-service/pkg/types"
 )
 
@@ -35,8 +35,7 @@ func GetConfig(target string) types.ConfigObject {
 	})
 
 	if err != nil {
-		fmt.Print("Could not create a gNMI client: ")
-		fmt.Println(err)
+		logger.Errorf("Could not create a gNMI client: %v", err)
 	}
 
 	r := &gnmi.GetRequest{
@@ -51,10 +50,7 @@ func GetConfig(target string) types.ConfigObject {
 	response, err := c.(*gclient.Client).Get(ctx, r)
 
 	if err != nil {
-		fmt.Print("Target returned RPC error for Get(")
-		fmt.Print(r.String())
-		fmt.Print("): ")
-		fmt.Println(err)
+		logger.Errorf("Target returned RPC error for Get(%v): %v", r.String(), err)
 	}
 
 	var config types.ConfigObject
@@ -77,8 +73,7 @@ func GetAdapter(protocol string) types.Adapter {
 	})
 
 	if err != nil {
-		fmt.Print("Could not create a gNMI client: ")
-		fmt.Println(err)
+		logger.Errorf("Could not create a gNMI client: %v", err)
 	}
 
 	r := &gnmi.GetRequest{
@@ -93,17 +88,13 @@ func GetAdapter(protocol string) types.Adapter {
 	response, err := c.(*gclient.Client).Get(ctx, r)
 
 	if err != nil {
-		fmt.Print("Target returned RPC error for Get(")
-		fmt.Print(r.String())
-		fmt.Print("): ")
-		fmt.Println(err)
+		logger.Errorf("Target returned RPC error for Get(%v): %v", r.String(), err)
 	}
 
 	var adapter types.Adapter
 	err = json.Unmarshal(response.Notification[0].Update[0].Val.GetBytesVal(), &adapter)
 	if err != nil {
-		fmt.Print("Failed to unmarshal adapter")
-		fmt.Println(err)
+		logger.Errorf("Failed to unmarshal adapter: %v", err)
 	}
 
 	return adapter

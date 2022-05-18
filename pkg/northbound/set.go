@@ -1,9 +1,10 @@
 package northboundInterface
 
 import (
-	"fmt"
 	"strconv"
 	"time"
+
+	"github.com/onosproject/monitor-service/pkg/logger"
 
 	"github.com/google/gnxi/utils/credentials"
 	"github.com/openconfig/gnmi/proto/gnmi"
@@ -16,11 +17,12 @@ import (
 func (s *server) Set(ctx context.Context, req *gnmi.SetRequest) (*gnmi.SetResponse, error) {
 	msg, ok := credentials.AuthorizeUser(ctx)
 	if !ok {
-		fmt.Print("Denied a Set request: ")
-		fmt.Println(msg)
+		// fmt.Print("Denied a Set request: ")
+		// fmt.Println(msg)
+		logger.Infof("Denied a Set request: %v", msg)
 		return nil, status.Error(codes.PermissionDenied, msg)
 	}
-	fmt.Println("Allowed a Set request")
+	logger.Info("Allowed a Set request")
 
 	var updateResult []*gnmi.UpdateResult
 
@@ -40,7 +42,8 @@ func (s *server) Set(ctx context.Context, req *gnmi.SetRequest) (*gnmi.SetRespon
 			case "Delete":
 				updateResult = append(updateResult, s.deleteRequest(update.Path))
 			default:
-				fmt.Println("Action not found!")
+				// fmt.Println("Action not found!")
+				logger.Error("Action not found!")
 			}
 		}
 	}
@@ -76,7 +79,8 @@ func (s *server) setRequest(path *gnmi.Path) *gnmi.UpdateResult {
 	}
 
 	if err != nil {
-		fmt.Println("Failed to convert ConfigIndex from string to int")
+		// fmt.Println("Failed to convert ConfigIndex from string to int")
+		logger.Error("Failed to convert ConfigIndex from string to int")
 	} else {
 		update := gnmi.UpdateResult{
 			Path: &gnmi.Path{

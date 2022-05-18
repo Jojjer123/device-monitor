@@ -1,9 +1,9 @@
 package deviceManager
 
 import (
-	"fmt"
 	"sync"
 
+	"github.com/onosproject/monitor-service/pkg/logger"
 	reqBuilder "github.com/onosproject/monitor-service/pkg/requestBuilder"
 	"github.com/onosproject/monitor-service/pkg/types"
 )
@@ -27,7 +27,7 @@ func ConfigManager(waitGroup *sync.WaitGroup, adminChannel chan types.ConfigAdmi
 
 func executeAdminSetCmd(cmd string, target string, configIndex ...int) string {
 	if len(configIndex) > 1 {
-		fmt.Println("Config index should not be an array larger than 1")
+		logger.Warn("Config index should not be an array larger than 1")
 	}
 
 	switch cmd {
@@ -41,7 +41,7 @@ func executeAdminSetCmd(cmd string, target string, configIndex ...int) string {
 	case "Delete":
 		deleteDeviceMonitor(target)
 	default:
-		fmt.Println("Could not find command: " + cmd)
+		logger.Warnf("Could not find command: %v", cmd)
 		return "Could not find command: " + cmd
 	}
 
@@ -59,7 +59,7 @@ func deleteDeviceMonitor(target string) {
 		}
 	}
 
-	fmt.Println("Could not find device monitor in store.")
+	logger.Warn("Could not find device monitor in store.")
 }
 
 func updateDeviceMonitor(requests []types.Request, target string) {
@@ -71,7 +71,7 @@ func updateDeviceMonitor(requests []types.Request, target string) {
 		}
 	}
 
-	fmt.Println("Could not find device monitor in store.")
+	logger.Warn("Could not find device monitor in store.")
 }
 
 func createDeviceMonitor(requests []types.Request, adapter types.Adapter, target string) {
@@ -89,6 +89,5 @@ func createDeviceMonitor(requests []types.Request, adapter types.Adapter, target
 
 	deviceMonitorStore = append(deviceMonitorStore, monitor)
 
-	// fmt.Println("Starting deviceMonitor now...")
 	go deviceMonitor(monitor)
 }

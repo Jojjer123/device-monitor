@@ -12,9 +12,7 @@ import (
 
 // TODO: Remove this bs init function that is doing nothing.
 func RequestBuilder(waitGroup *sync.WaitGroup) {
-	// fmt.Println("RequestBuilder started")
 	defer waitGroup.Done()
-
 }
 
 func GetConfig(target string, configSelected int) ([]types.Request, types.Adapter) {
@@ -79,12 +77,7 @@ func getPathFromString(path string) []*gnmi.PathElem {
 			continue
 		}
 
-		// fmt.Println(elem)
-		// fmt.Println("--------------")
 		tok := strings.Split(elem, "'")
-
-		// fmt.Println(tok)
-		// fmt.Println(tok[1])
 
 		newElem := &gnmi.PathElem{
 			Name: tok[1],
@@ -92,8 +85,6 @@ func getPathFromString(path string) []*gnmi.PathElem {
 
 		// Contains key.
 		if len(tok) > 3 {
-			// fmt.Println(tok[3])
-			// fmt.Println(tok[5])
 			keyMap := make(map[string]string)
 			keyMap[tok[3]] = tok[5]
 			newElem.Key = keyMap

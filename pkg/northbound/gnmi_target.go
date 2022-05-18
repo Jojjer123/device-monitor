@@ -1,7 +1,6 @@
 package northboundInterface
 
 import (
-	"fmt"
 	"io/ioutil"
 	"net"
 	"reflect"
@@ -18,6 +17,7 @@ import (
 	pb "github.com/openconfig/gnmi/proto/gnmi"
 	"google.golang.org/grpc/credentials"
 
+	"github.com/onosproject/monitor-service/pkg/logger"
 	"github.com/onosproject/monitor-service/pkg/types"
 )
 
@@ -34,7 +34,8 @@ func startServer(secure bool, address string, executeSetCmd func(string, string,
 	if secure {
 		creds, err := credentials.NewServerTLSFromFile("certs/localhost.crt", "certs/localhost.key")
 		if err != nil {
-			fmt.Printf("Failed to load credentials: %v\n", err)
+			// fmt.Printf("Failed to load credentials: %v\n", err)
+			logger.Errorf("Failed to load credentials: %v\n", err)
 		}
 
 		g = grpc.NewServer(grpc.Creds(creds))
@@ -44,9 +45,9 @@ func startServer(secure bool, address string, executeSetCmd func(string, string,
 
 	configData, err := ioutil.ReadFile("./target_configs/typical_ofsw_config.json") //*configFile)
 	if err != nil {
-		// log.Fatalf("Error in reading config file: %v", err)
-		fmt.Print("Error in reading config file: ")
-		fmt.Println(err)
+		// fmt.Print("Error in reading config file: ")
+		// fmt.Println(err)
+		logger.Errorf("Error in reading config file: %v", err)
 	}
 
 	s, err := newServer(model, configData)
@@ -55,29 +56,29 @@ func startServer(secure bool, address string, executeSetCmd func(string, string,
 	s.StreamMgrCmd = streamMgrCmd
 
 	if err != nil {
-		// log.Fatalf("Error in creating gnmi target: %v", err)
-		fmt.Print("Error in creating gnmi target: ")
-		fmt.Println(err)
+		// fmt.Print("Error in creating gnmi target: ")
+		// fmt.Println(err)
+		logger.Errorf("Error in creating gnmi target: %v", err)
 	}
 	pb.RegisterGNMIServer(g, s)
 	reflection.Register(g)
 
-	// log.Infof("Starting gNMI agent to listen on %s", *bindAddr)
-	fmt.Print("Starting gNMI agent to listen on ")
-	fmt.Println(address)
+	// fmt.Print("Starting gNMI agent to listen on ")
+	// fmt.Println(address)
+	logger.Infof("Starting gNMI agent to listen on %v", address)
 	listen, err := net.Listen("tcp", address)
 	if err != nil {
-		// log.Fatalf("Failed to listen: %v", err)
-		fmt.Print("Failed to listen: ")
-		fmt.Println(err)
+		// fmt.Print("Failed to listen: ")
+		// fmt.Println(err)
+		logger.Errorf("Failed to listen: %v", err)
 	}
 
-	// log.Infof("Starting gNMI agent to serve on %s", *bindAddr)
-	fmt.Print("Starting gNMI agent to serve on ")
-	fmt.Println(address)
+	// fmt.Print("Starting gNMI agent to serve on ")
+	// fmt.Println(address)
+	logger.Infof("Starting gNMI agent to serve on %v", address)
 	if err := g.Serve(listen); err != nil {
-		// log.Fatalf("Failed to serve: %v", err)
-		fmt.Print("Failed to serve ")
-		fmt.Println(err)
+		// fmt.Print("Failed to serve ")
+		// fmt.Println(err)
+		logger.Errorf("Failed to serve: %v", err)
 	}
 }

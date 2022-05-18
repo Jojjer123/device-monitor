@@ -2,11 +2,11 @@ package deviceManager
 
 import (
 	"context"
-	"fmt"
 	"sync"
 	"time"
 
 	"github.com/gogo/protobuf/proto"
+	"github.com/onosproject/monitor-service/pkg/logger"
 	"github.com/onosproject/monitor-service/pkg/types"
 
 	"github.com/openconfig/gnmi/client"
@@ -74,7 +74,7 @@ func newCounter(req types.Request, target string, adapter types.Adapter, waitGro
 			return
 		case msg := <-counterChannel:
 			if msg == "shutdown" {
-				fmt.Println("Exits counter now")
+				logger.Info("Exits counter now")
 				return
 			}
 		}
@@ -95,7 +95,7 @@ func newCounter(req types.Request, target string, adapter types.Adapter, waitGro
 			// Get the counter and send it to the data processing and to possible subscribers.
 			response, err := c.(*gclient.Client).Get(ctx, req.GnmiRequest)
 			if err != nil {
-				fmt.Printf("Target returned RPC error: %v", err)
+				logger.Errorf("Target returned RPC error: %v", err)
 			} else {
 				// TODO: Send counter to data processing.
 
@@ -105,7 +105,7 @@ func newCounter(req types.Request, target string, adapter types.Adapter, waitGro
 		}
 	}
 
-	fmt.Println("Exits counter now")
+	logger.Info("Exits counter now")
 }
 
 func createGnmiClient(adapter types.Adapter, target string, ctx context.Context) (client.Impl, error) {
@@ -118,8 +118,8 @@ func createGnmiClient(adapter types.Adapter, target string, ctx context.Context)
 	})
 
 	if err != nil {
-		fmt.Print("Could not create a gNMI client: ")
-		fmt.Println(err)
+		logger.Errorf("Could not create a gNMI client: %v", err)
+
 		return nil, err
 	}
 
@@ -134,12 +134,12 @@ func extractData(response *gnmi.GetResponse, req *gnmi.GetRequest, name string) 
 	if len(response.Notification) > 0 {
 
 		if len(response.Notification[0].Update) == 0 {
-			fmt.Printf("There is no data for request: %v\n", req)
+			logger.Warnf("There is no data for request: %v", req)
 			return
 		}
 
 		if err := proto.Unmarshal(response.Notification[0].Update[0].Val.GetProtoBytes(), &adapterResponse); err != nil {
-			fmt.Printf("Failed to unmarshal ProtoBytes: %v", err)
+			logger.Errorf("Failed to unmarshal ProtoBytes: %v", err)
 		}
 
 		// Get tree structure from slice.
@@ -157,7 +157,7 @@ func sendDataToSubMgr(schemaTree *types.SchemaTree, paths []*gnmi.Path, name str
 	}
 
 	if len(counterValues) != len(paths) {
-		fmt.Println("Failed to map counter values to paths.")
+		logger.Error("Failed to map counter values to paths.")
 		return
 	}
 
