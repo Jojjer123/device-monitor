@@ -16,11 +16,13 @@ func GetConfig(target string, configSelected int) ([]types.Request, types.Adapte
 
 	var requests []types.Request
 
+	// For each interval and all counters for that interval (intCounters), build a request.
 	for _, intCounters := range conf.Configs[configSelected].Counters {
 		request := types.Request{
 			Interval: intCounters.Interval,
 		}
 
+		// For each counter for an interval, build a Counter object.
 		for _, counter := range intCounters.Counters {
 			request.Counters = append(request.Counters, types.Counter{
 				Name: counter.Name,
@@ -46,6 +48,7 @@ func GetConfig(target string, configSelected int) ([]types.Request, types.Adapte
 
 	var adapter types.Adapter
 
+	// Only protocol without need for an adapter is gNMI, for now.
 	if conf.Protocol != "GNMI" {
 		adapter = storageInterface.GetAdapter(conf.Protocol)
 	}
@@ -53,6 +56,7 @@ func GetConfig(target string, configSelected int) ([]types.Request, types.Adapte
 	return requests, adapter
 }
 
+// Get gNMI path from a string.
 func getPathFromString(path string) []*gnmi.PathElem {
 	if !strings.Contains(path, "elem:") {
 		return nil
