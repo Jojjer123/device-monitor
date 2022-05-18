@@ -21,15 +21,18 @@ func ConfigInterface(waitGroup *sync.WaitGroup) {
 	defer waitGroup.Done()
 }
 
-// TODO: Implement cert usage
+const (
+	GetRequest_MONITOR_CONFIG  gnmi.GetRequest_DataType = 5 // Configuration for a switch.
+	GetRequest_MONITOR_ADAPTER gnmi.GetRequest_DataType = 6 // Adapter for a protocol.
+)
 
 func GetConfig(target string) types.ConfigObject {
 	ctx := context.Background()
 
-	address := []string{"storage-service:11161"}
-
+	// Create a gNMI client, if credentials is required, implement it here. Storage-service does not
+	// offer secure communication yet. Don't forget to change port if changing to secure communication.
 	c, err := gclient.New(ctx, client.Destination{
-		Addrs:       address,
+		Addrs:       []string{"storage-service:11161"},
 		Target:      "storage-service",
 		Timeout:     time.Second * 5,
 		Credentials: nil,
@@ -37,13 +40,12 @@ func GetConfig(target string) types.ConfigObject {
 	})
 
 	if err != nil {
-		// fmt.Errorf("could not create a gNMI client: %v", err)
 		fmt.Print("Could not create a gNMI client: ")
 		fmt.Println(err)
 	}
 
 	r := &gnmi.GetRequest{
-		Type: 5,
+		Type: GetRequest_MONITOR_CONFIG,
 		Path: []*gnmi.Path{
 			{
 				Target: target,
@@ -54,7 +56,6 @@ func GetConfig(target string) types.ConfigObject {
 	response, err := c.(*gclient.Client).Get(ctx, r)
 
 	if err != nil {
-		// fmt.Errorf("target returned RPC error for Get(%q): %v", r.String(), err)
 		fmt.Print("Target returned RPC error for Get(")
 		fmt.Print(r.String())
 		fmt.Print("): ")
@@ -70,10 +71,10 @@ func GetConfig(target string) types.ConfigObject {
 func GetAdapter(protocol string) types.Adapter {
 	ctx := context.Background()
 
-	address := []string{"storage-service:11161"}
-
+	// Create a gNMI client, if secure connection is required, implement it here. Storage-service does not
+	// offer secure communication yet. Don't forget to change port if changing to secure communication.
 	c, err := gclient.New(ctx, client.Destination{
-		Addrs:       address,
+		Addrs:       []string{"storage-service:11161"},
 		Target:      "storage-service",
 		Timeout:     time.Second * 5,
 		Credentials: nil,
@@ -81,13 +82,12 @@ func GetAdapter(protocol string) types.Adapter {
 	})
 
 	if err != nil {
-		// fmt.Errorf("could not create a gNMI client: %v", err)
 		fmt.Print("Could not create a gNMI client: ")
 		fmt.Println(err)
 	}
 
 	r := &gnmi.GetRequest{
-		Type: 6,
+		Type: GetRequest_MONITOR_ADAPTER,
 		Path: []*gnmi.Path{
 			{
 				Target: protocol,
@@ -98,7 +98,6 @@ func GetAdapter(protocol string) types.Adapter {
 	response, err := c.(*gclient.Client).Get(ctx, r)
 
 	if err != nil {
-		// fmt.Errorf("target returned RPC error for Get(%q): %v", r.String(), err)
 		fmt.Print("Target returned RPC error for Get(")
 		fmt.Print(r.String())
 		fmt.Print("): ")
