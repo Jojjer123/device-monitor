@@ -90,14 +90,3 @@ func (s *server) setRequest(path *gnmi.Path) *gnmi.UpdateResult {
 
 	return nil
 }
-
-// func (s *server) updateConfigRequest(req *gnmi.SetRequest) *gnmi.UpdateResult {
-// 	err := storageInterface.UpdateConfig(req)
-// 	if err != nil {
-// 		fmt.Println("Failed to update configuration!")
-// 	}
-
-// 	// TODO: Add correct result
-
-// 	return &gnmi.UpdateResult{}
-// }

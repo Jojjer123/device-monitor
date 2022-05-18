@@ -6,15 +6,11 @@ import (
 )
 
 type ConfigAdminChannelMessage struct {
-	// RegisterFunction func(chan string, *sync.WaitGroup)
 	ExecuteSetCmd func(string, string, ...int) string
-	// Message       string
 }
 
 type StreamMgrChannelMessage struct {
 	ManageCmd func(Stream, string) string
-	// ExecuteSetCmd    func(string, string, ...int) string
-	// Message          string
 }
 
 type Stream struct {
@@ -55,12 +51,6 @@ type Request struct {
 	GnmiRequest *gnmi.GetRequest
 }
 
-// type Request struct {
-// 	Name     string
-// 	Interval int
-// 	Path     []*gnmi.PathElem
-// }
-
 type Adapter struct {
 	Protocol string `json:"protocol"`
 	Address  string `json:"address"`
@@ -75,7 +65,6 @@ type DeviceMonitor struct {
 }
 
 // The following types are used for deconstructing data from the adapter.
-
 type SchemaTree struct {
 	Name      string
 	Namespace string
@@ -84,6 +73,7 @@ type SchemaTree struct {
 	Value     string
 }
 
+// TODO: Rename type.
 type AdapterResponse struct {
 	Entries   []SchemaEntry `protobuf:"bytes,1,opt,name=Entries"`
 	Timestamp int64         `protobuf:"fixed64,2,opt,name=Timestamp"`
