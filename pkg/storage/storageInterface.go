@@ -4,7 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"sync"
+
+	// "sync"
 	"time"
 
 	"github.com/openconfig/gnmi/client"
@@ -14,12 +15,6 @@ import (
 
 	types "github.com/onosproject/monitor-service/pkg/types"
 )
-
-// TODO: Remove all bs init functions that doesn't do shit.
-func ConfigInterface(waitGroup *sync.WaitGroup) {
-	// fmt.Println("ConfigInterface started")
-	defer waitGroup.Done()
-}
 
 const (
 	GetRequest_MONITOR_CONFIG  gnmi.GetRequest_DataType = 5 // Configuration for a switch.
