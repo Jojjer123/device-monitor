@@ -9,10 +9,9 @@ import (
 
 type server struct {
 	*gnmi.Server
-	Model         *gnmi.Model
-	configStruct  ygot.ValidatedGoStruct
-	ExecuteSetCmd func(string, string, ...int) string
-	StreamMgrCmd  func(types.Stream, string) string
+	Model        *gnmi.Model
+	configStruct ygot.ValidatedGoStruct
+	StreamMgrCmd func(types.Stream, string) string
 }
 
 func newServer(model *gnmi.Model, config []byte) (*server, error) {
@@ -23,12 +22,12 @@ func newServer(model *gnmi.Model, config []byte) (*server, error) {
 	}
 
 	newconfig, _ := model.NewConfigStruct(config)
-	// channelUpdate := make(chan *pb.Update)
+
 	server := server{
 		Server:       s,
 		Model:        model,
-		configStruct: newconfig}
-	// UpdateChann:  channelUpdate}
+		configStruct: newconfig,
+	}
 
 	return &server, nil
 }

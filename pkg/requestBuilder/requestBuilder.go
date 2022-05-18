@@ -2,19 +2,13 @@ package requestBuilder
 
 import (
 	"strings"
-	"sync"
 
-	// "github.com/google/gnxi/gnmi"
 	storageInterface "github.com/onosproject/monitor-service/pkg/storage"
 	types "github.com/onosproject/monitor-service/pkg/types"
 	"github.com/openconfig/gnmi/proto/gnmi"
 )
 
-// TODO: Remove this bs init function that is doing nothing.
-func RequestBuilder(waitGroup *sync.WaitGroup) {
-	defer waitGroup.Done()
-}
-
+// Builds requests to send to a switch or an adapter.
 func GetConfig(target string, configSelected int) ([]types.Request, types.Adapter) {
 	conf := storageInterface.GetConfig(target)
 
@@ -22,7 +16,6 @@ func GetConfig(target string, configSelected int) ([]types.Request, types.Adapte
 
 	var requests []types.Request
 
-	// TODO: Change from single reqeustObj to batchObj that is based on interval
 	for _, intCounters := range conf.Configs[configSelected].Counters {
 		request := types.Request{
 			Interval: intCounters.Interval,
@@ -48,12 +41,6 @@ func GetConfig(target string, configSelected int) ([]types.Request, types.Adapte
 		}
 
 		request.GnmiRequest = r
-		// requestObj := types.Request{
-		// 	Name:     req.Name,
-		// 	Interval: req.Interval,
-		// 	Path:     getPathFromString(req.Path),
-		// }
-
 		requests = append(requests, request)
 	}
 

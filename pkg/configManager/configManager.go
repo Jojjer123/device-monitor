@@ -1,8 +1,6 @@
-package deviceManager
+package configManager
 
 import (
-	"sync"
-
 	"github.com/onosproject/monitor-service/pkg/deviceMonitor"
 	"github.com/onosproject/monitor-service/pkg/logger"
 	reqBuilder "github.com/onosproject/monitor-service/pkg/requestBuilder"
@@ -11,22 +9,7 @@ import (
 
 var deviceMonitorStore []types.DeviceMonitor
 
-func ConfigManager(waitGroup *sync.WaitGroup, adminChannel chan types.ConfigAdminChannelMessage) {
-	defer waitGroup.Done()
-
-	// TODO: Remove deviceMonitorWaitGroup and add better way of keeping module "alive".
-
-	// var deviceMonitorWaitGroup sync.WaitGroup
-
-	var adminMessage types.ConfigAdminChannelMessage
-	adminMessage.ExecuteSetCmd = executeAdminSetCmd
-
-	adminChannel <- adminMessage
-
-	// deviceMonitorWaitGroup.Wait()
-}
-
-func executeAdminSetCmd(cmd string, target string, configIndex ...int) string {
+func ExecuteAdminSetCmd(cmd string, target string, configIndex ...int) string {
 	if len(configIndex) > 1 {
 		logger.Warn("Config index should not be an array larger than 1")
 	}

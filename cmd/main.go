@@ -3,31 +3,26 @@ package main
 import (
 	"sync"
 
-	confMgr "github.com/onosproject/monitor-service/pkg/configManager"
 	dataProcMgr "github.com/onosproject/monitor-service/pkg/dataProcessingManager"
 	north "github.com/onosproject/monitor-service/pkg/northbound"
-	reqBuilder "github.com/onosproject/monitor-service/pkg/requestBuilder"
 	streamMgr "github.com/onosproject/monitor-service/pkg/streamManager"
 
 	"github.com/onosproject/monitor-service/pkg/logger"
 	"github.com/onosproject/monitor-service/pkg/types"
 )
 
-const numberOfModules = 5
+const numberOfModules = 3
 
-// Starts the main components of the monitor-service
+// Starts some components of the monitor-service
 func main() {
 	logger.InitLogging()
 
 	var waitGroup sync.WaitGroup
 	waitGroup.Add(numberOfModules)
 
-	configAdminChannel := make(chan types.ConfigAdminChannelMessage)
 	streamMgrChannel := make(chan types.StreamMgrChannelMessage)
 
-	go north.Northbound(&waitGroup, configAdminChannel, streamMgrChannel)
-	go reqBuilder.RequestBuilder(&waitGroup)
-	go confMgr.ConfigManager(&waitGroup, configAdminChannel)
+	go north.Northbound(&waitGroup, streamMgrChannel)
 	go dataProcMgr.DataProcessingManager(&waitGroup)
 	go streamMgr.StreamManager(&waitGroup, streamMgrChannel)
 

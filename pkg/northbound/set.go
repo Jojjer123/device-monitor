@@ -4,6 +4,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/onosproject/monitor-service/pkg/configManager"
 	"github.com/onosproject/monitor-service/pkg/logger"
 
 	"github.com/google/gnxi/utils/credentials"
@@ -11,14 +12,11 @@ import (
 	"golang.org/x/net/context"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	// storageInterface "github.com/onosproject/monitor-service/pkg/storage"
 )
 
 func (s *server) Set(ctx context.Context, req *gnmi.SetRequest) (*gnmi.SetResponse, error) {
 	msg, ok := credentials.AuthorizeUser(ctx)
 	if !ok {
-		// fmt.Print("Denied a Set request: ")
-		// fmt.Println(msg)
 		logger.Infof("Denied a Set request: %v", msg)
 		return nil, status.Error(codes.PermissionDenied, msg)
 	}
@@ -33,16 +31,12 @@ func (s *server) Set(ctx context.Context, req *gnmi.SetRequest) (*gnmi.SetRespon
 		if update.Path.Elem[0].Name == "Action" {
 			switch update.Path.Elem[0].Key["Action"] {
 			case "Create":
-				// Change input param to update or path
 				updateResult = append(updateResult, s.setRequest(update.Path))
 			case "Update":
 				updateResult = append(updateResult, s.setRequest(update.Path))
-			// case "Change config":
-			// 	updateResult = append(updateResult, s.updateConfigRequest(req))
 			case "Delete":
 				updateResult = append(updateResult, s.deleteRequest(update.Path))
 			default:
-				// fmt.Println("Action not found!")
 				logger.Error("Action not found!")
 			}
 		}
@@ -60,7 +54,7 @@ func (s *server) Set(ctx context.Context, req *gnmi.SetRequest) (*gnmi.SetRespon
 func (s *server) deleteRequest(path *gnmi.Path) *gnmi.UpdateResult {
 	update := gnmi.UpdateResult{
 		Path: &gnmi.Path{
-			Element: []string{s.ExecuteSetCmd(path.Elem[0].Key["Action"], path.Target)},
+			Element: []string{configManager.ExecuteAdminSetCmd(path.Elem[0].Key["Action"], path.Target)},
 			Target:  path.Target,
 		},
 	}
@@ -79,12 +73,11 @@ func (s *server) setRequest(path *gnmi.Path) *gnmi.UpdateResult {
 	}
 
 	if err != nil {
-		// fmt.Println("Failed to convert ConfigIndex from string to int")
 		logger.Error("Failed to convert ConfigIndex from string to int")
 	} else {
 		update := gnmi.UpdateResult{
 			Path: &gnmi.Path{
-				Element: []string{s.ExecuteSetCmd(action, path.Target, configIndex)},
+				Element: []string{configManager.ExecuteAdminSetCmd(action, path.Target, configIndex)},
 				Target:  path.Target,
 			},
 		}

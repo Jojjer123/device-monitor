@@ -5,8 +5,6 @@ import (
 	"net"
 	"reflect"
 
-	// "time"
-
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
@@ -21,7 +19,7 @@ import (
 	"github.com/onosproject/monitor-service/pkg/types"
 )
 
-func startServer(secure bool, address string, executeSetCmd func(string, string, ...int) string, streamMgrCmd func(types.Stream, string) string) {
+func startServer(secure bool, address string, streamMgrCmd func(types.Stream, string) string) {
 	model := gnmi.NewModel(modeldata.ModelData,
 		reflect.TypeOf((*gostruct.Device)(nil)),
 		gostruct.SchemaTree["Device"],
@@ -34,7 +32,6 @@ func startServer(secure bool, address string, executeSetCmd func(string, string,
 	if secure {
 		creds, err := credentials.NewServerTLSFromFile("certs/localhost.crt", "certs/localhost.key")
 		if err != nil {
-			// fmt.Printf("Failed to load credentials: %v\n", err)
 			logger.Errorf("Failed to load credentials: %v\n", err)
 		}
 
@@ -45,40 +42,27 @@ func startServer(secure bool, address string, executeSetCmd func(string, string,
 
 	configData, err := ioutil.ReadFile("./target_configs/typical_ofsw_config.json") //*configFile)
 	if err != nil {
-		// fmt.Print("Error in reading config file: ")
-		// fmt.Println(err)
 		logger.Errorf("Error in reading config file: %v", err)
 	}
 
 	s, err := newServer(model, configData)
 
-	s.ExecuteSetCmd = executeSetCmd
 	s.StreamMgrCmd = streamMgrCmd
 
 	if err != nil {
-		// fmt.Print("Error in creating gnmi target: ")
-		// fmt.Println(err)
 		logger.Errorf("Error in creating gnmi target: %v", err)
 	}
 	pb.RegisterGNMIServer(g, s)
 	reflection.Register(g)
 
-	// fmt.Print("Starting gNMI agent to listen on ")
-	// fmt.Println(address)
 	logger.Infof("Starting gNMI agent to listen on %v", address)
 	listen, err := net.Listen("tcp", address)
 	if err != nil {
-		// fmt.Print("Failed to listen: ")
-		// fmt.Println(err)
 		logger.Errorf("Failed to listen: %v", err)
 	}
 
-	// fmt.Print("Starting gNMI agent to serve on ")
-	// fmt.Println(address)
 	logger.Infof("Starting gNMI agent to serve on %v", address)
 	if err := g.Serve(listen); err != nil {
-		// fmt.Print("Failed to serve ")
-		// fmt.Println(err)
 		logger.Errorf("Failed to serve: %v", err)
 	}
 }
