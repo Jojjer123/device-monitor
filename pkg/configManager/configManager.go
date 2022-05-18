@@ -18,9 +18,15 @@ func ExecuteAdminSetCmd(cmd string, target string, configIndex ...int) string {
 	case "Create":
 		// Get slice of the different paths with their intervals and the appropriate adapter if one is necessary
 		requests, adapter := reqBuilder.GetConfig(target, configIndex[0])
+		if len(requests) == 0 {
+			return "No configurations to monitor"
+		}
 		createDeviceMonitor(requests, adapter, target)
 	case "Update":
 		requests, _ := reqBuilder.GetConfig(target, configIndex[0])
+		if len(requests) == 0 {
+			return "No configurations to monitor"
+		}
 		updateDeviceMonitor(requests, target)
 	case "Delete":
 		deleteDeviceMonitor(target)
@@ -29,7 +35,7 @@ func ExecuteAdminSetCmd(cmd string, target string, configIndex ...int) string {
 		return "Could not find command: " + cmd
 	}
 
-	return "Successfully executed command sent"
+	return "Successfully executed command"
 }
 
 func deleteDeviceMonitor(target string) {

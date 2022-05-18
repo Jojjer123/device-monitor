@@ -3,6 +3,7 @@ package requestBuilder
 import (
 	"strings"
 
+	"github.com/onosproject/monitor-service/pkg/logger"
 	storageInterface "github.com/onosproject/monitor-service/pkg/storage"
 	types "github.com/onosproject/monitor-service/pkg/types"
 	"github.com/openconfig/gnmi/proto/gnmi"
@@ -12,6 +13,10 @@ import (
 func GetConfig(target string, configSelected int) ([]types.Request, types.Adapter) {
 	conf := storageInterface.GetConfig(target)
 
+	if len(conf.Configs) == 0 {
+		logger.Error("No configurations to monitor")
+		return []types.Request{}, types.Adapter{}
+	}
 	// TODO: Add check for empty config, and dont crash if that is the case.
 
 	var requests []types.Request
@@ -51,6 +56,8 @@ func GetConfig(target string, configSelected int) ([]types.Request, types.Adapte
 	// Only protocol without need for an adapter is gNMI, for now.
 	if conf.Protocol != "GNMI" {
 		adapter = storageInterface.GetAdapter(conf.Protocol)
+	} else {
+		logger.Info("Support for direct communication with switches over gNMI is not yet supported")
 	}
 
 	return requests, adapter

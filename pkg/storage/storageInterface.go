@@ -54,7 +54,10 @@ func GetConfig(target string) types.ConfigObject {
 	}
 
 	var config types.ConfigObject
-	yaml.Unmarshal(response.Notification[0].Update[0].Val.GetBytesVal(), &config)
+	err = yaml.Unmarshal(response.Notification[0].Update[0].Val.GetBytesVal(), &config)
+	if err != nil {
+		logger.Errorf("Could not unmarshal config: %v", err)
+	}
 
 	return config
 }
