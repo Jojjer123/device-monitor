@@ -3,6 +3,7 @@ package deviceManager
 import (
 	"sync"
 
+	"github.com/onosproject/monitor-service/pkg/deviceMonitor"
 	"github.com/onosproject/monitor-service/pkg/logger"
 	reqBuilder "github.com/onosproject/monitor-service/pkg/requestBuilder"
 	"github.com/onosproject/monitor-service/pkg/types"
@@ -59,7 +60,7 @@ func deleteDeviceMonitor(target string) {
 		}
 	}
 
-	logger.Warn("Could not find device monitor in store.")
+	logger.Warn("Could not find device monitor in store")
 }
 
 func updateDeviceMonitor(requests []types.Request, target string) {
@@ -71,13 +72,10 @@ func updateDeviceMonitor(requests []types.Request, target string) {
 		}
 	}
 
-	logger.Warn("Could not find device monitor in store.")
+	logger.Warn("Could not find device monitor in store")
 }
 
 func createDeviceMonitor(requests []types.Request, adapter types.Adapter, target string) {
-	// managerChannel := make(chan string)
-	// requestsChannel := make(chan []types.Request)
-
 	// Consider checking Requests to update only if changed.
 	monitor := types.DeviceMonitor{
 		Target:          target,
@@ -89,5 +87,5 @@ func createDeviceMonitor(requests []types.Request, adapter types.Adapter, target
 
 	deviceMonitorStore = append(deviceMonitorStore, monitor)
 
-	go deviceMonitor(monitor)
+	go deviceMonitor.DeviceMonitor(monitor)
 }
