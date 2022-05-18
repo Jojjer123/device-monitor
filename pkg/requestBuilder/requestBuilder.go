@@ -10,12 +10,12 @@ import (
 )
 
 // Builds requests to send to a switch or an adapter.
-func GetConfig(target string, configSelected int) ([]types.Request, types.Adapter) {
+func GetConfig(target string, configSelected int) ([]types.Request, types.Adapter, string) {
 	conf := storageInterface.GetConfig(target)
 
 	if len(conf.Configs) == 0 {
 		logger.Error("No configurations to monitor")
-		return []types.Request{}, types.Adapter{}
+		return []types.Request{}, types.Adapter{}, ""
 	}
 	// TODO: Add check for empty config, and dont crash if that is the case.
 
@@ -60,7 +60,7 @@ func GetConfig(target string, configSelected int) ([]types.Request, types.Adapte
 		logger.Info("Support for direct communication with switches over gNMI is not yet supported")
 	}
 
-	return requests, adapter
+	return requests, adapter, conf.DeviceName
 }
 
 // Get gNMI path from a string.

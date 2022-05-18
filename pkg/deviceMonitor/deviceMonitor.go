@@ -21,7 +21,7 @@ func DeviceMonitor(monitor types.DeviceMonitor) {
 		counterWaitGroup.Add(1)
 		counterChannels = append(counterChannels, make(chan string))
 
-		go newCounter(req, monitor.Target, monitor.Adapter, &counterWaitGroup, counterChannels[index])
+		go newCounter(req, monitor.DeviceName, monitor.Target, monitor.Adapter, &counterWaitGroup, counterChannels[index])
 	}
 
 	alive := true
@@ -42,7 +42,7 @@ func DeviceMonitor(monitor types.DeviceMonitor) {
 			for index, req := range monitor.Requests {
 				counterWaitGroup.Add(1)
 				counterChannels = append(counterChannels, make(chan string))
-				go newCounter(req, monitor.Target, monitor.Adapter, &counterWaitGroup, counterChannels[index])
+				go newCounter(req, monitor.DeviceName, monitor.Target, monitor.Adapter, &counterWaitGroup, counterChannels[index])
 			}
 		}
 	}
@@ -51,7 +51,7 @@ func DeviceMonitor(monitor types.DeviceMonitor) {
 }
 
 // Requests counters at the given interval, extract response and forward it.
-func newCounter(req types.Request, target string, adapter types.Adapter, waitGroup *sync.WaitGroup, counterChannel <-chan string) {
+func newCounter(req types.Request, deviceName string, target string, adapter types.Adapter, waitGroup *sync.WaitGroup, counterChannel <-chan string) {
 	defer waitGroup.Done()
 
 	ctx := context.Background()
@@ -63,7 +63,7 @@ func newCounter(req types.Request, target string, adapter types.Adapter, waitGro
 		select {
 		case <-time.After(10 * time.Second):
 			waitGroup.Add(1)
-			go newCounter(req, target, adapter, waitGroup, counterChannel)
+			go newCounter(req, deviceName, target, adapter, waitGroup, counterChannel)
 			return
 		case msg := <-counterChannel:
 			if msg == "shutdown" {
@@ -92,8 +92,7 @@ func newCounter(req types.Request, target string, adapter types.Adapter, waitGro
 			} else {
 				// TODO: Send counter to data processing.
 
-				// TODO: Use switch as name?
-				extractData(response, req.GnmiRequest, "myOwnIdentifier" /*req.Name*/)
+				extractData(response, req.GnmiRequest, deviceName)
 			}
 		}
 	}

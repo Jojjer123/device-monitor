@@ -57,6 +57,7 @@ type Adapter struct {
 }
 
 type DeviceMonitor struct {
+	DeviceName      string
 	Target          string
 	Adapter         Adapter
 	Requests        []Request

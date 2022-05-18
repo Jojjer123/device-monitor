@@ -17,13 +17,14 @@ func ExecuteAdminSetCmd(cmd string, target string, configIndex ...int) string {
 	switch cmd {
 	case "Create":
 		// Get slice of the different paths with their intervals and the appropriate adapter if one is necessary
-		requests, adapter := reqBuilder.GetConfig(target, configIndex[0])
+		// Should create new object with all the data inside.
+		requests, adapter, deviceName := reqBuilder.GetConfig(target, configIndex[0])
 		if len(requests) == 0 {
 			return "No configurations to monitor"
 		}
-		createDeviceMonitor(requests, adapter, target)
+		createDeviceMonitor(requests, adapter, target, deviceName)
 	case "Update":
-		requests, _ := reqBuilder.GetConfig(target, configIndex[0])
+		requests, _, _ := reqBuilder.GetConfig(target, configIndex[0])
 		if len(requests) == 0 {
 			return "No configurations to monitor"
 		}
@@ -64,9 +65,10 @@ func updateDeviceMonitor(requests []types.Request, target string) {
 	logger.Warn("Could not find device monitor in store")
 }
 
-func createDeviceMonitor(requests []types.Request, adapter types.Adapter, target string) {
+func createDeviceMonitor(requests []types.Request, adapter types.Adapter, target string, deviceName string) {
 	// Consider checking Requests to update only if changed.
 	monitor := types.DeviceMonitor{
+		DeviceName:      deviceName,
 		Target:          target,
 		Adapter:         adapter,
 		Requests:        requests,
