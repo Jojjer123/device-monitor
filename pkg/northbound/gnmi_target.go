@@ -14,39 +14,35 @@ import (
 	"github.com/google/gnxi/gnmi"
 	"github.com/google/gnxi/gnmi/modeldata"
 	"github.com/google/gnxi/gnmi/modeldata/gostruct"
+
 	pb "github.com/openconfig/gnmi/proto/gnmi"
+	"google.golang.org/grpc/credentials"
 
 	"github.com/onosproject/monitor-service/pkg/types"
 )
 
-func startServer(address string, executeSetCmd func(string, string, ...int) string, streamMgrCmd func(types.Stream, string) string) {
+func startServer(secure bool, address string, executeSetCmd func(string, string, ...int) string, streamMgrCmd func(types.Stream, string) string) {
 	model := gnmi.NewModel(modeldata.ModelData,
 		reflect.TypeOf((*gostruct.Device)(nil)),
 		gostruct.SchemaTree["Device"],
 		gostruct.Unmarshal,
 		gostruct.ΛEnum)
 
-	// TODO Add credentials
+	var g *grpc.Server
 
-	// flag.Usage = func() {
-	// 	fmt.Fprintf(os.Stderr, "Supported models:\n")
-	// 	for _, m := range model.SupportedModels() {
-	// 		fmt.Fprintf(os.Stderr, "  %s\n", m)
-	// 	}
-	// 	fmt.Fprintf(os.Stderr, "\n")
-	// 	fmt.Fprintf(os.Stderr, "Usage of %s:\n", os.Args[0])
-	// 	flag.PrintDefaults()
-	// }
+	// Create server with credentials, they are COPIED from gnxi-simulators, so they SHOULD be replaced.
+	if secure {
+		creds, err := credentials.NewServerTLSFromFile("certs/localhost.crt", "certs/localhost.key")
+		if err != nil {
+			fmt.Printf("Failed to load credentials: %v\n", err)
+		}
 
-	// flag.Parse()
+		g = grpc.NewServer(grpc.Creds(creds))
+	} else {
+		g = grpc.NewServer()
+	}
 
-	// opts := credentials.ServerCredentials()
-	g := grpc.NewServer( /*opts...*/ )
-
-	var configData []byte
-
-	var err error
-	configData, err = ioutil.ReadFile("./target_configs/typical_ofsw_config.json") //*configFile)
+	configData, err := ioutil.ReadFile("./target_configs/typical_ofsw_config.json") //*configFile)
 	if err != nil {
 		// log.Fatalf("Error in reading config file: %v", err)
 		fmt.Print("Error in reading config file: ")
