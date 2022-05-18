@@ -63,17 +63,21 @@ func newCounter(req types.Request, target string, adapter types.Adapter, waitGro
 
 	ctx := context.Background()
 
-	c, err := gclient.New(ctx, client.Destination{
-		Addrs:       []string{adapter.Address},
-		Target:      target,
-		Timeout:     time.Second * 5,
-		Credentials: nil,
-		TLS:         nil,
-	})
-
+	c, err := createGnmiClient(adapter, target, ctx)
 	if err != nil {
-		fmt.Print("Could not create a gNMI client: ")
-		fmt.Println(err)
+		// Restarts process after 10s, however, if the shutdown command is sent on
+		// counterChannel, the process will stop.
+		select {
+		case <-time.After(10 * time.Second):
+			waitGroup.Add(1)
+			go newCounter(req, target, adapter, waitGroup, counterChannel)
+			return
+		case msg := <-counterChannel:
+			if msg == "shutdown" {
+				fmt.Println("Exits counter now")
+				return
+			}
+		}
 	}
 
 	// Start a ticker which will trigger repeatedly after (interval) milliseconds.
@@ -102,6 +106,24 @@ func newCounter(req types.Request, target string, adapter types.Adapter, waitGro
 	}
 
 	fmt.Println("Exits counter now")
+}
+
+func createGnmiClient(adapter types.Adapter, target string, ctx context.Context) (client.Impl, error) {
+	c, err := gclient.New(ctx, client.Destination{
+		Addrs:       []string{adapter.Address},
+		Target:      target,
+		Timeout:     time.Second * 5,
+		Credentials: nil,
+		TLS:         nil,
+	})
+
+	if err != nil {
+		fmt.Print("Could not create a gNMI client: ")
+		fmt.Println(err)
+		return nil, err
+	}
+
+	return c, nil
 }
 
 func extractData(response *gnmi.GetResponse, req *gnmi.GetRequest, name string) {
