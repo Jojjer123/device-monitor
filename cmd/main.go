@@ -3,9 +3,8 @@ package main
 import (
 	"sync"
 
-	northboundInterface "github.com/onosproject/monitor-service/pkg/northbound"
-
 	"github.com/onosproject/monitor-service/pkg/logger"
+	"github.com/onosproject/monitor-service/pkg/northbound"
 )
 
 // Starts some components of the monitor-service
@@ -16,7 +15,6 @@ func main() {
 	waitGroup.Add(1)
 
 	go northboundInterface.Northbound(&waitGroup)
-	// go dataProcMgr.DataProcessingManager(&waitGroup)
 
 	waitGroup.Wait()
 }

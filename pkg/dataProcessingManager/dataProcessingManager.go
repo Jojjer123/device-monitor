@@ -1,10 +1,10 @@
 package dataProcessing
 
 import (
-	"sync"
+	"github.com/onosproject/monitor-service/pkg/types"
+	"github.com/openconfig/gnmi/proto/gnmi"
 )
 
-func DataProcessingManager(waitGroup *sync.WaitGroup) {
-	// fmt.Println("DataProcessing started")
-	defer waitGroup.Done()
+func ProcessData(schemaTree *types.SchemaTree, path []*gnmi.Path) {
+	// TODO: Implement some processing on incoming data.
 }

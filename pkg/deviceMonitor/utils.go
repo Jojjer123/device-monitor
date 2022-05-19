@@ -9,6 +9,7 @@ import (
 	gclient "github.com/openconfig/gnmi/client/gnmi"
 	"github.com/openconfig/gnmi/proto/gnmi"
 
+	dataProcessing "github.com/onosproject/monitor-service/pkg/dataProcessingManager"
 	"github.com/onosproject/monitor-service/pkg/logger"
 	"github.com/onosproject/monitor-service/pkg/subscriptionManager"
 	"github.com/onosproject/monitor-service/pkg/types"
@@ -51,6 +52,7 @@ func extractData(response *gnmi.GetResponse, req *gnmi.GetRequest, name string) 
 		// Get tree structure from slice.
 		schemaTree = getTreeStructure(adapterResponse.Entries)
 
+		dataProcessing.ProcessData(schemaTree, req.Path)
 		sendDataToSubMgr(schemaTree, req.Path, name, adapterResponse.Timestamp)
 	}
 }

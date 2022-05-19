@@ -90,8 +90,6 @@ func newCounter(req types.Request, deviceName string, target string, adapter typ
 			if err != nil {
 				logger.Errorf("Target returned RPC error: %v", err)
 			} else {
-				// TODO: Send counter to data processing.
-
 				extractData(response, req.GnmiRequest, deviceName)
 			}
 		}
