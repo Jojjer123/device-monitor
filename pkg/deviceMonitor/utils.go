@@ -72,7 +72,7 @@ func sendDataToSubMgr(schemaTree *types.SchemaTree, paths []*gnmi.Path, name str
 		findCounterVals(counter, &counterValues)
 	}
 
-	logger.Infof("Counter values: %v", counterValues)
+	// logger.Infof("Counter values: %v", counterValues)
 
 	if len(counterValues) != len(paths) {
 		logger.Errorf("Failed to map counter values to paths with counters: %v\npaths: %v", counterValues, paths)
@@ -112,7 +112,6 @@ func createDictionary(counterValues []string, paths []*gnmi.Path) []types.Dictio
 // 	return ""
 // }
 
-// Call findCounterVals with startIndex as 0, in order to start searching through pathElems from index 0.
 func findCounterVals(schemaTree *types.SchemaTree, counterValues *[]string) {
 	if schemaTree.Value != "" {
 		// Check if all children of parent has values, then I must be a counter, otherwise I am just an identifier.
@@ -133,17 +132,6 @@ func findCounterVals(schemaTree *types.SchemaTree, counterValues *[]string) {
 			findCounterVals(child, counterValues)
 		}
 	}
-	// if startIndex < len(pathElems) {
-	// 	if pathElems[startIndex].Name == schemaTree.Name {
-	// 		if startIndex == len(pathElems)-1 {
-	// 			counterValues = append(counterValues, schemaTree.Value)
-	// 		}
-
-	// 		for _, child := range schemaTree.Children {
-	// 			findCounterVals(child, pathElems, startIndex+1, counterValues)
-	// 		}
-	// 	}
-	// }
 }
 
 func getTreeStructure(schemaEntries []types.SchemaEntry) *types.SchemaTree {
