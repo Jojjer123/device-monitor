@@ -30,6 +30,8 @@ func (s *server) Subscribe(stream pb.GNMI_SubscribeServer) error {
 
 	subRequest, err := stream.Recv()
 
+	logger.Infof("Subscribe request: %v", subRequest)
+
 	if err != nil {
 		// fmt.Print("Failed to receive from stream: ")
 		// fmt.Println(err)
@@ -38,23 +40,25 @@ func (s *server) Subscribe(stream pb.GNMI_SubscribeServer) error {
 
 	// fmt.Println(subRequest.GetSubscribe().Subscription[0].Path)
 
-	newStream := types.Stream{
-		StreamHandle: stream,
-		Target:       subRequest.GetSubscribe().Subscription[0].Path.Elem, // Previously was *&subRequest.GetSubscribe()...
-	}
-
-	// s.StreamMgrCmd(newStream, "Add")
-	subscriptionManager.SubscriptionMgrCmd(newStream, "Add")
-
-	go func() {
-		_, err := stream.Recv()
-		if err != nil {
-			// fmt.Println("Subscriber has disconnected")
-			logger.Info("Subscriber has disconnected")
-			// s.StreamMgrCmd(newStream, "Remove")
-			subscriptionManager.SubscriptionMgrCmd(newStream, "Remove")
+	for _, sub := range subRequest.GetSubscribe().Subscription {
+		newStream := types.Stream{
+			StreamHandle: stream,
+			Target:       sub.Path.Elem,
 		}
-	}()
+
+		// s.StreamMgrCmd(newStream, "Add")
+		subscriptionManager.SubscriptionMgrCmd(newStream, "Add")
+
+		go func() {
+			_, err := stream.Recv()
+			if err != nil {
+				// fmt.Println("Subscriber has disconnected")
+				logger.Info("Subscriber has disconnected")
+				// s.StreamMgrCmd(newStream, "Remove")
+				subscriptionManager.SubscriptionMgrCmd(newStream, "Remove")
+			}
+		}()
+	}
 
 	// TODO: Remove the bs stalling and have a correct ending of the function if even necessary.
 	for {
