@@ -10,6 +10,7 @@ import (
 	pb "github.com/openconfig/gnmi/proto/gnmi"
 
 	"github.com/onosproject/monitor-service/pkg/logger"
+	"github.com/onosproject/monitor-service/pkg/subscriptionManager"
 	"github.com/onosproject/monitor-service/pkg/types"
 )
 
@@ -42,14 +43,16 @@ func (s *server) Subscribe(stream pb.GNMI_SubscribeServer) error {
 		Target:       subRequest.GetSubscribe().Subscription[0].Path.Elem, // Previously was *&subRequest.GetSubscribe()...
 	}
 
-	s.StreamMgrCmd(newStream, "Add")
+	// s.StreamMgrCmd(newStream, "Add")
+	subscriptionManager.SubscriptionMgrCmd(newStream, "Add")
 
 	go func() {
 		_, err := stream.Recv()
 		if err != nil {
 			// fmt.Println("Subscriber has disconnected")
 			logger.Info("Subscriber has disconnected")
-			s.StreamMgrCmd(newStream, "Remove")
+			// s.StreamMgrCmd(newStream, "Remove")
+			subscriptionManager.SubscriptionMgrCmd(newStream, "Remove")
 		}
 	}()
 

@@ -4,11 +4,9 @@ import (
 	"sync"
 
 	dataProcMgr "github.com/onosproject/monitor-service/pkg/dataProcessingManager"
-	north "github.com/onosproject/monitor-service/pkg/northbound"
-	streamMgr "github.com/onosproject/monitor-service/pkg/streamManager"
+	northboundInterface "github.com/onosproject/monitor-service/pkg/northbound"
 
 	"github.com/onosproject/monitor-service/pkg/logger"
-	"github.com/onosproject/monitor-service/pkg/types"
 )
 
 const numberOfModules = 3
@@ -20,11 +18,11 @@ func main() {
 	var waitGroup sync.WaitGroup
 	waitGroup.Add(numberOfModules)
 
-	streamMgrChannel := make(chan types.StreamMgrChannelMessage)
+	// streamMgrChannel := make(chan types.StreamMgrChannelMessage)
 
-	go north.Northbound(&waitGroup, streamMgrChannel)
+	go northboundInterface.Northbound(&waitGroup) //, streamMgrChannel)
 	go dataProcMgr.DataProcessingManager(&waitGroup)
-	go streamMgr.StreamManager(&waitGroup, streamMgrChannel)
+	// go subscriptionManager.SubscriptionManager(&waitGroup, streamMgrChannel)
 
 	waitGroup.Wait()
 }

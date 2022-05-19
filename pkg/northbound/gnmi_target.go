@@ -16,10 +16,10 @@ import (
 	"google.golang.org/grpc/credentials"
 
 	"github.com/onosproject/monitor-service/pkg/logger"
-	"github.com/onosproject/monitor-service/pkg/types"
+	// "github.com/onosproject/monitor-service/pkg/types"
 )
 
-func startServer(secure bool, address string, streamMgrCmd func(types.Stream, string) string) {
+func startServer(secure bool, address string) { //, streamMgrCmd func(types.Stream, string) string) {
 	model := gnmi.NewModel(modeldata.ModelData,
 		reflect.TypeOf((*gostruct.Device)(nil)),
 		gostruct.SchemaTree["Device"],
@@ -47,7 +47,7 @@ func startServer(secure bool, address string, streamMgrCmd func(types.Stream, st
 
 	s, err := newServer(model, configData)
 
-	s.StreamMgrCmd = streamMgrCmd
+	// s.StreamMgrCmd = streamMgrCmd
 
 	if err != nil {
 		logger.Errorf("Error in creating gnmi target: %v", err)

@@ -10,7 +10,7 @@ import (
 )
 
 // Builds requests to send to a switch or an adapter.
-func GetConfig(target string, configSelected int) ([]types.Request, types.Adapter, string) {
+func GetRequestConf(target string, configSelected int) ([]types.Request, types.Adapter, string) {
 	conf := storageInterface.GetConfig(target)
 
 	if len(conf.Configs) == 0 {

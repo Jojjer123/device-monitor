@@ -10,7 +10,7 @@ import (
 	"github.com/openconfig/gnmi/proto/gnmi"
 
 	"github.com/onosproject/monitor-service/pkg/logger"
-	"github.com/onosproject/monitor-service/pkg/streamManager"
+	"github.com/onosproject/monitor-service/pkg/subscriptionManager"
 	"github.com/onosproject/monitor-service/pkg/types"
 )
 
@@ -67,7 +67,7 @@ func sendDataToSubMgr(schemaTree *types.SchemaTree, paths []*gnmi.Path, name str
 		return
 	}
 
-	streamManager.AddDataToStream(createDictionary(counterValues, paths), name, adapterTs)
+	subscriptionManager.AddDataToSubscribers(createDictionary(counterValues, paths), name, adapterTs)
 }
 
 func createDictionary(counterValues []string, paths []*gnmi.Path) []types.Dictionary {

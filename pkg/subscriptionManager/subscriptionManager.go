@@ -1,43 +1,29 @@
-package streamManager
+package subscriptionManager
 
 import (
-	"sync"
-	"time"
-
 	"encoding/json"
+	"time"
 
 	"github.com/onosproject/monitor-service/pkg/logger"
 	"github.com/onosproject/monitor-service/pkg/types"
-
-	// "github.com/openconfig/gnmi/ctree"
 	"github.com/openconfig/gnmi/proto/gnmi"
-	// "github.com/openconfig/goyang/pkg/yang"
 )
 
 var streamStore []types.Stream
 
-// TODO: Rename module to Subscription Manager
 // TODO: Remove channel in init function. Instead use public for streamMgrCmd...
 
-func StreamManager(waitGroup *sync.WaitGroup, streamMgrChannel chan types.StreamMgrChannelMessage) { //, adminChannel chan types.AdminChannelMessage) {
-	// fmt.Println("Started StreamManager")
-	defer waitGroup.Done()
+// func SubscriptionManager(waitGroup *sync.WaitGroup, streamMgrChannel chan types.StreamMgrChannelMessage) {
+// 	defer waitGroup.Done()
 
-	// TODO: Remove streamWaitGroup and add better way of keeping module "alive".
+// 	// TODO: Remove streamWaitGroup and add better way of keeping module "alive".
 
-	// var streamWaitGroup sync.WaitGroup
+// 	var streamMgrMessage types.StreamMgrChannelMessage
+// 	streamMgrMessage.ManageCmd = SubscriptionMgrCmd
+// 	streamMgrChannel <- streamMgrMessage
+// }
 
-	// fmt.Println("Going to send function from StreamManager")
-	var streamMgrMessage types.StreamMgrChannelMessage
-	streamMgrMessage.ManageCmd = streamMgrCmd
-	streamMgrChannel <- streamMgrMessage
-	// fmt.Println("Sent function from StreamManager")
-
-	// streamWaitGroup.Wait()
-	// fmt.Println("Closed StreamManager")
-}
-
-func streamMgrCmd(stream types.Stream, cmd string) string {
+func SubscriptionMgrCmd(stream types.Stream, cmd string) string {
 	switch cmd {
 	case "Add":
 		streamStore = append(streamStore, stream)
@@ -62,8 +48,7 @@ func streamMgrCmd(stream types.Stream, cmd string) string {
 	return ""
 }
 
-// TODO: Remove return-type
-func AddDataToStream(dataVal []types.Dictionary, subscriptionIdentifier string, adapterTs int64) types.Stream {
+func AddDataToSubscribers(dataVal []types.Dictionary, subscriptionIdentifier string, adapterTs int64) {
 	for _, stream := range streamStore {
 		if stream.Target[0].Name == subscriptionIdentifier {
 			objectToSend := types.GatewayData{
@@ -98,6 +83,4 @@ func AddDataToStream(dataVal []types.Dictionary, subscriptionIdentifier string, 
 			})
 		}
 	}
-
-	return types.Stream{}
 }
