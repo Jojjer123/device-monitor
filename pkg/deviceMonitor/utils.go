@@ -61,6 +61,7 @@ func sendDataToSubMgr(schemaTree *types.SchemaTree, paths []*gnmi.Path, name str
 	// Append values from the counters in the same order as the paths.
 	var counterValues []string
 	logger.Infof("Number of children for schemaTree = %v", len(schemaTree.Children))
+	logger.Infof("SchemaTree child is: %v", schemaTree.Children[0])
 	for index, counter := range schemaTree.Children {
 		counterValues = append(counterValues, findCounterVal(counter, paths[index].Elem, 0))
 	}
