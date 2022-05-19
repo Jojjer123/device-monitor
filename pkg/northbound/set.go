@@ -30,11 +30,11 @@ func (s *server) Set(ctx context.Context, req *gnmi.SetRequest) (*gnmi.SetRespon
 	for _, update := range req.Update {
 		if update.Path.Elem[0].Name == "Action" {
 			switch update.Path.Elem[0].Key["Action"] {
-			case "Create":
+			case "Start":
 				updateResult = append(updateResult, s.setRequest(update.Path))
 			case "Update":
 				updateResult = append(updateResult, s.setRequest(update.Path))
-			case "Delete":
+			case "Stop":
 				updateResult = append(updateResult, s.deleteRequest(update.Path))
 			default:
 				logger.Error("Action not found!")

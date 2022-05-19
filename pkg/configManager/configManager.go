@@ -15,22 +15,22 @@ func ExecuteAdminSetCmd(cmd string, target string, configIndex ...int) string {
 	}
 
 	switch cmd {
-	case "Create":
+	case "Start":
 		// Get slice of the different paths with their intervals and the appropriate adapter if one is necessary
 		// Should create new object with all the data inside.
-		requests, adapter, deviceName := reqBuilder.GetConfig(target, configIndex[0])
+		requests, adapter, deviceName := reqBuilder.GetRequestConf(target, configIndex[0])
 		if len(requests) == 0 {
 			return "No configurations to monitor"
 		}
-		createDeviceMonitor(requests, adapter, target, deviceName)
+		startMonitoring(requests, adapter, target, deviceName)
 	case "Update":
-		requests, _, _ := reqBuilder.GetConfig(target, configIndex[0])
+		requests, _, _ := reqBuilder.GetRequestConf(target, configIndex[0])
 		if len(requests) == 0 {
 			return "No configurations to monitor"
 		}
-		updateDeviceMonitor(requests, target)
-	case "Delete":
-		deleteDeviceMonitor(target)
+		updateMonitoring(requests, target)
+	case "Stop":
+		stopMonitoring(target)
 	default:
 		logger.Warnf("Could not find command: %v", cmd)
 		return "Could not find command: " + cmd
@@ -39,7 +39,7 @@ func ExecuteAdminSetCmd(cmd string, target string, configIndex ...int) string {
 	return "Successfully executed command"
 }
 
-func deleteDeviceMonitor(target string) {
+func stopMonitoring(target string) {
 	for index, monitor := range deviceMonitorStore {
 		if monitor.Target == target {
 			monitor.ManagerChannel <- "shutdown"
@@ -53,7 +53,7 @@ func deleteDeviceMonitor(target string) {
 	logger.Warn("Could not find device monitor in store")
 }
 
-func updateDeviceMonitor(requests []types.Request, target string) {
+func updateMonitoring(requests []types.Request, target string) {
 	for _, monitor := range deviceMonitorStore {
 		if monitor.Target == target {
 			monitor.ManagerChannel <- "update"
@@ -65,7 +65,7 @@ func updateDeviceMonitor(requests []types.Request, target string) {
 	logger.Warn("Could not find device monitor in store")
 }
 
-func createDeviceMonitor(requests []types.Request, adapter types.Adapter, target string, deviceName string) {
+func startMonitoring(requests []types.Request, adapter types.Adapter, target string, deviceName string) {
 	// Consider checking Requests to update only if changed.
 	monitor := types.DeviceMonitor{
 		DeviceName:      deviceName,
