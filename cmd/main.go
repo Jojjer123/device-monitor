@@ -1,28 +1,26 @@
 package main
 
 import (
-	"sync"
+	// "sync"
 
-	dataProcMgr "github.com/onosproject/monitor-service/pkg/dataProcessingManager"
 	northboundInterface "github.com/onosproject/monitor-service/pkg/northbound"
 
 	"github.com/onosproject/monitor-service/pkg/logger"
 )
 
-const numberOfModules = 3
-
 // Starts some components of the monitor-service
 func main() {
 	logger.InitLogging()
 
-	var waitGroup sync.WaitGroup
-	waitGroup.Add(numberOfModules)
+	// var waitGroup sync.WaitGroup
+	// waitGroup.Add(1)
 
-	// streamMgrChannel := make(chan types.StreamMgrChannelMessage)
+	go northboundInterface.StartServer(false, ":11161")
+	go northboundInterface.StartServer(true, ":10161")
 
-	go northboundInterface.Northbound(&waitGroup) //, streamMgrChannel)
-	go dataProcMgr.DataProcessingManager(&waitGroup)
-	// go subscriptionManager.SubscriptionManager(&waitGroup, streamMgrChannel)
+	// go northboundInterface.Northbound(/*&waitGroup*/)
 
-	waitGroup.Wait()
+	// go dataProcMgr.DataProcessingManager(&waitGroup)
+
+	// waitGroup.Wait()
 }

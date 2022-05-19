@@ -19,7 +19,7 @@ import (
 	// "github.com/onosproject/monitor-service/pkg/types"
 )
 
-func startServer(secure bool, address string) { //, streamMgrCmd func(types.Stream, string) string) {
+func StartServer(secure bool, address string) { //, streamMgrCmd func(types.Stream, string) string) {
 	model := gnmi.NewModel(modeldata.ModelData,
 		reflect.TypeOf((*gostruct.Device)(nil)),
 		gostruct.SchemaTree["Device"],
