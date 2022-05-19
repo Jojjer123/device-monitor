@@ -83,7 +83,7 @@ func AddDataToSubscribers(dataVal []types.Dictionary, subscriptionIdentifier str
 				},
 			}
 
-			fmt.Printf("Send data to gnmi-gateway: %v", time.Now().UnixNano())
+			fmt.Printf("Send data to gnmi-gateway: %v\n", time.Now().UnixNano())
 
 			stream.StreamHandle.Send(subResponse)
 		}

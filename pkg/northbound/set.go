@@ -22,7 +22,7 @@ func (s *server) Set(ctx context.Context, req *gnmi.SetRequest) (*gnmi.SetRespon
 		return nil, status.Error(codes.PermissionDenied, msg)
 	}
 
-	fmt.Printf("Set request start: %v", time.Now().UnixNano())
+	fmt.Printf("Set request start: %v\n", time.Now().UnixNano())
 
 	logger.Info("Allowed a Set request")
 
