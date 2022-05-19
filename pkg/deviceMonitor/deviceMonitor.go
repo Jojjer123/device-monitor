@@ -74,12 +74,12 @@ func newCounter(req types.Request, deviceName string, target string, adapter typ
 		}
 	}
 
-	fmt.Printf("Get %v from switch %v: %v\n", req.Counters[0].Name, deviceName, time.Now().UnixNano())
+	fmt.Printf("Get %v from %v: %v\n", req.Counters[0].Name, deviceName, time.Now().UnixNano())
 
 	// Get the counter and send it to the data processing and to possible subscribers.
 	response, err := c.(*gclient.Client).Get(ctx, req.GnmiRequest)
 
-	fmt.Printf("Received %v from switch %v: %v\n", req.Counters[0].Name, deviceName, time.Now().UnixNano())
+	fmt.Printf("Received %v from %v: %v\n", req.Counters[0].Name, deviceName, time.Now().UnixNano())
 
 	if err != nil {
 		logger.Errorf("Target returned RPC error: %v", err)
@@ -100,12 +100,12 @@ func newCounter(req types.Request, deviceName string, target string, adapter typ
 			}
 		case <-intervalTicker.C:
 
-			fmt.Printf("Get %v from switch %v: %v\n", req.Counters[0].Name, deviceName, time.Now().UnixNano())
+			fmt.Printf("Get %v from %v: %v\n", req.Counters[0].Name, deviceName, time.Now().UnixNano())
 
 			// Get the counter and send it to the data processing and to possible subscribers.
 			response, err := c.(*gclient.Client).Get(ctx, req.GnmiRequest)
 
-			fmt.Printf("Received %v from switch %v: %v\n", req.Counters[0].Name, deviceName, time.Now().UnixNano())
+			fmt.Printf("Received %v from %v: %v\n", req.Counters[0].Name, deviceName, time.Now().UnixNano())
 
 			if err != nil {
 				logger.Errorf("Target returned RPC error: %v", err)

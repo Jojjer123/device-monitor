@@ -79,6 +79,7 @@ func sendDataToSubMgr(schemaTree *types.SchemaTree, paths []*gnmi.Path, name str
 		return
 	}
 
+	logger.Infof("Identifier %v is now calling the AddDataToSubscribers", name)
 	subscriptionManager.AddDataToSubscribers(createDictionary(counterValues, paths), name, adapterTs)
 }
 
