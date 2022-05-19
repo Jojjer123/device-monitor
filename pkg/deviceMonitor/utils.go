@@ -49,7 +49,7 @@ func extractData(response *gnmi.GetResponse, req *gnmi.GetRequest, name string) 
 			logger.Errorf("Failed to unmarshal ProtoBytes: %v", err)
 		}
 
-		logger.Infof("Response entries: %v", adapterResponse.Entries)
+		// logger.Infof("Response entries: %v", adapterResponse.Entries)
 
 		// Get tree structure from slice.
 		schemaTree = getTreeStructure(adapterResponse.Entries)
@@ -61,11 +61,15 @@ func extractData(response *gnmi.GetResponse, req *gnmi.GetRequest, name string) 
 
 func sendDataToSubMgr(schemaTree *types.SchemaTree, paths []*gnmi.Path, name string, adapterTs int64) {
 	// Append values from the counters in the same order as the paths.
+	// var counterValues []string
 	var counterValues []string
-	logger.Infof("Number of children for schemaTree = %v", len(schemaTree.Children))
-	logger.Infof("SchemaTree child is: %v", schemaTree.Children[0])
-	for index, counter := range schemaTree.Children {
-		counterValues = append(counterValues, findCounterVal(counter, paths[index].Elem, 0))
+	// logger.Infof("Number of children for schemaTree = %v", len(schemaTree.Children))
+	// logger.Infof("SchemaTree child is: %v", schemaTree.Children[0])
+
+	// for index, counter := range schemaTree.Children {
+	for _, counter := range schemaTree.Children {
+		// counterValues = append(counterValues, findCounterVal(counter, paths[index].Elem, 0))
+		findCounterVals(counter, &counterValues)
 	}
 
 	if len(counterValues) != len(paths) {
@@ -88,22 +92,56 @@ func createDictionary(counterValues []string, paths []*gnmi.Path) []types.Dictio
 	return dict
 }
 
-// Call findCounterVal with startIndex as 0, in order to start searching through pathElems from index 0.
-func findCounterVal(schemaTree *types.SchemaTree, pathElems []*gnmi.PathElem, startIndex int) string {
-	if startIndex < len(pathElems) {
-		if pathElems[startIndex].Name == schemaTree.Name {
-			if startIndex == len(pathElems)-1 {
-				return schemaTree.Value
+// // Call findCounterVal with startIndex as 0, in order to start searching through pathElems from index 0.
+// func findCounterVal(schemaTree *types.SchemaTree, pathElems []*gnmi.PathElem, startIndex int) string {
+// 	if startIndex < len(pathElems) {
+// 		if pathElems[startIndex].Name == schemaTree.Name {
+// 			if startIndex == len(pathElems)-1 {
+// 				return schemaTree.Value
+// 			}
+// 			var childResult string
+// 			for _, child := range schemaTree.Children {
+// 				childResult += findCounterVal(child, pathElems, startIndex+1)
+// 			}
+// 			return childResult
+// 		}
+// 	}
+
+// 	return ""
+// }
+
+// Call findCounterVals with startIndex as 0, in order to start searching through pathElems from index 0.
+func findCounterVals(schemaTree *types.SchemaTree, counterValues *[]string) {
+	if schemaTree.Value != "" {
+		// Check if all children of parent has values, then I must be a counter, otherwise I am just an identifier.
+		isIdentifier := false
+		for _, child := range schemaTree.Parent.Children {
+			// If child is directory.
+			if child.Value == "" {
+				isIdentifier = true
 			}
-			var childResult string
-			for _, child := range schemaTree.Children {
-				childResult += findCounterVal(child, pathElems, startIndex+1)
-			}
-			return childResult
+		}
+
+		if !isIdentifier {
+			*counterValues = append(*counterValues, schemaTree.Value)
+		}
+	} else {
+		// Current schemaTree is directory.
+		for _, child := range schemaTree.Children {
+			findCounterVals(child, counterValues)
 		}
 	}
+	// if startIndex < len(pathElems) {
+	// 	if pathElems[startIndex].Name == schemaTree.Name {
+	// 		if startIndex == len(pathElems)-1 {
+	// 			counterValues = append(counterValues, schemaTree.Value)
+	// 		}
 
-	return ""
+	// 		for _, child := range schemaTree.Children {
+	// 			findCounterVals(child, pathElems, startIndex+1, counterValues)
+	// 		}
+	// 	}
+	// }
 }
 
 func getTreeStructure(schemaEntries []types.SchemaEntry) *types.SchemaTree {
