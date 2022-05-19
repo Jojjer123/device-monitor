@@ -2,6 +2,7 @@ package subscriptionManager
 
 import (
 	"encoding/json"
+	"fmt"
 	"time"
 
 	"github.com/onosproject/monitor-service/pkg/logger"
@@ -62,7 +63,7 @@ func AddDataToSubscribers(dataVal []types.Dictionary, subscriptionIdentifier str
 				logger.Errorf("Failed to marshal to json, err: %v", err)
 			}
 
-			stream.StreamHandle.Send(&gnmi.SubscribeResponse{
+			subResponse := &gnmi.SubscribeResponse{
 				Response: &gnmi.SubscribeResponse_Update{
 					Update: &gnmi.Notification{
 						Timestamp: time.Now().UnixNano(),
@@ -80,7 +81,11 @@ func AddDataToSubscribers(dataVal []types.Dictionary, subscriptionIdentifier str
 						},
 					},
 				},
-			})
+			}
+
+			fmt.Printf("Send data to gnmi-gateway: %v", time.Now().UnixNano())
+
+			stream.StreamHandle.Send(subResponse)
 		}
 	}
 }

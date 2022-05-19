@@ -3,6 +3,7 @@ package config
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 
 	// "sync"
 	"time"
@@ -47,7 +48,11 @@ func GetConfig(target string) types.ConfigObject {
 		},
 	}
 
+	fmt.Printf("Get config from ext service: %v", time.Now().UnixNano())
+
 	response, err := c.(*gclient.Client).Get(ctx, r)
+
+	fmt.Printf("Received config from ext service: %v", time.Now().UnixNano())
 
 	if err != nil {
 		logger.Errorf("Target returned RPC error for Get(%v): %v", r.String(), err)
@@ -88,7 +93,11 @@ func GetAdapter(protocol string) types.Adapter {
 		},
 	}
 
+	fmt.Printf("Get adapter from ext service: %v", time.Now().UnixNano())
+
 	response, err := c.(*gclient.Client).Get(ctx, r)
+
+	fmt.Printf("Received adapter from ext service: %v", time.Now().UnixNano())
 
 	if err != nil {
 		logger.Errorf("Target returned RPC error for Get(%v): %v", r.String(), err)

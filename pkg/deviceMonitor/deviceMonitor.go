@@ -2,6 +2,7 @@ package deviceMonitor
 
 import (
 	"context"
+	"fmt"
 	"sync"
 	"time"
 
@@ -73,6 +74,19 @@ func newCounter(req types.Request, deviceName string, target string, adapter typ
 		}
 	}
 
+	fmt.Printf("Get counter from adapter/switch: %v", time.Now().UnixNano())
+
+	// Get the counter and send it to the data processing and to possible subscribers.
+	response, err := c.(*gclient.Client).Get(ctx, req.GnmiRequest)
+
+	fmt.Printf("Received counter from adapter/switch: %v", time.Now().UnixNano())
+
+	if err != nil {
+		logger.Errorf("Target returned RPC error: %v", err)
+	} else {
+		extractData(response, req.GnmiRequest, deviceName)
+	}
+
 	// Start a ticker which will trigger repeatedly after (interval) milliseconds.
 	intervalTicker := time.NewTicker(time.Duration(req.Interval) * time.Millisecond)
 
@@ -85,8 +99,14 @@ func newCounter(req types.Request, deviceName string, target string, adapter typ
 				counterIsActive = false
 			}
 		case <-intervalTicker.C:
+
+			fmt.Printf("Get counter from adapter/switch: %v", time.Now().UnixNano())
+
 			// Get the counter and send it to the data processing and to possible subscribers.
 			response, err := c.(*gclient.Client).Get(ctx, req.GnmiRequest)
+
+			fmt.Printf("Received counter from adapter/switch: %v", time.Now().UnixNano())
+
 			if err != nil {
 				logger.Errorf("Target returned RPC error: %v", err)
 			} else {

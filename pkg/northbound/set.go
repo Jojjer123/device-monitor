@@ -1,6 +1,7 @@
 package northboundInterface
 
 import (
+	"fmt"
 	"strconv"
 	"time"
 
@@ -20,6 +21,9 @@ func (s *server) Set(ctx context.Context, req *gnmi.SetRequest) (*gnmi.SetRespon
 		logger.Infof("Denied a Set request: %v", msg)
 		return nil, status.Error(codes.PermissionDenied, msg)
 	}
+
+	fmt.Printf("Set request start: %v", time.Now().UnixNano())
+
 	logger.Info("Allowed a Set request")
 
 	var updateResult []*gnmi.UpdateResult
