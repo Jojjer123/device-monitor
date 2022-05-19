@@ -72,6 +72,8 @@ func sendDataToSubMgr(schemaTree *types.SchemaTree, paths []*gnmi.Path, name str
 		findCounterVals(counter, &counterValues)
 	}
 
+	logger.Infof("Counter values: %v", counterValues)
+
 	if len(counterValues) != len(paths) {
 		logger.Errorf("Failed to map counter values to paths with counters: %v\npaths: %v", counterValues, paths)
 		return
