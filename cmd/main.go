@@ -1,7 +1,7 @@
 package main
 
 import (
-	// "sync"
+	"sync"
 
 	northboundInterface "github.com/onosproject/monitor-service/pkg/northbound"
 
@@ -12,15 +12,11 @@ import (
 func main() {
 	logger.InitLogging()
 
-	// var waitGroup sync.WaitGroup
-	// waitGroup.Add(1)
+	var waitGroup sync.WaitGroup
+	waitGroup.Add(1)
 
-	go northboundInterface.StartServer(false, ":11161")
-	go northboundInterface.StartServer(true, ":10161")
-
-	// go northboundInterface.Northbound(/*&waitGroup*/)
-
+	go northboundInterface.Northbound(&waitGroup)
 	// go dataProcMgr.DataProcessingManager(&waitGroup)
 
-	// waitGroup.Wait()
+	waitGroup.Wait()
 }
