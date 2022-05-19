@@ -30,7 +30,7 @@ func (s *server) Subscribe(stream pb.GNMI_SubscribeServer) error {
 
 	subRequest, err := stream.Recv()
 
-	logger.Infof("Subscribe request: %v", subRequest)
+	// logger.Infof("Subscribe request: %v", subRequest)
 
 	if err != nil {
 		// fmt.Print("Failed to receive from stream: ")
