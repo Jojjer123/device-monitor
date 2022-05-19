@@ -49,6 +49,8 @@ func extractData(response *gnmi.GetResponse, req *gnmi.GetRequest, name string) 
 			logger.Errorf("Failed to unmarshal ProtoBytes: %v", err)
 		}
 
+		logger.Infof("Response entries: %v", adapterResponse.Entries)
+
 		// Get tree structure from slice.
 		schemaTree = getTreeStructure(adapterResponse.Entries)
 
