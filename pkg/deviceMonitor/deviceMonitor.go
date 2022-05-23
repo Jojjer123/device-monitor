@@ -112,6 +112,7 @@ func newCounter(req types.Request, deviceName string, target string, adapter typ
 		select {
 		case msg := <-counterChannel:
 			if msg == "shutdown" {
+				fmt.Println("Shutdown message arrived")
 				intervalTicker.Stop()
 				counterIsActive = false
 			} else {
