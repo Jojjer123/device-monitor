@@ -37,7 +37,7 @@ func DeviceMonitor(monitor types.DeviceMonitor) {
 		cmd := <-monitor.ManagerChannel
 		if cmd == "shutdown" {
 			fmt.Printf("len: %v\n", len(counterChannels))
-			fmt.Println("Shutting down:")
+			fmt.Printf("Shutting down %v:\n", monitor.Target)
 			for index, ch := range counterChannels {
 				fmt.Println(index)
 				ch <- cmd
