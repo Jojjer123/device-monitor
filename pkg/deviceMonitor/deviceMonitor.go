@@ -22,7 +22,7 @@ func DeviceMonitor(monitor types.DeviceMonitor) {
 
 	for index, req := range monitor.Requests {
 		counterWaitGroup.Add(1)
-		counterChannels = append(counterChannels, make(chan string))
+		counterChannels = append(counterChannels, make(chan string, 1))
 
 		fmt.Printf("Sending channel %v to %v\n", index, req.Counters[0].Name)
 
