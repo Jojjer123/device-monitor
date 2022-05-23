@@ -18,12 +18,17 @@ func DeviceMonitor(monitor types.DeviceMonitor) {
 	var counterWaitGroup sync.WaitGroup
 	var counterChannels []chan string
 
+	fmt.Printf("Requests: %v\n", monitor.Requests)
+
 	for index, req := range monitor.Requests {
 		counterWaitGroup.Add(1)
 		counterChannels = append(counterChannels, make(chan string))
 
 		go newCounter(req, monitor.DeviceName, monitor.Target, monitor.Adapter, &counterWaitGroup, counterChannels[index])
 	}
+
+	fmt.Println(len(monitor.Requests))
+	fmt.Println(len(counterChannels))
 
 	alive := true
 	for alive {
