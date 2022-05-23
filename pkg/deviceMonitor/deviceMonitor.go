@@ -24,6 +24,8 @@ func DeviceMonitor(monitor types.DeviceMonitor) {
 		counterWaitGroup.Add(1)
 		counterChannels = append(counterChannels, make(chan string))
 
+		fmt.Println(counterChannels)
+
 		fmt.Printf("Sending channel %v to %v\n", index, req.Counters[0].Name)
 
 		go newCounter(req, monitor.DeviceName, monitor.Target, monitor.Adapter, &counterWaitGroup, counterChannels[index])
