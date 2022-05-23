@@ -107,6 +107,8 @@ func newCounter(req types.Request, deviceName string, target string, adapter typ
 			if msg == "shutdown" {
 				intervalTicker.Stop()
 				counterIsActive = false
+			} else {
+				logger.Errorf("Counter channel message is not \"shutdown\", it is: %v", msg)
 			}
 		case <-intervalTicker.C:
 
@@ -122,6 +124,8 @@ func newCounter(req types.Request, deviceName string, target string, adapter typ
 			} else {
 				extractData(response, req.GnmiRequest, deviceName)
 			}
+		default:
+			logger.Error("Counters select-statement did not receive anything")
 		}
 	}
 
