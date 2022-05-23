@@ -115,5 +115,5 @@ func newCounter(req types.Request, deviceName string, target string, adapter typ
 		}
 	}
 
-	logger.Info("Exits counter now")
+	logger.Infof("Exits %v from %v", req.Counters[0].Name, deviceName)
 }
