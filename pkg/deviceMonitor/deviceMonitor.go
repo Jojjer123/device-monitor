@@ -114,10 +114,11 @@ func newCounter(req types.Request, deviceName string, target string, adapter typ
 		case <-intervalTicker.C:
 			if counterIsActive {
 				counterChannel <- "ticker"
-			} else {
-				return
 			}
 		default:
+			if !counterIsActive {
+				return
+			}
 		}
 	}()
 
