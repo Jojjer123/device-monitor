@@ -72,8 +72,8 @@ func startMonitoring(requests []types.Request, adapter types.Adapter, target str
 		Target:          target,
 		Adapter:         adapter,
 		Requests:        requests,
-		RequestsChannel: make(chan []types.Request),
-		ManagerChannel:  make(chan string),
+		RequestsChannel: make(chan []types.Request, 1),
+		ManagerChannel:  make(chan string, 1),
 	}
 
 	deviceMonitorStore = append(deviceMonitorStore, monitor)
