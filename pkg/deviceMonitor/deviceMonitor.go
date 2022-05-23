@@ -30,7 +30,7 @@ func DeviceMonitor(monitor types.DeviceMonitor) {
 	}
 
 	// fmt.Println(len(monitor.Requests))
-	fmt.Println(len(counterChannels))
+	// fmt.Println(len(counterChannels))
 
 	alive := true
 	for alive {
@@ -39,10 +39,10 @@ func DeviceMonitor(monitor types.DeviceMonitor) {
 			// fmt.Printf("len: %v\n", len(counterChannels))
 			// fmt.Printf("Shutting down %v:\n", monitor.Target)
 			for index := 0; index < len(counterChannels); index++ {
-				fmt.Println(index)
+				// fmt.Println(index)
 				// fmt.Println(cap(counterChannels[index]))
 				counterChannels[index] <- cmd
-				fmt.Println("Sent command on channel now")
+				// fmt.Println("Sent command on channel now")
 			}
 			alive = false
 		} else if cmd == "update" {
@@ -127,11 +127,11 @@ func newCounter(req types.Request, deviceName string, target string, adapter typ
 		// case msg := <-counterChannel:
 		msg := <-counterChannel
 		if msg == "shutdown" {
-			fmt.Println("Shutdown message arrived")
+			// fmt.Println("Shutdown message arrived")
 			intervalTicker.Stop()
 			counterIsActive = false
 		} else if msg == "ticker" {
-			fmt.Printf("Len of counter channel is: %v\n", len(counterChannel))
+			// fmt.Printf("Len of counter channel is: %v\n", len(counterChannel))
 
 			fmt.Printf("Get %v from %v: %v\n", req.Counters[0].Name, deviceName, time.Now().UnixNano())
 
