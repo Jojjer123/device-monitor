@@ -124,8 +124,7 @@ func newCounter(req types.Request, deviceName string, target string, adapter typ
 			} else {
 				extractData(response, req.GnmiRequest, deviceName)
 			}
-		default:
-			logger.Error("Counters select-statement did not receive anything")
+		case <-time.After(500 * time.Millisecond):
 		}
 	}
 
