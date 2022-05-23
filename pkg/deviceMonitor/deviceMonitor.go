@@ -119,6 +119,7 @@ func newCounter(req types.Request, deviceName string, target string, adapter typ
 				logger.Errorf("Counter channel message is not \"shutdown\", it is: %v", msg)
 			}
 		case <-intervalTicker.C:
+			fmt.Printf("Len of counter channel is: %v\n", len(counterChannel))
 
 			fmt.Printf("Get %v from %v: %v\n", req.Counters[0].Name, deviceName, time.Now().UnixNano())
 
