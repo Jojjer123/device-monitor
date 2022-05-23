@@ -38,15 +38,15 @@ func DeviceMonitor(monitor types.DeviceMonitor) {
 		if cmd == "shutdown" {
 			fmt.Printf("len: %v\n", len(counterChannels))
 			fmt.Printf("Shutting down %v:\n", monitor.Target)
-			for index, ch := range counterChannels {
+			for index := 0; index < len(counterChannels); index++ {
 				fmt.Println(index)
-				ch <- cmd
+				counterChannels[index] <- cmd
 				fmt.Println("Sent command on channel now...")
 			}
 			alive = false
 		} else if cmd == "update" {
-			for _, ch := range counterChannels {
-				ch <- "shutdown"
+			for index := 0; index < len(counterChannels); index++ {
+				counterChannels[index] <- "shutdown"
 			}
 
 			monitor.Requests = <-monitor.RequestsChannel
