@@ -40,8 +40,7 @@ func DeviceMonitor(monitor types.DeviceMonitor) {
 			fmt.Printf("Shutting down %v:\n", monitor.Target)
 			for index := 0; index < len(counterChannels); index++ {
 				fmt.Println(index)
-				_, ok := <-counterChannels[index]
-				fmt.Println(ok)
+				fmt.Println(cap(counterChannels[index]))
 				counterChannels[index] <- cmd
 				fmt.Println("Sent command on channel now...")
 			}
