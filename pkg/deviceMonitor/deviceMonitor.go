@@ -41,6 +41,7 @@ func DeviceMonitor(monitor types.DeviceMonitor) {
 			for index, ch := range counterChannels {
 				fmt.Println(index)
 				ch <- cmd
+				fmt.Println("Sent command on channel now...")
 			}
 			alive = false
 		} else if cmd == "update" {
