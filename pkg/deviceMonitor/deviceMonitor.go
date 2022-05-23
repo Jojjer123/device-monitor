@@ -40,8 +40,6 @@ func DeviceMonitor(monitor types.DeviceMonitor) {
 			fmt.Printf("Shutting down %v:\n", monitor.Target)
 			for index := 0; index < len(counterChannels); index++ {
 				fmt.Println(index)
-				fmt.Println(counterChannels[index])
-				fmt.Println(cmd)
 				counterChannels[index] <- cmd
 				fmt.Println("Sent command on channel now...")
 			}
@@ -59,6 +57,8 @@ func DeviceMonitor(monitor types.DeviceMonitor) {
 				go newCounter(req, monitor.DeviceName, monitor.Target, monitor.Adapter, &counterWaitGroup, counterChannels[index])
 			}
 		}
+
+		fmt.Println(".")
 	}
 
 	counterWaitGroup.Wait()
