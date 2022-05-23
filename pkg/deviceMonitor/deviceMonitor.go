@@ -72,16 +72,21 @@ func newCounter(req types.Request, deviceName string, target string, adapter typ
 	if err != nil {
 		// Restarts process after 10s, however, if the shutdown command is sent on
 		// counterChannel, the process will stop.
+
+		restartTicker := time.NewTicker(10 * time.Second)
+
 		select {
-		case <-time.After(10 * time.Second):
-			waitGroup.Add(1)
-			go newCounter(req, deviceName, target, adapter, waitGroup, counterChannel)
-			return
 		case msg := <-counterChannel:
 			if msg == "shutdown" {
 				logger.Info("Exits counter now")
 				return
 			}
+		// case <-time.After(10 * time.Second):
+		case <-restartTicker.C:
+			restartTicker.Stop()
+			waitGroup.Add(1)
+			go newCounter(req, deviceName, target, adapter, waitGroup, counterChannel)
+			return
 		}
 	}
 
@@ -125,7 +130,6 @@ func newCounter(req types.Request, deviceName string, target string, adapter typ
 			} else {
 				extractData(response, req.GnmiRequest, deviceName)
 			}
-		case <-time.After(500 * time.Millisecond):
 		}
 	}
 
