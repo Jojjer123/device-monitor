@@ -42,7 +42,7 @@ func DeviceMonitor(monitor types.DeviceMonitor) {
 				fmt.Println(index)
 				// fmt.Println(cap(counterChannels[index]))
 				counterChannels[index] <- cmd
-				fmt.Println("Sent command on channel now...")
+				fmt.Println("Sent command on channel now")
 			}
 			alive = false
 		} else if cmd == "update" {
@@ -132,6 +132,8 @@ func newCounter(req types.Request, deviceName string, target string, adapter typ
 			} else {
 				extractData(response, req.GnmiRequest, deviceName)
 			}
+		default:
+			fmt.Print(".")
 		}
 	}
 
