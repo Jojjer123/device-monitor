@@ -43,7 +43,6 @@ func DeviceMonitor(monitor types.DeviceMonitor) {
 				// fmt.Println(cap(counterChannels[index]))
 				counterChannels[index] <- cmd
 				fmt.Println("Sent command on channel now")
-				fmt.Println(len(counterChannels[index]))
 			}
 			alive = false
 		} else if cmd == "update" {
@@ -65,7 +64,7 @@ func DeviceMonitor(monitor types.DeviceMonitor) {
 }
 
 // Requests counters at the given interval, extract response and forward it.
-func newCounter(req types.Request, deviceName string, target string, adapter types.Adapter, waitGroup *sync.WaitGroup, counterChannel <-chan string) {
+func newCounter(req types.Request, deviceName string, target string, adapter types.Adapter, waitGroup *sync.WaitGroup, counterChannel chan string) {
 	defer waitGroup.Done()
 
 	ctx := context.Background()
