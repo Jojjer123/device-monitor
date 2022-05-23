@@ -133,6 +133,7 @@ func newCounter(req types.Request, deviceName string, target string, adapter typ
 			} else {
 				extractData(response, req.GnmiRequest, deviceName)
 			}
+		default:
 		}
 	}
 
