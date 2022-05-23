@@ -24,7 +24,7 @@ func DeviceMonitor(monitor types.DeviceMonitor) {
 		counterWaitGroup.Add(1)
 		counterChannels = append(counterChannels, make(chan string, 1))
 
-		fmt.Printf("Sending channel %v to %v\n", index, req.Counters[0].Name)
+		// fmt.Printf("Sending channel %v to %v\n", index, req.Counters[0].Name)
 
 		go newCounter(req, monitor.DeviceName, monitor.Target, monitor.Adapter, &counterWaitGroup, counterChannels[index])
 	}
@@ -36,13 +36,13 @@ func DeviceMonitor(monitor types.DeviceMonitor) {
 	for alive {
 		cmd := <-monitor.ManagerChannel
 		if cmd == "shutdown" {
-			fmt.Printf("len: %v\n", len(counterChannels))
-			fmt.Printf("Shutting down %v:\n", monitor.Target)
+			// fmt.Printf("len: %v\n", len(counterChannels))
+			// fmt.Printf("Shutting down %v:\n", monitor.Target)
 			for index := 0; index < len(counterChannels); index++ {
 				fmt.Println(index)
-				fmt.Println(cap(counterChannels[index]))
+				// fmt.Println(cap(counterChannels[index]))
 				counterChannels[index] <- cmd
-				fmt.Println("Sent command on channel now...")
+				// fmt.Println("Sent command on channel now...")
 			}
 			alive = false
 		} else if cmd == "update" {
