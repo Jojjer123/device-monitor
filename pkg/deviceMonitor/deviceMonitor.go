@@ -36,7 +36,9 @@ func DeviceMonitor(monitor types.DeviceMonitor) {
 	for alive {
 		cmd := <-monitor.ManagerChannel
 		if cmd == "shutdown" {
-			for _, ch := range counterChannels {
+			fmt.Println("Shutting down:")
+			for index, ch := range counterChannels {
+				fmt.Println(index)
 				ch <- cmd
 			}
 			alive = false
