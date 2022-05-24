@@ -134,41 +134,8 @@ func newCounter(req types.Request, deviceName string, target string, adapter typ
 			intervalTicker.Stop()
 			counterIsActive = false
 		} else if msg == "ticker" {
-			// fmt.Printf("Len of counter channel is: %v\n", len(counterChannel))
-
-			fmt.Printf("Get %v from %v: %v\n", req.Counters[0].Name, deviceName, time.Now().UnixNano())
-
-			// Get the counter and send it to the data processing and to possible subscribers.
-			response, err := c.(*gclient.Client).Get(ctx, req.GnmiRequest)
-
-			fmt.Printf("Received %v from %v: %v\n", req.Counters[0].Name, deviceName, time.Now().UnixNano())
-
-			if err != nil {
-				logger.Errorf("Target returned RPC error: %v", err)
-			} else {
-				extractData(response, req.GnmiRequest, deviceName)
-			}
+			go sendCounterReq(req, deviceName, ctx, c)
 		}
-		// } else {
-		// 	logger.Errorf("Counter channel message is not \"shutdown\", it is: %v", msg)
-		// }
-		// case <-intervalTicker.C:
-		// 	fmt.Printf("Len of counter channel is: %v\n", len(counterChannel))
-
-		// 	fmt.Printf("Get %v from %v: %v\n", req.Counters[0].Name, deviceName, time.Now().UnixNano())
-
-		// 	// Get the counter and send it to the data processing and to possible subscribers.
-		// 	response, err := c.(*gclient.Client).Get(ctx, req.GnmiRequest)
-
-		// 	fmt.Printf("Received %v from %v: %v\n", req.Counters[0].Name, deviceName, time.Now().UnixNano())
-
-		// 	if err != nil {
-		// 		logger.Errorf("Target returned RPC error: %v", err)
-		// 	} else {
-		// 		extractData(response, req.GnmiRequest, deviceName)
-		// 	}
-		// default:
-		// }
 	}
 
 	logger.Infof("Exits %v from %v", req.Counters[0].Name, deviceName)
