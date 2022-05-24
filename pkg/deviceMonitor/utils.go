@@ -34,7 +34,7 @@ func createGnmiClient(adapter types.Adapter, target string, ctx context.Context)
 	return c, nil
 }
 
-func sendCounterReq(req types.Request, deviceName string, ctx context.Context, c client.Impl) {
+func sendCounterReq(req types.Request, deviceName string, ctx context.Context, c client.Impl, active *bool) {
 	// fmt.Printf("Len of counter channel is: %v\n", len(counterChannel))
 
 	fmt.Printf("Get %v from %v: %v\n", req.Counters[0].Name, deviceName, time.Now().UnixNano())
@@ -42,12 +42,14 @@ func sendCounterReq(req types.Request, deviceName string, ctx context.Context, c
 	// Get the counter and send it to the data processing and to possible subscribers.
 	response, err := c.(*gclient.Client).Get(ctx, req.GnmiRequest)
 
-	fmt.Printf("Received %v from %v: %v\n", req.Counters[0].Name, deviceName, time.Now().UnixNano())
+	if *active {
+		fmt.Printf("Received %v from %v: %v\n", req.Counters[0].Name, deviceName, time.Now().UnixNano())
 
-	if err != nil {
-		logger.Errorf("Target returned RPC error: %v", err)
-	} else {
-		extractData(response, req.GnmiRequest, deviceName)
+		if err != nil {
+			logger.Errorf("Target returned RPC error: %v", err)
+		} else {
+			extractData(response, req.GnmiRequest, deviceName)
+		}
 	}
 }
 

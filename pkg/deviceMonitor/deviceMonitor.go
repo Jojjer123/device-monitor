@@ -8,7 +8,6 @@ import (
 
 	"github.com/onosproject/monitor-service/pkg/logger"
 	"github.com/onosproject/monitor-service/pkg/types"
-	gclient "github.com/openconfig/gnmi/client/gnmi"
 )
 
 // TODO: Place file in new folder representing its own module???
@@ -91,23 +90,12 @@ func newCounter(req types.Request, deviceName string, target string, adapter typ
 		}
 	}
 
-	fmt.Printf("Get %v from %v: %v\n", req.Counters[0].Name, deviceName, time.Now().UnixNano())
+	counterIsActive := true
 
-	// Get the counter and send it to the data processing and to possible subscribers.
-	response, err := c.(*gclient.Client).Get(ctx, req.GnmiRequest)
-
-	fmt.Printf("Received %v from %v: %v\n", req.Counters[0].Name, deviceName, time.Now().UnixNano())
-
-	if err != nil {
-		logger.Errorf("Target returned RPC error: %v", err)
-	} else {
-		extractData(response, req.GnmiRequest, deviceName)
-	}
+	go sendCounterReq(req, deviceName, ctx, c, &counterIsActive)
 
 	// Start a ticker which will trigger repeatedly after (interval) milliseconds.
 	intervalTicker := time.NewTicker(time.Duration(req.Interval) * time.Millisecond)
-
-	counterIsActive := true
 
 	go func() {
 		for {
@@ -134,7 +122,7 @@ func newCounter(req types.Request, deviceName string, target string, adapter typ
 			intervalTicker.Stop()
 			counterIsActive = false
 		} else if msg == "ticker" {
-			go sendCounterReq(req, deviceName, ctx, c)
+			go sendCounterReq(req, deviceName, ctx, c, &counterIsActive)
 		}
 	}
 
