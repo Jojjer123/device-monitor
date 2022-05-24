@@ -113,6 +113,7 @@ func newCounter(req types.Request, deviceName string, target string, adapter typ
 		for {
 			select {
 			case <-intervalTicker.C:
+				fmt.Println("Tick")
 				if counterIsActive {
 					counterChannel <- "ticker"
 				}
