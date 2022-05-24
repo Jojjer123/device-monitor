@@ -2,7 +2,6 @@ package deviceMonitor
 
 import (
 	"context"
-	"fmt"
 	"sync"
 	"time"
 
@@ -91,8 +90,9 @@ func newCounter(req types.Request, deviceName string, target string, adapter typ
 	}
 
 	counterIsActive := true
+	id := 0
 
-	go sendCounterReq(req, deviceName, ctx, c, &counterIsActive)
+	go sendCounterReq(req, deviceName, ctx, c, &counterIsActive, id)
 
 	// Start a ticker which will trigger repeatedly after (interval) milliseconds.
 	intervalTicker := time.NewTicker(time.Duration(req.Interval) * time.Millisecond)
@@ -101,7 +101,6 @@ func newCounter(req types.Request, deviceName string, target string, adapter typ
 		for {
 			select {
 			case <-intervalTicker.C:
-				fmt.Println("Tick")
 				if counterIsActive {
 					counterChannel <- "ticker"
 				}
@@ -122,7 +121,8 @@ func newCounter(req types.Request, deviceName string, target string, adapter typ
 			intervalTicker.Stop()
 			counterIsActive = false
 		} else if msg == "ticker" {
-			go sendCounterReq(req, deviceName, ctx, c, &counterIsActive)
+			id += 1
+			go sendCounterReq(req, deviceName, ctx, c, &counterIsActive, id)
 		}
 	}
 
