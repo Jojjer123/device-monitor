@@ -110,14 +110,16 @@ func newCounter(req types.Request, deviceName string, target string, adapter typ
 	counterIsActive := true
 
 	go func() {
-		select {
-		case <-intervalTicker.C:
-			if counterIsActive {
-				counterChannel <- "ticker"
-			}
-		default:
-			if !counterIsActive {
-				return
+		for {
+			select {
+			case <-intervalTicker.C:
+				if counterIsActive {
+					counterChannel <- "ticker"
+				}
+			default:
+				if !counterIsActive {
+					return
+				}
 			}
 		}
 	}()
