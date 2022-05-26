@@ -1,6 +1,8 @@
 package configManager
 
 import (
+	"fmt"
+
 	"github.com/onosproject/monitor-service/pkg/deviceMonitor"
 	"github.com/onosproject/monitor-service/pkg/logger"
 	reqBuilder "github.com/onosproject/monitor-service/pkg/requestBuilder"
@@ -56,6 +58,7 @@ func stopMonitoring(target string) {
 func updateMonitoring(requests []types.Request, target string) {
 	for _, monitor := range deviceMonitorStore {
 		if monitor.Target == target {
+			fmt.Printf("Sending update to %v\n", monitor.Target)
 			monitor.ManagerChannel <- "update"
 			monitor.RequestsChannel <- requests
 			return
