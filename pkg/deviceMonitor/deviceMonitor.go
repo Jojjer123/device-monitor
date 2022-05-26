@@ -2,6 +2,7 @@ package deviceMonitor
 
 import (
 	"context"
+	"fmt"
 	"sync"
 	"time"
 
@@ -55,6 +56,7 @@ func DeviceMonitor(monitor types.DeviceMonitor) {
 				counterChannels = append(counterChannels, make(chan string, 1))
 				go newCounter(req, monitor.DeviceName, monitor.Target, monitor.Adapter, &counterWaitGroup, counterChannels[index])
 			}
+			fmt.Printf("Update complete for %v: %v\n", monitor.DeviceName, time.Now().UnixNano())
 		}
 	}
 
