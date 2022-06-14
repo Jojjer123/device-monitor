@@ -12,18 +12,6 @@ import (
 
 var streamStore []types.Stream
 
-// TODO: Remove channel in init function. Instead use public for streamMgrCmd...
-
-// func SubscriptionManager(waitGroup *sync.WaitGroup, streamMgrChannel chan types.StreamMgrChannelMessage) {
-// 	defer waitGroup.Done()
-
-// 	// TODO: Remove streamWaitGroup and add better way of keeping module "alive".
-
-// 	var streamMgrMessage types.StreamMgrChannelMessage
-// 	streamMgrMessage.ManageCmd = SubscriptionMgrCmd
-// 	streamMgrChannel <- streamMgrMessage
-// }
-
 func SubscriptionMgrCmd(stream types.Stream, cmd string) string {
 	switch cmd {
 	case "Add":

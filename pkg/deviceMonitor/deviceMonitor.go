@@ -10,9 +10,6 @@ import (
 	"github.com/onosproject/monitor-service/pkg/types"
 )
 
-// TODO: Place file in new folder representing its own module???
-// TODO: Split this file into at least one more, for some helpers.
-
 func DeviceMonitor(monitor types.DeviceMonitor) {
 	var counterWaitGroup sync.WaitGroup
 	var counterChannels []chan string

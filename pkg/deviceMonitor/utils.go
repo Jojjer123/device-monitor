@@ -115,24 +115,6 @@ func createDictionary(counterValues []string, paths []*gnmi.Path) []types.Dictio
 	return dict
 }
 
-// // Call findCounterVal with startIndex as 0, in order to start searching through pathElems from index 0.
-// func findCounterVal(schemaTree *types.SchemaTree, pathElems []*gnmi.PathElem, startIndex int) string {
-// 	if startIndex < len(pathElems) {
-// 		if pathElems[startIndex].Name == schemaTree.Name {
-// 			if startIndex == len(pathElems)-1 {
-// 				return schemaTree.Value
-// 			}
-// 			var childResult string
-// 			for _, child := range schemaTree.Children {
-// 				childResult += findCounterVal(child, pathElems, startIndex+1)
-// 			}
-// 			return childResult
-// 		}
-// 	}
-
-// 	return ""
-// }
-
 func findCounterVals(schemaTree *types.SchemaTree, counterValues *[]string) {
 	if schemaTree.Value != "" {
 		// Check if all children of parent has values, then I must be a counter, otherwise I am just an identifier.
