@@ -14,7 +14,7 @@ coverage: overalls | $(GOVERALLS) ; $(info $(M) running coveralls) @ ## run cove
 # this and the common clean will both executed because of ::
 
 .PHONY: clean
-clean:: ; $(info $(M) gnmi-netconf-adapter clean) @ ## clean (ADDITIONAL)
+clean:: ; $(info $(M) monitor-service clean) @ ## clean (ADDITIONAL)
 	@rm -rf  build/_output
 
 
