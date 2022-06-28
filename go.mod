@@ -3,6 +3,7 @@ module github.com/onosproject/monitor-service
 go 1.16
 
 require (
+	github.com/atomix/atomix-go-client v0.6.2
 	github.com/gogo/protobuf v1.3.2
 	github.com/golang/protobuf v1.5.2
 	github.com/google/gnxi v0.0.0-20220228093718-139998fb32fe
