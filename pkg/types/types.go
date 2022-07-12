@@ -2,6 +2,7 @@ package types
 
 import (
 	"github.com/golang/protobuf/proto"
+	"github.com/onosproject/monitor-service/pkg/proto/adapter"
 	"github.com/openconfig/gnmi/proto/gnmi"
 )
 
@@ -51,20 +52,16 @@ type Request struct {
 	GnmiRequest *gnmi.GetRequest
 }
 
-type Adapter struct {
-	Protocol string `json:"protocol"`
-	Address  string `json:"address"`
-}
-
 type DeviceMonitor struct {
 	DeviceName      string
 	Target          string
-	Adapter         Adapter
+	Adapter         *adapter.Adapter
 	Requests        []Request
 	RequestsChannel chan []Request
 	ManagerChannel  chan string
 }
 
+// ALL OF THE BELOW STRUCTURES SHOULD BE IMPLEMENTED THROUGH PROTOBUF
 // The following types are used for deconstructing data from the adapter.
 type SchemaTree struct {
 	Name      string

@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/onosproject/monitor-service/pkg/logger"
+	"github.com/onosproject/monitor-service/pkg/proto/adapter"
 	"github.com/onosproject/monitor-service/pkg/types"
 )
 
@@ -62,7 +63,7 @@ func DeviceMonitor(monitor types.DeviceMonitor) {
 }
 
 // Requests counters at the given interval, extract response and forward it.
-func newCounter(req types.Request, deviceName string, target string, adapter types.Adapter, waitGroup *sync.WaitGroup, counterChannel chan string) {
+func newCounter(req types.Request, deviceName string, target string, adapter *adapter.Adapter, waitGroup *sync.WaitGroup, counterChannel chan string) {
 	defer waitGroup.Done()
 
 	ctx := context.Background()

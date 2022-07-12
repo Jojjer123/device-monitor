@@ -1,0 +1,29 @@
+syntax = "proto3";
+package monitorConfig;
+
+option go_package = "/monitor-config";
+
+/////////////////////////////////////////////////
+/*            MONITOR CONFIGURATION            */
+/////////////////////////////////////////////////
+
+message DeviceCounter {
+	string Name = 1;
+	string Path = 2;
+}
+
+message IntervalCounters {
+	int32 Interval = 1;
+	repeated DeviceCounter Counters = 2;
+}
+
+message Conf {
+	repeated IntervalCounters Counters = 1;
+}
+
+message MonitorConfig {
+	string DeviceIP = 1;
+	string DeviceName = 2;
+	string Protocol = 3;
+	repeated Conf Configs = 4;
+}

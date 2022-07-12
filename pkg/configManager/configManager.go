@@ -5,6 +5,8 @@ import (
 
 	"github.com/onosproject/monitor-service/pkg/deviceMonitor"
 	"github.com/onosproject/monitor-service/pkg/logger"
+	"github.com/onosproject/monitor-service/pkg/proto/adapter"
+
 	reqBuilder "github.com/onosproject/monitor-service/pkg/requestBuilder"
 	"github.com/onosproject/monitor-service/pkg/types"
 )
@@ -69,7 +71,7 @@ func updateMonitoring(requests []types.Request, target string) {
 	log.Warn("Could not find device monitor in store")
 }
 
-func startMonitoring(requests []types.Request, adapter types.Adapter, target string, deviceName string) {
+func startMonitoring(requests []types.Request, adapter *adapter.Adapter, target string, deviceName string) {
 	// Consider checking Requests to update only if changed.
 	monitor := types.DeviceMonitor{
 		DeviceName:      deviceName,

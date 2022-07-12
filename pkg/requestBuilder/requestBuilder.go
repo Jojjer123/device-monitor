@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"github.com/onosproject/monitor-service/pkg/logger"
+	"github.com/onosproject/monitor-service/pkg/proto/adapter"
 	storageInterface "github.com/onosproject/monitor-service/pkg/storage"
 	types "github.com/onosproject/monitor-service/pkg/types"
 	"github.com/openconfig/gnmi/proto/gnmi"
@@ -12,12 +13,12 @@ import (
 var log = logger.GetLogger()
 
 // Builds requests to send to a switch or an adapter.
-func GetRequestConf(target string, configSelected int) ([]types.Request, types.Adapter, string) {
-	conf := storageInterface.GetConfig(target)
+func GetRequestConf(target string, configSelected int) ([]types.Request, *adapter.Adapter, string) {
+	conf, _ := storageInterface.GetConfig(target)
 
 	if len(conf.Configs) == 0 {
 		log.Error("No configurations to monitor")
-		return []types.Request{}, types.Adapter{}, ""
+		return []types.Request{}, &adapter.Adapter{}, ""
 	}
 	// TODO: Add check for empty config, and dont crash if that is the case.
 
@@ -26,7 +27,7 @@ func GetRequestConf(target string, configSelected int) ([]types.Request, types.A
 	// For each interval and all counters for that interval (intCounters), build a request.
 	for _, intCounters := range conf.Configs[configSelected].Counters {
 		request := types.Request{
-			Interval: intCounters.Interval,
+			Interval: int(intCounters.GetInterval()),
 		}
 
 		// For each counter for an interval, build a Counter object.
@@ -53,11 +54,11 @@ func GetRequestConf(target string, configSelected int) ([]types.Request, types.A
 		requests = append(requests, request)
 	}
 
-	var adapter types.Adapter
+	var adapter *adapter.Adapter
 
 	// Only protocol without need for an adapter is gNMI, for now.
 	if conf.Protocol != "GNMI" {
-		adapter = storageInterface.GetAdapter(conf.Protocol)
+		adapter, _ = storageInterface.GetAdapter(conf.Protocol)
 	} else {
 		log.Info("Support for direct communication with switches over gNMI is not yet supported")
 	}

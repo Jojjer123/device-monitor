@@ -11,11 +11,12 @@ import (
 	"github.com/openconfig/gnmi/proto/gnmi"
 
 	dataProcessing "github.com/onosproject/monitor-service/pkg/dataProcessingManager"
+	"github.com/onosproject/monitor-service/pkg/proto/adapter"
 	"github.com/onosproject/monitor-service/pkg/subscriptionManager"
 	"github.com/onosproject/monitor-service/pkg/types"
 )
 
-func createGnmiClient(adapter types.Adapter, target string, ctx context.Context) (client.Impl, error) {
+func createGnmiClient(adapter *adapter.Adapter, target string, ctx context.Context) (client.Impl, error) {
 	c, err := gclient.New(ctx, client.Destination{
 		Addrs:       []string{adapter.Address},
 		Target:      target,

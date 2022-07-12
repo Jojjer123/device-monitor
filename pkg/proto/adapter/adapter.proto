@@ -1,0 +1,13 @@
+syntax = "proto3";
+package adapter;
+
+option go_package = "/adapter";
+
+/////////////////////////////////////////////////
+/*                   ADAPTER                   */
+/////////////////////////////////////////////////
+
+message Adapter {
+	string Protocol = 1;
+	string Address = 2;
+}
