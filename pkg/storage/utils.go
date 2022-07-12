@@ -13,7 +13,7 @@ func getRawDataFromStore(urn string) ([]byte, error) {
 	// Create a slice of URN elements
 	urnElems := strings.SplitN(urn, ".", 2)
 
-	log.Infof("Getting store \"%s\"", urnElems[0])
+	// log.Infof("Getting store \"%s\"", urnElems[0])
 
 	// Getting Map (store)
 	store, err := atomix.GetMap(ctx, urnElems[0])
@@ -28,6 +28,8 @@ func getRawDataFromStore(urn string) ([]byte, error) {
 		log.Errorf("Error getting entry \"%s\" from %s: %v", urnElems[1], urnElems[1], err)
 		return nil, err
 	}
+
+	// log.Infof("Data from Map (store) is: %v", data.Value)
 
 	return data.Value, nil
 }

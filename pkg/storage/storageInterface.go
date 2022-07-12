@@ -3,8 +3,8 @@ package Storage
 import (
 	"fmt"
 
-	"github.com/gogo/protobuf/proto"
 	"github.com/onosproject/monitor-service/pkg/logger"
+	"google.golang.org/protobuf/proto"
 
 	// types "github.com/onosproject/monitor-service/pkg/types"
 
@@ -24,22 +24,28 @@ func GetConfig(target string) (*conf.MonitorConfig, error) {
 
 	// log.Infof("Get config for %v, from ext service: %v\n", target, time.Now().UnixNano())
 
+	// log.Infof("Getting config using urn: %v", urn)
+
 	rawConf, err := getRawDataFromStore(urn)
 	if err != nil {
 		log.Errorf("Failed getting config from store: %v", err)
 		return &conf.MonitorConfig{}, err
 	}
 
+	// log.Infof("Got raw conf from store: %v", rawConf)
+
 	// log.Infof("Received config for %v, from ext service: %v\n", target, time.Now().UnixNano())
 
-	var config = &conf.MonitorConfig{}
+	var config = &conf.Config{}
 
 	if err = proto.Unmarshal(rawConf, config); err != nil {
 		log.Errorf("Failed unmarshaling config from store: %v", err)
 		return &conf.MonitorConfig{}, err
 	}
 
-	return config, nil
+	log.Infof("Config umarshaled into: %v", config)
+
+	return config.Devices[0], nil
 }
 
 func GetAdapter(protocol string) (*adapter.Adapter, error) {

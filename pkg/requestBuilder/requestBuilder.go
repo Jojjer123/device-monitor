@@ -16,6 +16,8 @@ var log = logger.GetLogger()
 func GetRequestConf(target string, configSelected int) ([]types.Request, *adapter.Adapter, string) {
 	conf, _ := storageInterface.GetConfig(target)
 
+	log.Infof("Config: %v", conf)
+
 	if len(conf.Configs) == 0 {
 		log.Error("No configurations to monitor")
 		return []types.Request{}, &adapter.Adapter{}, ""

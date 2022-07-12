@@ -41,6 +41,7 @@ type ConfigObject struct {
 	Configs    []Conf `yaml:"configs"`
 }
 
+// DEVICE MONITOR
 type Counter struct {
 	Name string
 	Path []*gnmi.PathElem
