@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/onosproject/monitor-service/pkg/configManager"
-	"github.com/onosproject/monitor-service/pkg/logger"
 
 	"github.com/google/gnxi/utils/credentials"
 	"github.com/openconfig/gnmi/proto/gnmi"
@@ -18,13 +17,13 @@ import (
 func (s *server) Set(ctx context.Context, req *gnmi.SetRequest) (*gnmi.SetResponse, error) {
 	msg, ok := credentials.AuthorizeUser(ctx)
 	if !ok {
-		logger.Infof("Denied a Set request: %v", msg)
+		log.Infof("Denied a Set request: %v", msg)
 		return nil, status.Error(codes.PermissionDenied, msg)
 	}
 
 	fmt.Printf("Set request start: %v\n", time.Now().UnixNano())
 
-	logger.Info("Allowed a Set request")
+	log.Info("Allowed a Set request")
 
 	var updateResult []*gnmi.UpdateResult
 
@@ -41,7 +40,7 @@ func (s *server) Set(ctx context.Context, req *gnmi.SetRequest) (*gnmi.SetRespon
 			case "Stop":
 				updateResult = append(updateResult, s.deleteRequest(update.Path))
 			default:
-				logger.Error("Action not found!")
+				log.Error("Action not found!")
 			}
 		}
 	}
@@ -77,7 +76,7 @@ func (s *server) setRequest(path *gnmi.Path) *gnmi.UpdateResult {
 	}
 
 	if err != nil {
-		logger.Error("Failed to convert ConfigIndex from string to int")
+		log.Error("Failed to convert ConfigIndex from string to int")
 	} else {
 		update := gnmi.UpdateResult{
 			Path: &gnmi.Path{

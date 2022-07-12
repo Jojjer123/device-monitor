@@ -9,12 +9,14 @@ import (
 	"github.com/openconfig/gnmi/proto/gnmi"
 )
 
+var log = logger.GetLogger()
+
 // Builds requests to send to a switch or an adapter.
 func GetRequestConf(target string, configSelected int) ([]types.Request, types.Adapter, string) {
 	conf := storageInterface.GetConfig(target)
 
 	if len(conf.Configs) == 0 {
-		logger.Error("No configurations to monitor")
+		log.Error("No configurations to monitor")
 		return []types.Request{}, types.Adapter{}, ""
 	}
 	// TODO: Add check for empty config, and dont crash if that is the case.
@@ -57,7 +59,7 @@ func GetRequestConf(target string, configSelected int) ([]types.Request, types.A
 	if conf.Protocol != "GNMI" {
 		adapter = storageInterface.GetAdapter(conf.Protocol)
 	} else {
-		logger.Info("Support for direct communication with switches over gNMI is not yet supported")
+		log.Info("Support for direct communication with switches over gNMI is not yet supported")
 	}
 
 	return requests, adapter, conf.DeviceName

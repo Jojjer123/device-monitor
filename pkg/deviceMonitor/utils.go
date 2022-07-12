@@ -11,7 +11,6 @@ import (
 	"github.com/openconfig/gnmi/proto/gnmi"
 
 	dataProcessing "github.com/onosproject/monitor-service/pkg/dataProcessingManager"
-	"github.com/onosproject/monitor-service/pkg/logger"
 	"github.com/onosproject/monitor-service/pkg/subscriptionManager"
 	"github.com/onosproject/monitor-service/pkg/types"
 )
@@ -26,7 +25,7 @@ func createGnmiClient(adapter types.Adapter, target string, ctx context.Context)
 	})
 
 	if err != nil {
-		logger.Errorf("Could not create a gNMI client: %v", err)
+		log.Errorf("Could not create a gNMI client: %v", err)
 
 		return nil, err
 	}
@@ -46,7 +45,7 @@ func sendCounterReq(req types.Request, deviceName string, ctx context.Context, c
 		fmt.Printf("Received %v from %v, req ID: %v, : %v\n", req.Counters[0].Name, deviceName, id, time.Now().UnixNano())
 
 		if err != nil {
-			logger.Errorf("Target returned RPC error: %v", err)
+			log.Errorf("Target returned RPC error: %v", err)
 		} else {
 			extractData(response, req.GnmiRequest, deviceName)
 		}
@@ -61,12 +60,12 @@ func extractData(response *gnmi.GetResponse, req *gnmi.GetRequest, name string) 
 	if len(response.Notification) > 0 {
 
 		if len(response.Notification[0].Update) == 0 {
-			logger.Warnf("There is no data for request: %v", req)
+			log.Warnf("There is no data for request: %v", req)
 			return
 		}
 
 		if err := proto.Unmarshal(response.Notification[0].Update[0].Val.GetProtoBytes(), &adapterResponse); err != nil {
-			logger.Errorf("Failed to unmarshal ProtoBytes: %v", err)
+			log.Errorf("Failed to unmarshal ProtoBytes: %v", err)
 		}
 
 		// logger.Infof("Response entries: %v", adapterResponse.Entries)
@@ -95,7 +94,7 @@ func sendDataToSubMgr(schemaTree *types.SchemaTree, paths []*gnmi.Path, name str
 	// logger.Infof("Counter values: %v", counterValues)
 
 	if len(counterValues) != len(paths) {
-		logger.Errorf("Failed to map counter values to paths with counters: %v\npaths: %v", counterValues, paths)
+		log.Errorf("Failed to map counter values to paths with counters: %v\npaths: %v", counterValues, paths)
 		return
 	}
 

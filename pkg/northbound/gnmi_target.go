@@ -14,8 +14,6 @@ import (
 
 	pb "github.com/openconfig/gnmi/proto/gnmi"
 	"google.golang.org/grpc/credentials"
-
-	"github.com/onosproject/monitor-service/pkg/logger"
 	// "github.com/onosproject/monitor-service/pkg/types"
 )
 
@@ -32,7 +30,7 @@ func startServer(secure bool, address string) { //, streamMgrCmd func(types.Stre
 	if secure {
 		creds, err := credentials.NewServerTLSFromFile("certs/localhost.crt", "certs/localhost.key")
 		if err != nil {
-			logger.Errorf("Failed to load credentials: %v\n", err)
+			log.Errorf("Failed to load credentials: %v\n", err)
 		}
 
 		g = grpc.NewServer(grpc.Creds(creds))
@@ -42,7 +40,7 @@ func startServer(secure bool, address string) { //, streamMgrCmd func(types.Stre
 
 	configData, err := ioutil.ReadFile("./target_configs/typical_ofsw_config.json") //*configFile)
 	if err != nil {
-		logger.Errorf("Error in reading config file: %v", err)
+		log.Errorf("Error in reading config file: %v", err)
 	}
 
 	s, err := newServer(model, configData)
@@ -50,19 +48,19 @@ func startServer(secure bool, address string) { //, streamMgrCmd func(types.Stre
 	// s.StreamMgrCmd = streamMgrCmd
 
 	if err != nil {
-		logger.Errorf("Error in creating gnmi target: %v", err)
+		log.Errorf("Error in creating gnmi target: %v", err)
 	}
 	pb.RegisterGNMIServer(g, s)
 	reflection.Register(g)
 
-	logger.Infof("Starting gNMI agent to listen on %v", address)
+	log.Infof("Starting gNMI agent to listen on %v", address)
 	listen, err := net.Listen("tcp", address)
 	if err != nil {
-		logger.Errorf("Failed to listen: %v", err)
+		log.Errorf("Failed to listen: %v", err)
 	}
 
-	logger.Infof("Starting gNMI agent to serve on %v", address)
+	log.Infof("Starting gNMI agent to serve on %v", address)
 	if err := g.Serve(listen); err != nil {
-		logger.Errorf("Failed to serve: %v", err)
+		log.Errorf("Failed to serve: %v", err)
 	}
 }

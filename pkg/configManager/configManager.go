@@ -9,11 +9,12 @@ import (
 	"github.com/onosproject/monitor-service/pkg/types"
 )
 
+var log = logger.GetLogger()
 var deviceMonitorStore []types.DeviceMonitor
 
 func ExecuteAdminSetCmd(cmd string, target string, configIndex ...int) string {
 	if len(configIndex) > 1 {
-		logger.Warn("Config index should not be an array larger than 1")
+		log.Warn("Config index should not be an array larger than 1")
 	}
 
 	switch cmd {
@@ -34,7 +35,7 @@ func ExecuteAdminSetCmd(cmd string, target string, configIndex ...int) string {
 	case "Stop":
 		stopMonitoring(target)
 	default:
-		logger.Warnf("Could not find command: %v", cmd)
+		log.Warnf("Could not find command: %v", cmd)
 		return "Could not find command: " + cmd
 	}
 
@@ -52,7 +53,7 @@ func stopMonitoring(target string) {
 		}
 	}
 
-	logger.Warn("Could not find device monitor in store")
+	log.Warn("Could not find device monitor in store")
 }
 
 func updateMonitoring(requests []types.Request, target string) {
@@ -65,7 +66,7 @@ func updateMonitoring(requests []types.Request, target string) {
 		}
 	}
 
-	logger.Warn("Could not find device monitor in store")
+	log.Warn("Could not find device monitor in store")
 }
 
 func startMonitoring(requests []types.Request, adapter types.Adapter, target string, deviceName string) {

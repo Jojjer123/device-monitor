@@ -2,13 +2,14 @@ package deviceMonitor
 
 import (
 	"context"
-	"fmt"
 	"sync"
 	"time"
 
 	"github.com/onosproject/monitor-service/pkg/logger"
 	"github.com/onosproject/monitor-service/pkg/types"
 )
+
+var log = logger.GetLogger()
 
 func DeviceMonitor(monitor types.DeviceMonitor) {
 	var counterWaitGroup sync.WaitGroup
@@ -53,7 +54,7 @@ func DeviceMonitor(monitor types.DeviceMonitor) {
 				counterChannels = append(counterChannels, make(chan string, 1))
 				go newCounter(req, monitor.DeviceName, monitor.Target, monitor.Adapter, &counterWaitGroup, counterChannels[index])
 			}
-			fmt.Printf("Update complete for %v: %v\n", monitor.DeviceName, time.Now().UnixNano())
+			log.Infof("Update complete for %v: %v\n", monitor.DeviceName, time.Now().UnixNano())
 		}
 	}
 
@@ -76,7 +77,7 @@ func newCounter(req types.Request, deviceName string, target string, adapter typ
 		select {
 		case msg := <-counterChannel:
 			if msg == "shutdown" {
-				logger.Info("Exits counter now")
+				log.Info("Exits counter now")
 				return
 			}
 		// case <-time.After(10 * time.Second):
@@ -125,5 +126,5 @@ func newCounter(req types.Request, deviceName string, target string, adapter typ
 		}
 	}
 
-	logger.Infof("Exits %v from %v", req.Counters[0].Name, deviceName)
+	log.Infof("Exits %v from %v", req.Counters[0].Name, deviceName)
 }

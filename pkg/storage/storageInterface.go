@@ -3,7 +3,6 @@ package config
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 
 	// "sync"
 	"time"
@@ -22,6 +21,8 @@ const (
 	GetRequest_MONITOR_ADAPTER gnmi.GetRequest_DataType = 6 // Adapter for a protocol.
 )
 
+var log = logger.GetLogger()
+
 func GetConfig(target string) types.ConfigObject {
 	ctx := context.Background()
 
@@ -36,7 +37,7 @@ func GetConfig(target string) types.ConfigObject {
 	})
 
 	if err != nil {
-		logger.Errorf("Could not create a gNMI client: %v", err)
+		log.Errorf("Could not create a gNMI client: %v", err)
 	}
 
 	r := &gnmi.GetRequest{
@@ -48,20 +49,20 @@ func GetConfig(target string) types.ConfigObject {
 		},
 	}
 
-	fmt.Printf("Get config for %v, from ext service: %v\n", r.Path[0].Target, time.Now().UnixNano())
+	log.Infof("Get config for %v, from ext service: %v\n", r.Path[0].Target, time.Now().UnixNano())
 
 	response, err := c.(*gclient.Client).Get(ctx, r)
 
-	fmt.Printf("Received config for %v, from ext service: %v\n", r.Path[0].Target, time.Now().UnixNano())
+	log.Infof("Received config for %v, from ext service: %v\n", r.Path[0].Target, time.Now().UnixNano())
 
 	if err != nil {
-		logger.Errorf("Target returned RPC error for Get(%v): %v", r.String(), err)
+		log.Errorf("Target returned RPC error for Get(%v): %v", r.String(), err)
 	}
 
 	var config types.ConfigObject
 	err = yaml.Unmarshal(response.Notification[0].Update[0].Val.GetBytesVal(), &config)
 	if err != nil {
-		logger.Errorf("Could not unmarshal config: %v", err)
+		log.Errorf("Could not unmarshal config: %v", err)
 	}
 
 	return config
@@ -81,7 +82,7 @@ func GetAdapter(protocol string) types.Adapter {
 	})
 
 	if err != nil {
-		logger.Errorf("Could not create a gNMI client: %v", err)
+		log.Errorf("Could not create a gNMI client: %v", err)
 	}
 
 	r := &gnmi.GetRequest{
@@ -93,20 +94,20 @@ func GetAdapter(protocol string) types.Adapter {
 		},
 	}
 
-	fmt.Printf("Get adapter for %v, from ext service: %v\n", r.Path[0].Target, time.Now().UnixNano())
+	log.Infof("Get adapter for %v, from ext service: %v\n", r.Path[0].Target, time.Now().UnixNano())
 
 	response, err := c.(*gclient.Client).Get(ctx, r)
 
-	fmt.Printf("Received adapter for %v, from ext service: %v\n", r.Path[0].Target, time.Now().UnixNano())
+	log.Infof("Received adapter for %v, from ext service: %v\n", r.Path[0].Target, time.Now().UnixNano())
 
 	if err != nil {
-		logger.Errorf("Target returned RPC error for Get(%v): %v", r.String(), err)
+		log.Errorf("Target returned RPC error for Get(%v): %v", r.String(), err)
 	}
 
 	var adapter types.Adapter
 	err = json.Unmarshal(response.Notification[0].Update[0].Val.GetBytesVal(), &adapter)
 	if err != nil {
-		logger.Errorf("Failed to unmarshal adapter: %v", err)
+		log.Errorf("Failed to unmarshal adapter: %v", err)
 	}
 
 	return adapter

@@ -3,8 +3,12 @@ package northboundInterface
 import (
 	"sync"
 	"time"
+
+	"github.com/onosproject/monitor-service/pkg/logger"
 	// "github.com/onosproject/monitor-service/pkg/types"
 )
+
+var log = logger.GetLogger()
 
 func Northbound(waitGroup *sync.WaitGroup) { //, streamMgrChannel chan types.StreamMgrChannelMessage) {
 	defer waitGroup.Done()

@@ -2,7 +2,6 @@ package subscriptionManager
 
 import (
 	"encoding/json"
-	"fmt"
 	"time"
 
 	"github.com/onosproject/monitor-service/pkg/logger"
@@ -10,6 +9,7 @@ import (
 	"github.com/openconfig/gnmi/proto/gnmi"
 )
 
+var log = logger.GetLogger()
 var streamStore []types.Stream
 
 func SubscriptionMgrCmd(stream types.Stream, cmd string) string {
@@ -27,11 +27,11 @@ func SubscriptionMgrCmd(stream types.Stream, cmd string) string {
 		if indexToBeRemoved != -1 {
 			streamStore = append(streamStore[:indexToBeRemoved], streamStore[indexToBeRemoved+1:]...)
 		} else {
-			logger.Warn("Could not find stream to delete")
+			log.Warn("Could not find stream to delete")
 		}
 
 	default:
-		logger.Errorf("Did not recognize cmd: %s", cmd)
+		log.Errorf("Did not recognize cmd: %s", cmd)
 	}
 
 	return ""
@@ -48,7 +48,7 @@ func AddDataToSubscribers(dataVal []types.Dictionary, subscriptionIdentifier str
 
 			jsonBytes, err := json.Marshal(objectToSend)
 			if err != nil {
-				logger.Errorf("Failed to marshal to json, err: %v", err)
+				log.Errorf("Failed to marshal to json, err: %v", err)
 			}
 
 			subResponse := &gnmi.SubscribeResponse{
@@ -71,7 +71,7 @@ func AddDataToSubscribers(dataVal []types.Dictionary, subscriptionIdentifier str
 				},
 			}
 
-			fmt.Printf("Send data from %v, to gnmi-gateway: %v\n", subscriptionIdentifier, time.Now().UnixNano())
+			log.Infof("Send data from %v, to gnmi-gateway: %v\n", subscriptionIdentifier, time.Now().UnixNano())
 
 			stream.StreamHandle.Send(subResponse)
 		}

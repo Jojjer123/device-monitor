@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"sync"
 
 	"github.com/atomix/atomix-go-client/pkg/atomix"
@@ -11,10 +10,10 @@ import (
 	northboundInterface "github.com/onosproject/monitor-service/pkg/northbound"
 )
 
+var log = logger.GetLogger()
+
 // Starts some components of the monitor-service
 func main() {
-	logger.InitLogging()
-
 	getDistributedMap()
 
 	var waitGroup sync.WaitGroup
@@ -28,28 +27,27 @@ func main() {
 func getDistributedMap() {
 	ctx := context.Background()
 
-	fmt.Println("Getting Map")
+	log.Info("Getting Map")
 
 	myMap, err := atomix.GetMap(ctx, "monitor-config")
 	if err != nil {
-		// fmt.Printf("Error from atomixClient.GetMap:%+v\n", err)
-		fmt.Printf("Error from atomix.GetMap: %v\n", err)
+		log.Errorf("Error from atomix.GetMap: %v\n", err)
 		return
 	}
 
-	fmt.Println("Wathing myMap for events")
+	log.Info("Watching myMap for events")
 
 	newChannel := make(chan _map.Event)
 	err = myMap.Watch(ctx, newChannel)
 	if err != nil {
-		fmt.Printf("Error getting entry \"Test\" from myMap: %v\n", err)
+		log.Errorf("Error getting entry \"Test\" from myMap: %v\n", err)
 		return
 	}
 
 	go func() {
 		select {
 		case event := <-newChannel:
-			fmt.Printf("Event from channel is: %v\n", event)
+			log.Errorf("Event from channel is: %v\n", event)
 		}
 	}()
 }
