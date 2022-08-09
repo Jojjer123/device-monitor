@@ -20,9 +20,9 @@ func (s *server) Set(ctx context.Context, req *gnmi.SetRequest) (*gnmi.SetRespon
 		return nil, status.Error(codes.PermissionDenied, msg)
 	}
 
-	log.Infof("Set request start: %v\n", time.Now().UnixNano())
+	// log.Infof("Set request start: %v\n", time.Now().UnixNano())
 
-	log.Info("Allowed a Set request")
+	log.Infof("Allowed a Set request: %v", msg)
 
 	var updateResult []*gnmi.UpdateResult
 

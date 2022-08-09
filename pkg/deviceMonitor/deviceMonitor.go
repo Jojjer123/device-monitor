@@ -24,7 +24,7 @@ func DeviceMonitor(monitor types.DeviceMonitor) {
 
 		// fmt.Printf("Sending channel %v to %v\n", index, req.Counters[0].Name)
 
-		go newCounter(req, monitor.DeviceName, monitor.Target, monitor.Adapter, &counterWaitGroup, counterChannels[index])
+		go newCounter(req, monitor.DeviceName, monitor.Adapter, &counterWaitGroup, counterChannels[index])
 	}
 
 	// fmt.Println(len(monitor.Requests))
@@ -53,7 +53,7 @@ func DeviceMonitor(monitor types.DeviceMonitor) {
 			for index, req := range monitor.Requests {
 				counterWaitGroup.Add(1)
 				counterChannels = append(counterChannels, make(chan string, 1))
-				go newCounter(req, monitor.DeviceName, monitor.Target, monitor.Adapter, &counterWaitGroup, counterChannels[index])
+				go newCounter(req, monitor.DeviceName, monitor.Adapter, &counterWaitGroup, counterChannels[index])
 			}
 			log.Infof("Update complete for %v: %v\n", monitor.DeviceName, time.Now().UnixNano())
 		}
@@ -63,12 +63,12 @@ func DeviceMonitor(monitor types.DeviceMonitor) {
 }
 
 // Requests counters at the given interval, extract response and forward it.
-func newCounter(req types.Request, deviceName string, target string, adapter *adapter.Adapter, waitGroup *sync.WaitGroup, counterChannel chan string) {
+func newCounter(req types.Request, deviceName string, adapter *adapter.Adapter, waitGroup *sync.WaitGroup, counterChannel chan string) {
 	defer waitGroup.Done()
 
 	ctx := context.Background()
 
-	c, err := createGnmiClient(adapter, target, ctx)
+	c, err := createGnmiClient(adapter, ctx)
 	if err != nil {
 		// Restarts process after 10s, however, if the shutdown command is sent on
 		// counterChannel, the process will stop.
@@ -85,7 +85,7 @@ func newCounter(req types.Request, deviceName string, target string, adapter *ad
 		case <-restartTicker.C:
 			restartTicker.Stop()
 			waitGroup.Add(1)
-			go newCounter(req, deviceName, target, adapter, waitGroup, counterChannel)
+			go newCounter(req, deviceName, adapter, waitGroup, counterChannel)
 			return
 		}
 	}

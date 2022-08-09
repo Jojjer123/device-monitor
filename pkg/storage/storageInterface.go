@@ -43,7 +43,7 @@ func GetConfig(target string) (*conf.MonitorConfig, error) {
 		return &conf.MonitorConfig{}, err
 	}
 
-	log.Infof("Config umarshaled into: %v", config)
+	// log.Infof("Config umarshaled into: %v", config)
 
 	return config.Devices[0], nil
 }

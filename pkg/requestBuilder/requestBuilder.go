@@ -16,13 +16,13 @@ var log = logger.GetLogger()
 func GetRequestConf(target string, configSelected int) ([]types.Request, *adapter.Adapter, string) {
 	conf, _ := storageInterface.GetConfig(target)
 
-	log.Infof("Config: %v", conf)
+	// log.Infof("Config: %v", conf)
 
 	if len(conf.Configs) == 0 {
 		log.Error("No configurations to monitor")
 		return []types.Request{}, &adapter.Adapter{}, ""
 	}
-	// TODO: Add check for empty config, and dont crash if that is the case.
+	// TODO: Add check for empty config, and don't crash if that is the case.
 
 	var requests []types.Request
 
@@ -35,12 +35,12 @@ func GetRequestConf(target string, configSelected int) ([]types.Request, *adapte
 		// For each counter for an interval, build a Counter object.
 		for _, counter := range intCounters.Counters {
 			request.Counters = append(request.Counters, types.Counter{
-				Name: counter.Name,
-				Path: getPathFromString(counter.Path),
+				Name: counter.GetName(),
+				Path: getPathFromString(counter.GetPath()),
 			})
 		}
 
-		// Create gnmi get request.
+		// Create gNMI get request.
 		r := &gnmi.GetRequest{
 			Type: gnmi.GetRequest_STATE,
 		}
@@ -51,6 +51,8 @@ func GetRequestConf(target string, configSelected int) ([]types.Request, *adapte
 				Elem:   counter.Path,
 			})
 		}
+
+		log.Infof("Request looks like: %v", r)
 
 		request.GnmiRequest = r
 		requests = append(requests, request)
