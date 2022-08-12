@@ -12,27 +12,26 @@ import (
 
 var log = logger.GetLogger()
 
-// Builds requests to send to a switch or an adapter.
+// Builds requests to send to a switch or an adapter
 func GetRequestConf(target string, configSelected int) ([]types.Request, *adapter.Adapter, string) {
 	conf, _ := storageInterface.GetConfig(target)
-
-	// log.Infof("Config: %v", conf)
 
 	if len(conf.Configs) == 0 {
 		log.Error("No configurations to monitor")
 		return []types.Request{}, &adapter.Adapter{}, ""
 	}
-	// TODO: Add check for empty config, and don't crash if that is the case.
+
+	// TODO: Add check for empty config, and don't crash if that is the case
 
 	var requests []types.Request
 
-	// For each interval and all counters for that interval (intCounters), build a request.
+	// For each interval and all counters for that interval (intCounters), build a request
 	for _, intCounters := range conf.Configs[configSelected].Counters {
 		request := types.Request{
 			Interval: int(intCounters.GetInterval()),
 		}
 
-		// For each counter for an interval, build a Counter object.
+		// For each counter for an interval, build a Counter object
 		for _, counter := range intCounters.Counters {
 			request.Counters = append(request.Counters, types.Counter{
 				Name: counter.GetName(),
@@ -40,7 +39,7 @@ func GetRequestConf(target string, configSelected int) ([]types.Request, *adapte
 			})
 		}
 
-		// Create gNMI get request.
+		// Create gNMI get request
 		r := &gnmi.GetRequest{
 			Type: gnmi.GetRequest_STATE,
 		}
@@ -52,7 +51,7 @@ func GetRequestConf(target string, configSelected int) ([]types.Request, *adapte
 			})
 		}
 
-		log.Infof("Request looks like: %v", r)
+		// log.Infof("Request looks like: %v", r)
 
 		request.GnmiRequest = r
 		requests = append(requests, request)
@@ -60,7 +59,7 @@ func GetRequestConf(target string, configSelected int) ([]types.Request, *adapte
 
 	var adapter *adapter.Adapter
 
-	// Only protocol without need for an adapter is gNMI, for now.
+	// Only protocol without need for an adapter is gNMI, for now
 	if conf.Protocol != "GNMI" {
 		adapter, _ = storageInterface.GetAdapter(conf.Protocol)
 	} else {
@@ -70,7 +69,7 @@ func GetRequestConf(target string, configSelected int) ([]types.Request, *adapte
 	return requests, adapter, conf.DeviceName
 }
 
-// Get gNMI path from a string.
+// Get gNMI path from a string
 func getPathFromString(path string) []*gnmi.PathElem {
 	if !strings.Contains(path, "elem:") {
 		return nil
@@ -88,7 +87,7 @@ func getPathFromString(path string) []*gnmi.PathElem {
 			Name: tok[1],
 		}
 
-		// Contains key.
+		// Contains key
 		if len(tok) > 3 {
 			keyMap := make(map[string]string)
 			keyMap[tok[3]] = tok[5]

@@ -18,9 +18,9 @@ import (
 	"github.com/onosproject/monitor-service/pkg/types"
 )
 
+// Creates a gNMI client
 func createGnmiClient(adapter *adapter.Adapter, ctx context.Context) (client.Impl, error) {
-	// log.Infof("Creating client for: %v", adapter.Address)
-
+	// Port should be a variable set earlier or should be changed to "10161" for secure communication
 	port := "11161"
 
 	c, err := gclient.New(ctx, client.Destination{
@@ -39,49 +39,48 @@ func createGnmiClient(adapter *adapter.Adapter, ctx context.Context) (client.Imp
 	return c, nil
 }
 
+// Sends a request to adapter/device
 func sendCounterReq(req types.Request, deviceName string, ctx context.Context, c client.Impl, active *bool, id int) {
-	// log.Infof("Len of counter channel is: %v\n", len(counterChannel))
-
-	// log.Infof("Get %v from %v, req ID: %v, : %v\n", req.Counters[0].Name, deviceName, id, time.Now().UnixNano())
-
-	// Get the counter and send it to the data processing and to possible subscribers.
+	// Get the counter from the adapter/device
 	response, err := c.(*gclient.Client).Get(ctx, req.GnmiRequest)
 
 	if *active {
-		// log.Infof("Received %v from %v, req ID: %v, : %v\n", req.Counters[0].Name, deviceName, id, time.Now().UnixNano())
-
 		if err != nil {
 			log.Errorf("Target returned RPC error: %v", err)
 		} else {
+			// Extract data from the response
 			extractData(response, req.GnmiRequest, deviceName)
 		}
 	}
 }
 
+// Extracts data from a gNMI response
 func extractData(response *gnmi.GetResponse, req *gnmi.GetRequest, name string) {
-	// for _, notification := range response.Notification {
-	// 	if len(notification.GetUpdate()) == 0 {
-	// 		log.Warnf("No data in notification: %v", notification)
-	// 		continue
-	// 	}
+	// Start of response reading where the gNMI response contains all paths to the values (without any extra serialization such as "adapterResponse")
+	/*
+		for _, notification := range response.Notification {
+			if len(notification.GetUpdate()) == 0 {
+				log.Warnf("No data in notification: %v", notification)
+				continue
+			}
 
-	// 	// TODO: extract data from update(s)
-	// 	for _, update := range notification.Update {
-	// 		// TODO: map val to path in an easily accessible format
-	// 		val, err := getValue(update)
-	// 		if err != nil {
-	// 			log.Errorf("Failed getting value from update: %v", err)
-	// 			continue
-	// 		}
+			// TODO: extract data from update(s)
+			for _, update := range notification.Update {
+				// TODO: map val to path in an easily accessible format
+				val, err := getValue(update)
+				if err != nil {
+					log.Errorf("Failed getting value from update: %v", err)
+					continue
+				}
 
-	// 		log.Infof("Mapping val: %s to path: %v", val, update.Path)
-	// 	}
+				log.Infof("Mapping val: %s to path: %v", val, update.Path)
+			}
 
-	// 	// TODO: pass data to data processing and subscription manager
+			// TODO: pass data to data processing and subscription manager
 
-	// }
+		}
+	*/
 
-	// TODO: Rename adapterResponse to something like switchResponse.
 	var adapterResponse types.AdapterResponse
 	var schemaTree *types.SchemaTree
 
@@ -92,16 +91,17 @@ func extractData(response *gnmi.GetResponse, req *gnmi.GetRequest, name string) 
 			return
 		}
 
+		// Deserialize response that was built in adapter
 		if err := proto.Unmarshal(response.Notification[0].Update[0].Val.GetProtoBytes(), &adapterResponse); err != nil {
 			log.Errorf("Failed to unmarshal ProtoBytes: %v", err)
 		}
 
-		// logger.Infof("Response entries: %v", adapterResponse.Entries)
-
-		// Get tree structure from slice.
+		// Get tree structure of response
 		schemaTree = getTreeStructure(adapterResponse.Entries)
 
+		// Process data
 		dataProcessing.ProcessData(schemaTree, req.Path)
+		// Send data to subscription manager
 		sendDataToSubMgr(schemaTree, req.Path, name, adapterResponse.Timestamp)
 	}
 }
@@ -143,37 +143,33 @@ func getValue(update *gnmi.Update) (string, error) {
 	case *gnmi.TypedValue_UintVal:
 		value = strconv.FormatUint(update.GetVal().GetUintVal(), 10)
 	default:
-		log.Errorf("Value \"%v\" is not defined", update.GetValue())
-		return "", errors.New("Value not defined")
+		log.Errorf("Value \"%v\" is not defined", update.GetVal())
+		return "", errors.New("value not defined")
 	}
 
 	return value, nil
 }
 
+// Sends data to subscription manager
 func sendDataToSubMgr(schemaTree *types.SchemaTree, paths []*gnmi.Path, name string, adapterTs int64) {
 	// Append values from the counters in the same order as the paths.
-	// var counterValues []string
 	var counterValues []string
-	// logger.Infof("Number of children for schemaTree = %v", len(schemaTree.Children))
-	// logger.Infof("SchemaTree child is: %v", schemaTree.Children[0])
 
-	// for index, counter := range schemaTree.Children {
+	// Find all the counter values
 	for _, counter := range schemaTree.Children {
-		// counterValues = append(counterValues, findCounterVal(counter, paths[index].Elem, 0))
 		findCounterVals(counter, &counterValues)
 	}
-
-	// logger.Infof("Counter values: %v", counterValues)
 
 	if len(counterValues) != len(paths) {
 		log.Errorf("Failed to map counter values to paths with counters: %v\npaths: %v", counterValues, paths)
 		return
 	}
 
-	// logger.Infof("Identifier %v is now calling the AddDataToSubscribers", name)
+	// Send dictionary of paths mapped to counter values, to the subscription manager
 	subscriptionManager.AddDataToSubscribers(createDictionary(counterValues, paths), name, adapterTs)
 }
 
+// Create a dictionary from the provided counter values and paths
 func createDictionary(counterValues []string, paths []*gnmi.Path) []types.Dictionary {
 	var dict []types.Dictionary
 
@@ -186,12 +182,13 @@ func createDictionary(counterValues []string, paths []*gnmi.Path) []types.Dictio
 	return dict
 }
 
+// Recursively finds the counter values from the schemaTree
 func findCounterVals(schemaTree *types.SchemaTree, counterValues *[]string) {
 	if schemaTree.Value != "" {
-		// Check if all children of parent has values, then I must be a counter, otherwise I am just an identifier.
+		// Check if all children of parent has values, then I must be a counter, otherwise I am just an identifier
 		isIdentifier := false
 		for _, child := range schemaTree.Parent.Children {
-			// If child is directory.
+			// If child is directory
 			if child.Value == "" {
 				isIdentifier = true
 			}
@@ -201,13 +198,14 @@ func findCounterVals(schemaTree *types.SchemaTree, counterValues *[]string) {
 			*counterValues = append(*counterValues, schemaTree.Value)
 		}
 	} else {
-		// Current schemaTree is directory.
+		// Current schemaTree is directory
 		for _, child := range schemaTree.Children {
 			findCounterVals(child, counterValues)
 		}
 	}
 }
 
+// Build a schemaTree from the entries provided
 func getTreeStructure(schemaEntries []types.SchemaEntry) *types.SchemaTree {
 	var newTree *types.SchemaTree
 	tree := &types.SchemaTree{}

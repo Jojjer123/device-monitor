@@ -5,21 +5,18 @@ import (
 	"time"
 
 	"github.com/onosproject/monitor-service/pkg/logger"
-	// "github.com/onosproject/monitor-service/pkg/types"
 )
 
 var log = logger.GetLogger()
 
-func Northbound(waitGroup *sync.WaitGroup) { //, streamMgrChannel chan types.StreamMgrChannelMessage) {
+func Northbound(waitGroup *sync.WaitGroup) {
 	defer waitGroup.Done()
 
-	// streamMgrChannelMessage := <-streamMgrChannel
+	// Starts two gNMI servers
+	go startServer(false, ":11161")
+	go startServer(true, ":10161")
 
-	// Starts a gRPC server.
-	go startServer(false, ":11161") //, streamMgrChannelMessage.ManageCmd)
-	go startServer(true, ":10161")  //, streamMgrChannelMessage.ManageCmd)
-
-	// Remove???
+	// TODO: Replace with proper methods, such as a sync.WaitGroup
 	for {
 		time.Sleep(10 * time.Second)
 	}

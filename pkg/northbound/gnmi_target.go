@@ -14,10 +14,9 @@ import (
 
 	pb "github.com/openconfig/gnmi/proto/gnmi"
 	"google.golang.org/grpc/credentials"
-	// "github.com/onosproject/monitor-service/pkg/types"
 )
 
-func startServer(secure bool, address string) { //, streamMgrCmd func(types.Stream, string) string) {
+func startServer(secure bool, address string) {
 	model := gnmi.NewModel(modeldata.ModelData,
 		reflect.TypeOf((*gostruct.Device)(nil)),
 		gostruct.SchemaTree["Device"],
@@ -26,7 +25,7 @@ func startServer(secure bool, address string) { //, streamMgrCmd func(types.Stre
 
 	var g *grpc.Server
 
-	// Create server with credentials, they are COPIED from gnxi-simulators, so they SHOULD be replaced.
+	// Create server with credentials, they are COPIED from gnxi-simulators, so they SHOULD be replaced
 	if secure {
 		creds, err := credentials.NewServerTLSFromFile("certs/localhost.crt", "certs/localhost.key")
 		if err != nil {
@@ -38,14 +37,12 @@ func startServer(secure bool, address string) { //, streamMgrCmd func(types.Stre
 		g = grpc.NewServer()
 	}
 
-	configData, err := ioutil.ReadFile("./target_configs/typical_ofsw_config.json") //*configFile)
+	configData, err := ioutil.ReadFile("./target_configs/typical_ofsw_config.json")
 	if err != nil {
 		log.Errorf("Error in reading config file: %v", err)
 	}
 
 	s, err := newServer(model, configData)
-
-	// s.StreamMgrCmd = streamMgrCmd
 
 	if err != nil {
 		log.Errorf("Error in creating gnmi target: %v", err)

@@ -20,17 +20,14 @@ func (s *server) Set(ctx context.Context, req *gnmi.SetRequest) (*gnmi.SetRespon
 		return nil, status.Error(codes.PermissionDenied, msg)
 	}
 
-	// log.Infof("Set request start: %v\n", time.Now().UnixNano())
-
 	log.Infof("Allowed a Set request: %v", msg)
 
 	var updateResult []*gnmi.UpdateResult
 
-	// TODO: Add logging to let the user know that monitoring has started.
-
-	// TODO: Change to 3 cases, Start, Update, and Stop. If the setRequest and deleteRequest functions are merged, there is no need for a switch.
+	// Switch over each update in the request
 	for _, update := range req.Update {
 		if update.Path.Elem[0].Name == "Action" {
+			// TODO: Start and Update should be merged???
 			switch update.Path.Elem[0].Key["Action"] {
 			case "Start":
 				updateResult = append(updateResult, s.setRequest(update.Path))
@@ -52,7 +49,7 @@ func (s *server) Set(ctx context.Context, req *gnmi.SetRequest) (*gnmi.SetRespon
 	return &response, nil
 }
 
-// TODO: Merge with setRequest, they are similar enough to be used as one function, it only requires an extra if-statement most likely.
+// TODO: Merge with setRequest, they are similar enough to be used as one function, it only requires an extra if-statement most likely
 func (s *server) deleteRequest(path *gnmi.Path) *gnmi.UpdateResult {
 	update := gnmi.UpdateResult{
 		Path: &gnmi.Path{

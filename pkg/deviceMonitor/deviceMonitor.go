@@ -12,67 +12,73 @@ import (
 
 var log = logger.GetLogger()
 
+// TODO: Reduce duplicate code for update and shutdown commands, both have the same delete functionality
+
+// Main function for managing monitoring of a single device
 func DeviceMonitor(monitor types.DeviceMonitor) {
 	var counterWaitGroup sync.WaitGroup
 	var counterChannels []chan string
 
-	// fmt.Printf("Requests: %v\n", monitor.Requests)
-
+	// For each request create new goroutine dedicated to sending requests to adapter/device
 	for index, req := range monitor.Requests {
 		counterWaitGroup.Add(1)
+		// Create a new channel and add it to list of channels, for communication directly to goroutine dedicated to sending requests
 		counterChannels = append(counterChannels, make(chan string, 1))
 
-		// fmt.Printf("Sending channel %v to %v\n", index, req.Counters[0].Name)
-
+		// Create new goroutine dedicated to sending requests to adapter/device
 		go newCounter(req, monitor.DeviceName, monitor.Adapter, &counterWaitGroup, counterChannels[index])
 	}
 
-	// fmt.Println(len(monitor.Requests))
-	// fmt.Println(len(counterChannels))
-
+	// Create bool keeping track of state of the monitoring
 	alive := true
+
+	// While monitoring is active the loop continues
 	for alive {
+		// Block until command is sent on the managing channel
 		cmd := <-monitor.ManagerChannel
 		if cmd == "shutdown" {
-			// fmt.Printf("len: %v\n", len(counterChannels))
-			// fmt.Printf("Shutting down %v:\n", monitor.Target)
+			// Sends the shutdown command to all the goroutines dedicated to sending requests
 			for index := 0; index < len(counterChannels); index++ {
-				// fmt.Println(index)
-				// fmt.Println(cap(counterChannels[index]))
 				counterChannels[index] <- cmd
-				// fmt.Println("Sent command on channel now")
 			}
+			// Set monitoring to inactive
 			alive = false
 		} else if cmd == "update" {
+			// Sends the shutdown command to all the goroutines dedicated to sending requests
 			for index := 0; index < len(counterChannels); index++ {
 				counterChannels[index] <- "shutdown"
 			}
 
+			// Block until new requests are sent on the request channel
 			monitor.Requests = <-monitor.RequestsChannel
 
+			// For each new request create a new goroutine dedicated to sending requests to adapter/device
 			for index, req := range monitor.Requests {
 				counterWaitGroup.Add(1)
+				// Create a new channel and add it to list of channels, for communication directly to goroutine dedicated to sending requests
 				counterChannels = append(counterChannels, make(chan string, 1))
+				// Create new goroutine dedicated to sending requests to adapter/device
 				go newCounter(req, monitor.DeviceName, monitor.Adapter, &counterWaitGroup, counterChannels[index])
 			}
 			log.Infof("Update complete for %v: %v\n", monitor.DeviceName, time.Now().UnixNano())
 		}
 	}
 
+	// Wait until all goroutines dedicated to sending requests have stopped
 	counterWaitGroup.Wait()
 }
 
-// Requests counters at the given interval, extract response and forward it.
+// Requests counters at the given interval, extract response and forward it
 func newCounter(req types.Request, deviceName string, adapter *adapter.Adapter, waitGroup *sync.WaitGroup, counterChannel chan string) {
 	defer waitGroup.Done()
 
 	ctx := context.Background()
 
+	// Create gNMI client
 	c, err := createGnmiClient(adapter, ctx)
 	if err != nil {
 		// Restarts process after 10s, however, if the shutdown command is sent on
-		// counterChannel, the process will stop.
-
+		// counterChannel, the process will stop
 		restartTicker := time.NewTicker(10 * time.Second)
 
 		select {
@@ -81,8 +87,8 @@ func newCounter(req types.Request, deviceName string, adapter *adapter.Adapter, 
 				log.Info("Exits counter now")
 				return
 			}
-		// case <-time.After(10 * time.Second):
 		case <-restartTicker.C:
+			// Retry creation of gNMI client (done by calling this function again)
 			restartTicker.Stop()
 			waitGroup.Add(1)
 			go newCounter(req, deviceName, adapter, waitGroup, counterChannel)
@@ -93,15 +99,18 @@ func newCounter(req types.Request, deviceName string, adapter *adapter.Adapter, 
 	counterIsActive := true
 	id := 0
 
+	// Create new goroutine that sends request to adapter/device
 	go sendCounterReq(req, deviceName, ctx, c, &counterIsActive, id)
 
-	// Start a ticker which will trigger repeatedly after (interval) milliseconds.
+	// Start a ticker which will trigger repeatedly after (interval) milliseconds
 	intervalTicker := time.NewTicker(time.Duration(req.Interval) * time.Millisecond)
 
+	// Create new goroutine waiting for the repeated ticker
 	go func() {
 		for {
 			select {
 			case <-intervalTicker.C:
+				// If no shutdown command has arrived yet, send "ticker" on "counterChannel"
 				if counterIsActive {
 					counterChannel <- "ticker"
 				}
@@ -114,15 +123,16 @@ func newCounter(req types.Request, deviceName string, adapter *adapter.Adapter, 
 	}()
 
 	for counterIsActive {
-		// select {
-		// case msg := <-counterChannel:
+		// Block until command/message arrive on "counterChannel"
 		msg := <-counterChannel
 		if msg == "shutdown" {
-			// fmt.Println("Shutdown message arrived")
+			// Stop ticker
 			intervalTicker.Stop()
+			// Set state of counter to inactive
 			counterIsActive = false
 		} else if msg == "ticker" {
 			id += 1
+			// Create new goroutine that sends request to adapter/device
 			go sendCounterReq(req, deviceName, ctx, c, &counterIsActive, id)
 		}
 	}

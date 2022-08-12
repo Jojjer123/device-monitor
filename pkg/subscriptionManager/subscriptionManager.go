@@ -12,12 +12,14 @@ import (
 var log = logger.GetLogger()
 var streamStore []types.Stream
 
+// Add or remove the stream provided (manages subscriptions)
 func SubscriptionMgrCmd(stream types.Stream, cmd string) string {
 	switch cmd {
 	case "Add":
 		streamStore = append(streamStore, stream)
 	case "Remove":
 		indexToBeRemoved := -1
+		// Find index to remove
 		for index, activeStream := range streamStore {
 			if activeStream.StreamHandle == stream.StreamHandle {
 				indexToBeRemoved = index
@@ -37,8 +39,11 @@ func SubscriptionMgrCmd(stream types.Stream, cmd string) string {
 	return ""
 }
 
+// Not tested for multiple subscribers to the same data
+// Find subscribers to the data, and send the data to its subscribers
 func AddDataToSubscribers(dataVal []types.Dictionary, subscriptionIdentifier string, adapterTs int64) {
 	for _, stream := range streamStore {
+		// If data has subscribers
 		if stream.Target[0].Name == subscriptionIdentifier {
 			objectToSend := types.GatewayData{
 				Data:             dataVal,
@@ -46,11 +51,13 @@ func AddDataToSubscribers(dataVal []types.Dictionary, subscriptionIdentifier str
 				AdapterTimestamp: adapterTs,
 			}
 
+			// Serialize data using JSON
 			jsonBytes, err := json.Marshal(objectToSend)
 			if err != nil {
 				log.Errorf("Failed to marshal to json, err: %v", err)
 			}
 
+			// Build subscribe response
 			subResponse := &gnmi.SubscribeResponse{
 				Response: &gnmi.SubscribeResponse_Update{
 					Update: &gnmi.Notification{
@@ -73,6 +80,7 @@ func AddDataToSubscribers(dataVal []types.Dictionary, subscriptionIdentifier str
 
 			log.Infof("Send data from %v, to gnmi-gateway: %v\n", subscriptionIdentifier, time.Now().UnixNano())
 
+			// Send subscribe response with the data
 			stream.StreamHandle.Send(subResponse)
 		}
 	}

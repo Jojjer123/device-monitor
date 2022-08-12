@@ -63,7 +63,8 @@ type DeviceMonitor struct {
 }
 
 // ALL OF THE BELOW STRUCTURES SHOULD BE IMPLEMENTED THROUGH PROTOBUF
-// The following types are used for deconstructing data from the adapter.
+// OR THEY SHOULD BE REMOVED WITH A NATIVE GNMI IMPLEMENTATION
+// The following types are used for deconstructing data from the adapter
 type SchemaTree struct {
 	Name      string
 	Namespace string
@@ -72,7 +73,6 @@ type SchemaTree struct {
 	Value     string
 }
 
-// TODO: Rename type.
 type AdapterResponse struct {
 	Entries   []SchemaEntry `protobuf:"bytes,1,opt,name=Entries"`
 	Timestamp int64         `protobuf:"fixed64,2,opt,name=Timestamp"`
